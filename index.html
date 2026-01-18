@@ -945,7 +945,7 @@ In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen l
         document.getElementById('ai-score-fill').style.width = "0%";
 
         try {
-            const apiUrl = "https://ki-lernaufgaben.vercel.app/api/chat"; 
+           const apiUrl = "/api/chat"; 
             const response = await fetch(apiUrl, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1103,4 +1103,5 @@ In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen l
     renderScene('intro');
 </script>
 </body>
+
 </html>
