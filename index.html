@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planspiel: PlanA GmbH - Bildungscampus Leipzig</title>
+    <style>
+        /* --- GRUNDLEGENDES DESIGN --- */
+        *, *::before, *::after { box-sizing: border-box; }
+
+        :root {
+            --bg-color: #2b2e4a;
+            --text-color: #ffffff;
+            --accent: #e84545; /* Rot für PlanA / Chef */
+            --panel-bg: rgba(30, 30, 40, 0.96);
+            --success: #2ecc71;
+            --gold: #f1c40f;
+            --error: #c0392b;
+            --ai-color: #9b59b6; 
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--text-color);
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER */
+        header {
+            background-color: rgba(0,0,0,0.95);
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center; 
+            border-bottom: 3px solid var(--accent);
+            height: 80px; 
+            flex-shrink: 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            z-index: 50;
+        }
+
+        .header-left { display: flex; align-items: center; }
+        .bc-logo { height: 55px; background: rgba(255,255,255,0.95); padding: 5px; border-radius: 4px; margin-right: 20px; }
+        .title-group { display: flex; flex-direction: column; }
+        .main-title { font-weight: bold; font-size: 1.6rem; color: #ffffff; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .sub-title { font-size: 1rem; color: #bbb; letter-spacing: 1px; margin-top: 3px; font-weight: 300; }
+        
+        /* KPI BARS */
+        .kpi-container { display: flex; gap: 20px; align-items: flex-start; }
+        .kpi-box { text-align: center; width: 120px; position: relative; }
+        .kpi-label { font-size: 0.7rem; color: #aaa; display: block; margin-bottom: 3px; }
+        .progress-bg { background: #333; height: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #444; }
+        .progress-fill { height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .impressum-link { display: block; margin-top: 5px; font-size: 0.7rem; color: #888; text-decoration: underline; cursor: pointer; transition: color 0.2s; }
+        .impressum-link:hover { color: var(--gold); }
+
+        /* STAGE LAYOUT */
+        .stage {
+            flex: 1; display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px 40px; max-width: 1400px;
+            margin: 0 auto; width: 100%; position: relative; overflow: hidden; 
+        }
+
+        /* LINKE SPALTE */
+        .char-column { 
+            display: flex; flex-direction: column; justify-content: flex-start; align-items: center; 
+            height: 100%; position: relative; max-width: 100%; 
+        }
+        
+        .privacy-hint-sidebar {
+            font-size: 0.7rem; color: #aaa; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 8px; line-height: 1.3;
+            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; width: 100%; border-left: 2px solid #888;
+        }
+
+        .undo-btn {
+            background: #444; border: 1px solid #666; color: white; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; width: 100%; margin-bottom: 10px;
+        }
+        .undo-btn:hover { background: #666; border-color: #888; }
+        .undo-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .name-input-group { width: 100%; margin-bottom: 20px; text-align: left; display: none; }
+        .name-label { font-size: 0.8rem; color: var(--gold); margin-bottom: 4px; display: block; line-height: 1.3; }
+        .name-input {
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #555; color: #fff; padding: 10px; border-radius: 4px;
+            font-family: inherit; font-size: 1rem; transition: 0.2s; font-style: italic;
+        }
+        .name-input:focus { outline: none; border-color: var(--gold); background: rgba(0,0,0,0.5); }
+
+        .char-img-container {
+            width: 100%; height: 260px; display: flex; align-items: flex-end; justify-content: center;
+            background: radial-gradient(circle at bottom, rgba(232, 69, 69, 0.15) 0%, transparent 70%); 
+            margin-bottom: 0; transition: background 0.5s ease;
+        }
+        .char-img-container.klara-mode {
+            background: radial-gradient(circle at bottom, rgba(155, 89, 182, 0.25) 0%, transparent 70%) !important;
+        }
+        .char-img { max-width: 100%; max-height: 100%; filter: drop-shadow(0 0 15px rgba(0,0,0,0.7)); transition: transform 0.3s ease-out; }
+        
+        .char-name-badge {
+            background: var(--accent); color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold; z-index: 10;
+            font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);
+            margin-top: -25px; margin-bottom: 15px; position: relative; transition: background 0.5s;
+        }
+        .char-name-badge.klara-mode { background: var(--ai-color); }
+
+        /* Container unter dem Bild (Links) */
+        .char-extra-box {
+            width: 100%; min-height: 100px; background: rgba(0,0,0,0.4); border: 1px solid #555; border-radius: 12px; padding: 20px; 
+            backdrop-filter: blur(5px); display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: left; animation: slideUp 0.8s ease-out;
+        }
+        .role-text { font-size: 0.95rem; line-height: 1.5; color: #ddd; }
+        
+        /* SPEZIELLER STYLE FÜR 'IHRE ROLLE' BOX (LINKS) */
+        .role-box-left {
+            width: 100%;
+            background: #1a1a2e; /* Dunkler Hintergrund wie im Bild */
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .role-title {
+            color: #f1c40f; /* Gelb */
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .role-description {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        /* RECHTE SPALTE */
+        .dialog-column { display: flex; flex-direction: column; gap: 20px; overflow-y: auto; padding-right: 10px; max-height: 88vh; }
+        
+        .dialog-box {
+            background: var(--panel-bg); border: 1px solid #444; border-radius: 12px; padding: 35px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6); position: relative; backdrop-filter: blur(5px);
+        }
+        .dialog-box h2 { margin-top: 0; color: var(--accent); font-size: 2rem; margin-bottom: 15px; }
+        
+        /* INHALT RECHTS (PlanA Infos) */
+        .intro-title { color: #e84545; font-size: 2.2rem; font-weight: bold; margin-bottom: 20px; }
+        .product-list { margin: 15px 0; line-height: 1.6; padding-left: 5px; }
+        .product-list b { color: #fff; }
+
+        .team-grid {
+            display: grid; grid-template-columns: 260px 1fr;
+            gap: 8px;
+            background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 3px solid #e84545;
+            margin-top: 20px; margin-bottom: 20px; font-size: 0.95rem;
+        }
+        .team-role { color: #f1c40f; font-weight: bold; }
+        .team-name { color: #ffffff; }
+
+        /* BUTTONS */
+        .actions-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; padding-bottom: 20px; }
+        
+        button.choice-btn {
+            background: linear-gradient(180deg, #2d3436 0%, #1a1a1a 100%); border: 1px solid #555; color: white; padding: 18px 25px;
+            border-radius: 8px; font-size: 1.1rem; cursor: pointer; transition: all 0.2s ease; text-align: left;
+            position: relative; overflow: hidden; box-shadow: 0 4px 0 #000; width: 100%;
+        }
+        button.choice-btn:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 0 #000; }
+        
+        /* Start Button (Grün) */
+        button.start-btn-green {
+            background: linear-gradient(180deg, #27ae60 0%, #219150 100%); border: 1px solid #2ecc71;
+            color: white; font-size: 1.1rem; font-weight: bold; padding: 12px; width: 100%;
+            border-radius: 6px; cursor: pointer; box-shadow: 0 4px 0 #1e8449; transition: transform 0.1s; text-align: center;
+        }
+        button.start-btn-green:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #1e8449; }
+        button.start-btn-green:active { transform: translateY(2px); box-shadow: 0 2px 0 #1e8449; }
+
+        /* ANIMATIONEN */
+        .fade-in-effect { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* OVERLAYS */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 100;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px);
+        }
+        .hidden { display: none !important; }
+        .overlay-card {
+            background: #222; border: 2px solid var(--accent); padding: 40px; border-radius: 12px;
+            max-width: 1000px; width: 95%; text-align: center; box-shadow: 0 0 30px rgba(232, 69, 69, 0.2);
+            max-height: 95vh; overflow-y: auto;
+            position: relative; /* Für den Debug Button */
+        }
+
+        /* AI & QUIZ STYLES */
+        .ai-input-area { width: 100%; min-height: 120px; background: #1a1a2e; border: 2px solid var(--ai-color); color: #fff; padding: 15px; font-size: 1.1rem; border-radius: 8px; margin-bottom: 15px; }
+        .ai-feedback-box { background: rgba(155, 89, 182, 0.1); border-left: 4px solid var(--ai-color); padding: 15px; text-align: left; margin-top: 15px; border-radius: 4px; display: none; }
+        .ai-score-bar { height: 8px; background: #333; width: 100%; border-radius: 4px; margin-top: 10px; overflow: hidden; }
+        .ai-score-fill { height: 100%; width: 0%; background: var(--ai-color); transition: width 1s ease-out; }
+        
+        #quiz-questions-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; margin-bottom: 20px; }
+        .quiz-option { display: block; text-align: left; background: #333; padding: 12px; margin: 5px 0; border-radius: 5px; cursor: pointer; border: 1px solid #555; transition: 0.2s; }
+        .quiz-option:hover { background: #444; }
+        .law-text { background: #111; padding: 15px; border-left: 4px solid #f1c40f; text-align: left; margin-bottom: 20px; color: #ccc; }
+
+        .certificate-container { border: 10px solid var(--gold); padding: 40px; background: #fff; color: #222; width: 80%; max-width: 700px; text-align: center; box-shadow: 0 0 50px rgba(241, 196, 15, 0.5); animation: popIn 0.8s ease-out; }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .watermark { position: fixed; bottom: 20px; right: 30px; opacity: 0.1; font-size: 3rem; font-weight: bold; pointer-events: none; color: white; z-index: 0; }
+        
+        /* SKIP BUTTON STYLE */
+        .debug-skip-btn {
+            position: absolute; top: 10px; right: 10px; 
+            background: transparent; border: 1px solid #444; color: #666; 
+            font-size: 0.8rem; padding: 2px 6px; cursor: pointer; opacity: 0.3; transition: 0.2s;
+            border-radius: 4px; z-index: 10;
+        }
+        .debug-skip-btn:hover { opacity: 1; color: white; border-color: white; }
+
+        /* DRUCK-STYLES */
+        @media print {
+            body { background: #fff !important; color: #000 !important; height: auto !important; overflow: visible !important; }
+            header, .stage, .watermark { display: none !important; }
+            .overlay { position: static !important; background: #fff !important; width: 100% !important; height: auto !important; backdrop-filter: none !important; display: block !important; }
+            .overlay-card { border: none !important; box-shadow: none !important; background: #fff !important; color: #000 !important; max-width: 100% !important; padding: 0 !important; text-align: left !important; }
+            button { display: none !important; }
+            .ai-input-area { border: 1px solid #ccc !important; color: #000 !important; background: #fff !important; }
+            h2, h3, strong, p { color: #000 !important; }
+            .ai-feedback-box { border-left: 4px solid #000 !important; background: #f0f0f0 !important; color: #000 !important; }
+            .overlay.hidden { display: none !important; }
+            /* Debug Button beim Drucken ausblenden */
+            .debug-skip-btn { display: none !important; }
+        }
+
+        @media (max-width: 900px) {
+            body { height: auto; overflow-y: auto; }
+            header { flex-direction: column; height: auto; gap: 15px; padding: 15px; }
+            .stage { display: flex; flex-direction: column; height: auto; padding: 15px; }
+            .char-column { width: 100%; height: auto; margin-bottom: 30px; }
+            .actions-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="watermark">© Bildungscampus Leipzig</div>
+
+<header>
+    <div class="header-left">
+        <img src="https://www.bildungscampus-leipzig.de/Bueromanagement/userfiles/images/tcmlogo_blau_gif.gif" alt="Bildungscampus Leipzig" class="bc-logo">
+        <div class="title-group">
+            <div class="main-title">Bildungscampus Leipzig</div>
+            <div class="sub-title"><b>Planspiel - Unternehmenssimulation (DQR 7)</b></div>
+        </div>
+    </div>
+
+    <div class="kpi-container">
+        <div class="kpi-box">
+            <span class="kpi-label">⏳ Zeitfenster</span>
+            <div class="progress-bg"><div id="bar-time" class="progress-fill" style="width: 100%; background: #3498db;"></div></div>
+        </div>
+        <div class="kpi-box">
+            <span class="kpi-label">💰 Budget</span>
+            <div class="progress-bg"><div id="bar-budget" class="progress-fill" style="width: 100%; background: #2ecc71;"></div></div>
+        </div>
+        <div class="kpi-box">
+            <span class="kpi-label">⚖️ Recht/Team</span>
+            <div class="progress-bg"><div id="bar-mood" class="progress-fill" style="width: 100%; background: #f1c40f;"></div></div>
+            <span class="impressum-link" onclick="openImpressum()">Impressum</span>
+        </div>
+    </div>
+</header>
+
+<div class="stage" id="game-stage">
+    <div class="char-column">
+        <div class="privacy-hint-sidebar">
+            <span style="font-size: 1.2rem;">🔒</span> 
+            <div>Datenschutz-Hinweis:<br>Die Datenverarbeitung erfolgt ausschließlich lokal in Ihrem Browser.
+Es werden keine Daten auf dem Server gespeichert. </div>
+        </div>
+
+        <button class="undo-btn" id="undo-btn" onclick="undoMove()" disabled>↩ Schritt zurück</button>
+
+        <div class="name-input-group" id="name-input-group">
+            <label class="name-label">Bitte geben Sie für Ihre Arbeit einen Namen an:</label>
+            <input type="text" id="player-name" class="name-input" placeholder="Ihr Name...">
+        </div>
+
+        <div id="char-bg" class="char-img-container">
+            <img id="char-image" src="" alt="Charakter" class="char-img" onerror="this.style.display='none'; document.getElementById('char-fallback').style.display='block';">
+            <div id="char-fallback" style="font-size: 150px; display:none;">👨‍💼</div>
+        </div>
+        
+        <div class="char-name-badge" id="char-name">Dr. Peter Planer</div>
+        
+        <div id="char-extra" class="char-extra-box" style="display:none; background:transparent; border:none; padding:0; backdrop-filter:none;"></div>
+    </div>
+
+    <div class="dialog-column">
+        <div class="dialog-box">
+            <h2 id="scene-title">Laden...</h2>
+            <div id="scene-text" class="dialog-content"></div>
+            <div class="side-info" id="scene-info"></div>
+        </div>
+
+        <div class="actions-container" id="actions"></div>
+    </div>
+</div>
+
+<div id="overlay-ai" class="overlay hidden">
+    <div class="overlay-card">
+        <button class="debug-skip-btn" onclick="debugSkip()" title="Aufgabe überspringen (Debug)">⏭️</button>
+        
+        <h2 style="color: var(--ai-color);">Dr. Klara Kompetenz bittet um Ausarbeitung</h2>
+        <h3 id="ai-topic" style="color: white; margin: 0; font-weight: 300;"></h3>
+        <p id="ai-intro" style="color: #aaa; font-size: 0.95rem; margin: 10px 0 20px; text-align: left; line-height:1.5;">
+            </p>
+        <textarea id="ai-input" class="ai-input-area" placeholder="Formulieren Sie Ihre Strategie auf Master-Niveau..."></textarea>
+        <div style="display:flex; gap:15px; justify-content:center;">
+            <button class="choice-btn" style="background:var(--ai-color);" onclick="analyzeAIAnswer()">🤖 Konzept einreichen</button>
+            <button class="choice-btn" style="background:#444;" onclick="copyAiText()">📋 Text kopieren</button>
+        </div>
+        <div id="ai-result-box" class="ai-feedback-box">
+            <strong id="ai-verdict" style="font-size: 1.2rem;"></strong>
+            <div class="ai-score-bar"><div id="ai-score-fill" class="ai-score-fill"></div></div>
+            <p id="ai-feedback-text" style="color: #ddd; margin-top:10px;"></p>
+            <div style="display:flex; gap:10px; margin-top:20px; justify-content:center; flex-wrap:wrap;">
+                <button id="btn-ai-continue" class="choice-btn hidden" style="background: #2ecc71;" onclick="closeAiOverlay()">Weiter</button>
+                
+                <button id="btn-ai-retry" class="choice-btn hidden" style="background: #e67e22;" onclick="resetAiInput()">Nochmal versuchen</button>
+                <button id="btn-ai-skip" class="choice-btn hidden" style="background: #7f8c8d; font-size:0.9rem;" onclick="skipAiTask()">Weiter (Aufgabe nicht bestanden)</button>
+                
+                <button id="btn-ai-print" class="choice-btn hidden" style="background: #34495e; border: 1px solid #7f8c8d;" onclick="printOverlay()">🖨️ Ergebnis drucken</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="overlay-quiz" class="overlay hidden">
+    <div class="overlay-card">
+        <button class="debug-skip-btn" onclick="debugSkip()" title="Aufgabe überspringen (Debug)">⏭️</button>
+
+        <h2 style="color: var(--gold);">Rechtliche Prüfung</h2>
+        <h3 id="quiz-topic" style="color: white; margin: 0; font-weight: 300;"></h3>
+        <p id="quiz-intro" style="color: #aaa; font-size: 0.95rem; margin: 10px 0 20px; text-align: left; line-height:1.5;"></p>
+        <div id="quiz-law-text" class="law-text hidden"></div>
+        <div id="quiz-questions-container"></div>
+        <div id="quiz-feedback" style="margin:10px; font-weight:bold; font-size:1.2rem;"></div>
+        <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
+            <button class="choice-btn" style="max-width:300px;" onclick="checkQuiz()">Lösung prüfen</button>
+            <button class="choice-btn" style="max-width:300px; background:linear-gradient(180deg, #c0392b 0%, #96281b 100%);" onclick="giveUp()">Aufgeben</button>
+            <button id="btn-quiz-print" class="choice-btn" style="background: #34495e; border: 1px solid #7f8c8d;" onclick="printOverlay()">🖨️ Aufgaben drucken</button>
+        </div>
+        <button id="btn-quiz-success" class="choice-btn hidden" style="background: #2ecc71; margin-top:20px;" onclick="closeQuizOverlay()">Verstanden. Weiter.</button>
+    </div>
+</div>
+
+<div id="overlay-impressum" class="overlay hidden">
+    <div class="overlay-card" style="max-width: 800px;">
+        <h2 style="color: var(--gold);">Impressum</h2>
+        <div class="impressum-content">
+            <h3>Angaben gemäß § 5 TMG</h3>
+            <p>Bildungscampus Leipzig<br>Hebelstraße 27<br>04177 Leipzig</p>
+            <h3>Vertreten durch</h3>
+            <p>Geschäftsleitung: Boris Dahms</p>
+
+            <h3>Kontakt</h3>
+            <p>
+                Telefon: +49 (0) 123 44 55 66<br>
+                E-Mail: mail@bildungscampus-leipzig.de
+            </p>
+
+            <h3>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h3>
+            <p>
+                Boris Dahms<br>
+            </p>
+            
+            <h3>Urheberrecht und Haftungsausschluss</h3>
+            <div style="font-size: 0.85rem; color: #999; text-align: left;">
+                Die vorliegende Präsentation unterliegt dem Urheberrecht. Die Nutzung und Verwendung sowie die Weitergabe darf nur mit ausdrücklicher Genehmigung des Autors erfolgen. Die Präsentation darf ohne ausdrückliche Zustimmung des Autors nicht verändert werden.<br>
+                Eine nichtgenehmigte Verwendung durch Dritte zu Unterrichtszwecken in Bildungseinrichtungen ist ausdrücklich untersagt und führt unverzüglich zur Strafanzeige und Schadenersatzforderungen.
+                Der Autor übernimmt keinerlei Gewähr für die Aktualität, Richtigkeit und Vollständigkeit der bereitgestellten Informationen. Haftungsansprüche gegen den Autor, welche sich auf Schäden materieller oder ideeller Art beziehen, die durch die Nutzung oder Nichtnutzung der dargebotenen Informationen bzw. durch die Nutzung fehlerhafter und unvollständiger Informationen verursacht wurden, sind grundsätzlich ausgeschlossen, sofern seitens des Autors kein nachweislich vorsätzliches Verschulden vorliegt. Alle Angebote sind freibleibend und unverbindlich. Der Autor behält es sich ausdrücklich vor, Teile der Seiten oder das gesamte Angebot ohne gesonderte Ankündigung zu verändern, zu ergänzen, zu löschen oder die Veröffentlichung zeitweise oder endgültig einzustellen.<br>
+                Bei direkten oder indirekten Verweisen auf fremde Webseiten (“Hyperlinks”), die außerhalb des Verantwortungsbereiches des Autors liegen, würde eine Haftungsverpflichtung ausschließlich in dem Fall in Kraft treten, in dem der Autor von den Inhalten Kenntnis hat und es ihm technisch möglich und zumutbar wäre, die Nutzung im Falle rechtswidriger Inhalte zu verhindern. Der Autor erklärt hiermit ausdrücklich, dass zum Zeitpunkt der Linksetzung keine illegalen Inhalte auf den zu verlinkenden Seiten erkennbar waren. Auf die aktuelle und zukünftige Gestaltung, die Inhalte oder die Urheberschaft der verlinkten/verknüpften Seiten hat der Autor keinerlei Einfluss. Deshalb distanziert er sich hiermit ausdrücklich von allen Inhalten aller verlinkten /verknüpften Seiten, die nach der Linksetzung verändert wurden.<br>
+                Für illegale, fehlerhafte oder unvollständige Inhalte und insbesondere für Schäden, die aus der Nutzung oder Nichtnutzung solcherart dargebotener Informationen entstehen, haftet allein der Anbieter der Seite, auf welche verwiesen wurde, nicht derjenige, der über Links auf die jeweilige Veröffentlichung lediglich verweist.<br>
+                Der Autor ist bestrebt, in allen Publikationen die Urheberrechte der verwendeten Bilder, Grafiken, Tondokumente, Videosequenzen und Texte zu beachten, von ihm selbst erstellte Bilder, Grafiken, Tondokumente, Videosequenzen und Texte zu nutzen oder auf lizenzfreie Grafiken, Tondokumente, Videosequenzen und Texte zurückzugreifen.<br>
+                Alle innerhalb des Angebotes genannten und ggf. durch Dritte geschützten Marken- und Warenzeichen unterliegen uneingeschränkt den Bestimmungen des jeweils gültigen Kennzeichenrechts und den Besitzrechten der jeweiligen eingetragenen Eigentümer. Allein aufgrund der bloßen Nennung ist nicht der Schluss zu ziehen, dass Markenzeichen nicht durch Rechte Dritter geschützt sind! Das Copyright für veröffentlichte, vom Autor selbst erstellte Objekte bleibt allein beim Autor der Seiten. Eine Vervielfältigung oder Verwendung solcher Grafiken, Tondokumente, Videosequenzen und Texte in anderen elektronischen oder gedruckten Publikationen ist ohne ausdrückliche Zustimmung des Autors nicht gestattet.<br><br>
+                Leipzig 2025 Boris Dahms
+            </div>
+
+            <button class="choice-btn" onclick="closeImpressum()">Schließen</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Charaktere / Bilder
+    const IMAGES = {
+        sascha: 'sascha.png',
+        horst: 'horst.png',
+        chef: 'chef.png',
+        verwaltung: 'verwaltung.png',
+        azubis: 'azubis.png',
+        // klara entfernt -> Emoji Fallback
+        alex: 'alex.png',
+        claudia: 'claudia.png',
+        viola: 'viola.png',
+        erik: 'erik.png',
+        sebastian: 'sebastian.png'
+    };
+
+    // Charaktere mit spezifischem Duktus-Hinweis für den User - NEUES FORMAT
+    const CHAR_DESCRIPTIONS = {
+        'chef': "<b>Dr. Peter Planer (Geschäftsführung)</b><br>Ein Visionär, manchmal ein bisschen unkonzentriert.<br><i>\"Ich sehe Horizonte... aber wo ist meine Brille?\"</i>",
+        'horst': "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH)</b><br>Praktiker vom Bau. Kurz angebunden.<br><i>\"Muss fertig werden. Basta!\"</i>",
+        'verwaltung': "<b>Franziska Immerda (Verwaltung)</b><br>Zuvorkommend, hilfsbereit, aber bestimmt. Behält das Große und Ganze im Blick.<br><i>\"Ordnung muss sein.\"</i>",
+        'sascha': "<b>Sascha AEVO (Verantwortlicher Ausbilder)</b><br>Pflichtbewusst, modern und wertschätzend. Offen für Neuerungen.<br><i>\"Lass uns das gemeinsam angehen.\"</i>",
+        'klara': "<b>Dr. Klara Kompetenz (Personalleitung)</b><br>Höflich, wertschätzend und motivierend. Übt Kritik nur an der Sache.<br><i>\"Wir finden eine pädagogische Lösung.\"</i>",
+        'alex': "<b>Alex Engagiert (Betriebsrat)</b><br>Achtet auf Bedürfnisse der Mitarbeitenden. Wird bei Verstößen sehr deutlich.<br><i>\"Haben wir an die Kollegen gedacht?\"</i>",
+        'claudia': "<b>Claudia Papierkram (Verwaltung/KI)</b><br>Effizient, freundlich und pedantisch. Liebt KI und Weiterbildung.<br><i>\"Effizienz durch Struktur.\"</i>",
+        'viola': "<b>Viola Communikationis (Inklusion)</b><br>Fachpraktikerausbilderin. Spricht langsam und deutlich.<br><i>\"Wir müssen barrierefrei denken.\"</i>",
+        'erik': "<b>Erik Handycap (Sozialarbeit)</b><br>Bildet gerne lange, ausschweifende Schachtelsätze.<br><i>\"In Anbetracht der Umstände, die...\"</i>",
+        'sebastian': "<b>Sebastian Domini (Technik)</b><br>Industriemeister Metall/Mechatronik. Kommt aus der Produktion.<br><i>\"Das muss technisch funktionieren.\"</i>"
+    };
+
+    let state = { time: 150, budget: 100, mood: 100, currentScene: 'intro', giveUpCount: 0 };
+    let historyStack = [];
+    let resumeSceneAfterIntervention = ''; 
+
+    // --- KI-KONFIGURATION (DQR 7 NIVEAU) ---
+    const aiScenarios = {
+        'hb4_digital': { 
+            title: "<span style='color:white;'>Aufgabe:</span> Digitale Transformation der Ausbildung",
+            intro: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Verehrter Kollege, wir stehen vor einer paradigmatischen Wende. Die PlanA Soft KG expandiert in den SHK-Bereich. Ich benötige Ihre Expertise: Welche Anforderungen stellen wir an <b>Lernaufgaben</b>, um der digitalen Transformation gerecht zu werden? Bitte differenzieren Sie nach überfachlichen Kompetenzen und methodischen Ansätzen.'",
+            keywords: ["digitale zwillinge", "selbststeuerung", "überfachlich", "kooperationstools", "prozessorientierung", "lerntechniken"],
+            thresholds: { 30: "Zu oberflächlich für DQR 7.", 70: "Gute Ansätze, bitte präziser.", 100: "Exzellente strategische Ableitung!" },
+            solutionHint: "Fokus: Digitale Zwillinge, Selbststeuerung, Methodenkompetenz, Softskills.",
+            gradingPrompt: "Du bist Dr. Klara Kompetenz. Bewerte streng akademisch (DQR 7). Erwarte Begriffe wie 'Digitale Zwillinge', 'Selbststeuerung'."
+        },
+        'hb1_sozial': {
+            title: "<span style='color:white;'>Aufgabe:</span> Lernprozesse & Sozialkompetenz",
+            intro: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Ein bedauerlicher Vorfall. Ein Azubi vergreift sich im Ton. Herr Hektik plädiert für Kündigung. Das ist mir zu... unpädagogisch. Entwickeln Sie bitte eine Intervention zur Förderung der <b>Sozialkompetenz</b>. Ich erwarte ein fundiertes Konzept, keine bloße Strafe.'",
+            keywords: ["feedback", "reflexion", "verhaltenskodex", "perspektivwechsel", "kommunikationstraining", "ursachenanalyse"],
+            thresholds: { 30: "Das ist keine pädagogische Intervention.", 70: "Solider Ansatz.", 100: "Hervorragend differenziert!" },
+            solutionHint: "Fokus: Feedback-Gespräch, Reflexion der Sprachwirkung, gemeinsamer Verhaltenskodex.",
+            gradingPrompt: "Bewerte als Dr. Klara Kompetenz. Sei wertschätzend, aber fordere pädagogische Tiefe."
+        },
+        'hb2_recruit': {
+            title: "<span style='color:white;'>Aufgabe:</span> Planungsprozesse (Ausland)",
+            intro: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Ich sehe... Horizonte! Wir brauchen Fachkräfte. Aus dem Ausland! Aber wie? Planen Sie das Marketing und das Interview. Denken Sie an... alles!'<br><b>Alex Engagiert (Betriebsrat):</b> 'Und vergessen Sie mir den Betriebsrat nicht!'",
+            keywords: ["anerkennung", "betriebsrat", "kultur", "dolmetscher", "onboarding", "qualifikationsbedarf"],
+            thresholds: { 30: "Wichtige Stakeholder vergessen.", 70: "Strukturiert.", 100: "Strategisch umfassend!" },
+            solutionHint: "Fokus: §99 BetrVG, Anerkennung Abschlüsse, Kulturelle Sensibilität, Dolmetscher.",
+            gradingPrompt: "Bewerte strategisch. Prüfe, ob Betriebsrat und kulturelle Aspekte genannt sind."
+        },
+        'hb3_genz': {
+            title: "<span style='color:white;'>Aufgabe:</span> Management & Bindung (Gen Z)",
+            intro: "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Die Jungen hauen alle ab. Wollen Sabbatical. Pff. Mach was.'<br><b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Wir müssen ihre Werte verstehen, Horst. Erstellen Sie ein Retention-Konzept.'",
+            keywords: ["sinnstiftung", "flexibilität", "cafeteria-prinzip", "werte", "work-life-balance", "karrierepfade"],
+            thresholds: { 30: "Zu monetär gedacht.", 70: "Gute Ansätze.", 100: "Exzellentes Verständnis der Zielgruppe!" },
+            solutionHint: "Fokus: Cafeteria-Modell, Sinnstiftung, Flexibilisierung der Arbeit.",
+            gradingPrompt: "Bewerte modern und lebensweltorientiert."
+        },
+        'hb5_transfer': {
+            title: "<span style='color:white;'>Aufgabe:</span> Weiterbildung (Transfergesellschaft)",
+            intro: "<b>Erik Handycap (Sozialarbeit):</b> 'In Anbetracht der bedauerlichen Insolvenz eines Teilbereichs, und unter Berücksichtigung der sozialen Verantwortung, die wir zweifelsohne tragen, ist es unabdingbar, eine Transfergesellschaft zu gründen, deren primäres Ziel es sein muss...' <br><i>(Er redet noch 5 Minuten weiter)</i><br><b>Viola Communikationis (Inklusion):</b> 'Erik. Meint. Wir. Müssen. 50. Leute. Retten. Wir brauchen eine <b>Bildungsbedarfsanalyse</b>.'",
+            keywords: ["anforderungsprofil", "soll-ist-vergleich", "einzelgespräche", "kompetenzprofil", "empathie", "arbeitsmarktanalyse"],
+            thresholds: { 30: "Zu wenig Struktur.", 70: "Guter Leitfaden.", 100: "Hervorragend strukturiert und empathisch!" },
+            solutionHint: "Fokus: Profiling, Einzelgespräche, Abgleich mit Arbeitsmarktchancen.",
+            gradingPrompt: "Achte auf Struktur und Empathie im Prozess."
+        },
+        'hb6_karriere': {
+            title: "<span style='color:white;'>Aufgabe:</span> Personalentwicklung (Karrierewege)",
+            intro: "<b>Claudia Papierkram (Verwaltung/KI):</b> 'Ich habe die Daten analysiert. Unsere Effizienz leidet unter Motivationstiefs. Die Leute sehen keinen Aufstieg. Wir brauchen systematische <b>Laufbahnmodelle</b>. Meine KI sagt: Das erhöht die Retention um 40%.'",
+            keywords: ["fachlaufbahn", "führungslaufbahn", "projektlaufbahn", "durchlässigkeit", "anforderungsprofile", "transparenz"],
+            thresholds: { 30: "Nur Führungslaufbahn bedacht?", 70: "Gute Systematik.", 100: "Exzellente Differenzierung (Fach/Führung/Projekt)!" },
+            solutionHint: "Fokus: Fachlaufbahn vs. Führungslaufbahn vs. Projektlaufbahn.",
+            gradingPrompt: "Bewerte die Systematik der Laufbahnmodelle."
+        }
+    };
+    let currentAiId = null;
+
+    // --- QUIZ DATEN (Rechtliche Absicherung & EXPERTENKLAUSUR) ---
+    const quizzes = {
+        'jarbschg_zeit': {
+            title: "<span style='color:white;'>Aufgabe:</span> JArbSchG - Arbeitszeit & Aufsicht",
+            intro: "<b>Franziska Immerda (Verwaltung):</b> 'Der Vorfall mit Kevin an der Kreissäge hat hohe Wellen geschlagen. Die Berufsgenossenschaft prüft jetzt genau. Beweisen Sie Ihre Rechtssicherheit in Bezug auf Arbeitszeit und gefährliche Arbeiten.'",
+            law: "<strong>§ 22 JArbSchG</strong>: Beschäftigung bei gefährlichen Arbeiten nur unter Aufsicht.<br><strong>§ 8 JArbSchG</strong>: Max 40h/Woche.",
+            questions: [
+                { q: "Darf Kevin (16) alleine an die Kreissäge?", options: [{text:"Ja, wenn es eilt",val:false},{text:"Nein, verboten",val:true}] },
+                { q: "Max. Wochenarbeitszeit Jugendlicher?", options: [{text:"40 Std",val:true},{text:"48 Std",val:false}] }
+            ]
+        },
+        'pe_instrumente': {
+            title: "<span style='color:white;'>Aufgabe:</span> PE-Instrumente (DQR 7 Check)",
+            intro: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Strategische Personalentwicklung erfordert präzises Vokabular. Bevor wir Konzepte schreiben, müssen die Begriffe sitzen. Differenzieren Sie bitte:'",
+            law: "Strategische PE nutzt diverse Instrumente zur Bedarfsdeckung.",
+            questions: [
+                { q: "Was ist Job Enrichment?", options: [{text:"Mehr Aufgaben gleiches Niveau",val:false},{text:"Höheres Anforderungsniveau",val:true}] },
+                { q: "Ziel von Coaching?", options: [{text:"Hilfe zur Selbsthilfe",val:true},{text:"Fachberatung",val:false}] },
+                { q: "Was ist Job Rotation?", options: [{text:"Geplanter Wechsel",val:true},{text:"Kündigung",val:false}] }
+            ]
+        },
+        'quiz_pe_expert': {
+            title: "<span style='color:white;'>Aufgabe:</span> Expertenwissen Personalentwicklung & Führung",
+            intro: "<b>Dr. Klara Kompetenz:</b> 'Bevor ich meine Agenden übergebe, muss ich sicher sein, dass Sie die strategischen Zusammenhänge durchdrungen haben. Beweisen Sie Ihre Expertise in dieser Klausur.'",
+            law: "Hinweis: Diese Fragen basieren auf dem Handlungsbereich 6 (Personalentwicklung und Beratung).",
+            questions: [
+                { 
+                    q: "Was ist ein zentrales Ziel der Personalentwicklung (PE)?", 
+                    options: [
+                        {text: "Gewinnmaximierung der einzelnen Mitarbeiter.", val: false},
+                        {text: "Mitarbeiter auf künftige Entwicklungen (z.B. technologischen Wandel) vorzubereiten.", val: true}
+                    ] 
+                },
+                { 
+                    q: "Was wird in einer Qualifikationsmatrix gegenübergestellt?", 
+                    options: [
+                        {text: "Ist-Qualifikationen vs. Soll-Anforderungen.", val: true},
+                        {text: "Gehaltswünsche vs. Budget.", val: false}
+                    ] 
+                },
+                { 
+                    q: "Was kennzeichnet eine betriebliche Laufbahnplanung?", 
+                    options: [
+                        {text: "Sie beschreibt nur den Lebenslauf vor der Einstellung.", val: false},
+                        {text: "Sie bündelt Entwicklungs- und Aufstiegsmöglichkeiten zur Mitarbeiterbindung.", val: true}
+                    ] 
+                },
+                { 
+                    q: "Welche Phasen umfasst eine professionelle Mitarbeiterbeurteilung?", 
+                    options: [
+                        {text: "Beobachtung, Bewertung und Besprechung.", val: true},
+                        {text: "Nur die spontane Bewertung aus dem Bauch heraus.", val: false}
+                    ] 
+                },
+                { 
+                    q: "Was ist das primäre Ziel eines Coachings?", 
+                    options: [
+                        {text: "Fachliche Anweisungen geben.", val: false},
+                        {text: "Hilfe zur Selbsthilfe leisten.", val: true}
+                    ] 
+                }
+            ]
+        }
+    };
+    let currentQuizId = null;
+
+    // --- STORY SCENES ---
+    const scenes = {
+        'intro': {
+            title: "",
+            text: `
+                <div class="intro-title">Willkommen<br>im Bildungscampus Leipzig</div>
+                
+                <p style="text-align: justify;">Wir sind ein neu gegründetes Bildungsunternehmen in Leipzig und bieten vorrangig
+Präsenz- und Onlineschulungen in den Bereichen Aus- und Weiterbildungspädagogik, Berufspädagogik, Ausbildereignung, Personalwirtschaft und Büromanagement an.<br><br>
+Seit kurzer Zeit bilden wir in einem Ausbildungsverbund mit der PlanA GmbH im handwerklichen Bereich auch Tischler aus. Ein Teil dieser Ausbildung findet in einer Produktionslinie der PlanA GmbH statt. Es existiert auch eine eigene Lehrwerkstatt.
+
+ </div>
+
+                <p style="text-align: justify;">Wir beschäftigen zur Zeit 8 Mitarbeitende sowie mehrere freiberufliche Dozent*innen</p>
+
+                <div class="team-grid">
+                    <div class="team-role">Geschäftsführung:</div><div class="team-name">Dr. Peter Planer</div>
+                    <div class="team-role">Personalleitung:</div><div class="team-name">Dr. Klara Kompetenz</div>
+                    <div class="team-role">Ausbildungleiter PlanA GmbH:</div><div class="team-name">Horst Hektik</div>
+                    <div class="team-role">Verantwortlicher Ausbilder:</div><div class="team-name">Sascha AEVO</div>
+                    <div class="team-role">Verwaltung:</div><div class="team-name">Franziska Immerda</div>
+                    <div class="team-role">Betriebsrat:</div><div class="team-name">Alex Engagiert</div>
+                    <div class="team-role">weitere Mitarbeitende:</div><div class="team-name">Claudia Papierkram, Viola Communikationis,<br> Erik Handycap und Sebastian Domini</div>
+                </div>
+            `,
+            leftContent: `
+                <div class="role-box-left">
+                    <span class="role-title">IHRE MISSION</span>
+                    <div class="role-description">
+                        Sie sind als Gepr. Berufspädagog*in die neue <b>"Hauptabteilungsleitung Bildung" mit Personalbefugnissen</b>.<br>
+In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen lösen. 
+                    </div>
+                    <button class="start-btn-green" onclick="startGame()">Rolle annehmen & starten </button>
+                </div>
+            `,
+            char: "chef", 
+            charName: "Dr. Peter Planer",
+            options: []
+        },
+        'start': {
+            title: "Der Ernstfall",
+            text: "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Tach. Hör mal. Der Kevin. 16 Jahre. Soll an die Kreissäge. Sofort. Auftrag muss raus. Personal fehlt. Mach da kein Drama draus, ja?'",
+            char: "horst", charName: "Horst Hektik",
+            options: [
+                { text: "Genehmigen (Produktion first)", next: "fail_jarbschg", costTime: 2 },
+                { text: "Ablehnen (Gefährliche Arbeit)", next: "success_jarbschg", costTime: 5 }
+            ]
+        },
+        'fail_jarbschg': {
+            title: "Rechtsbruch!",
+            text: "<b>Franziska Immerda (Verwaltung):</b> 'Ich muss doch sehr bitten! § 22 JArbSchG. Ohne Aufsicht? Unmöglich. Ich habe die BG schon am Telefon gehabt. Das geht so nicht!'",
+            char: "verwaltung", charName: "Franziska Immerda", moodChange: -20,
+            options: [{ text: "Rechtskenntnisse auffrischen", next: "quiz_jarb", costTime: 10 }]
+        },
+        'quiz_jarb': { special: "quiz", quizId: "jarbschg_zeit", next: "success_jarbschg" },
+        'success_jarbschg': {
+            title: "Konflikt gelöst",
+            text: "<b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Danke. Horst ist zwar sauer, aber wir haben einen Unfall verhindert. Und Rechtssicherheit gewahrt. Das war professionell.'",
+            char: "sascha", charName: "Sascha AEVO",
+            options: [{ text: "Zum Termin mit Dr. Kompetenz", next: "klara_audit", costTime: 5 }]
+        },
+        'klara_audit': {
+            title: "<span style='color:white;'>Aufgabe:</span> Digitale Wende",
+            text: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Guten Tag. Ich freue mich, dass Sie da sind. Sehen Sie, wir expandieren in den SHK-Bereich. Unsere Didaktik ist jedoch... nun ja... antiquiert. Ich erbitte ein Konzept zur <b>digitalen Transformation</b> der Lernaufgaben.'",
+            char: "klara", charName: "Dr. Klara Kompetenz",
+            options: [
+                { text: "Konzept erstellen", next: "ai_digital", costTime: 15 },
+                { text: "Ablehnen ('Zu neumodisch')", next: "fail_klara_block", costTime: 5 }
+            ]
+        },
+        'fail_klara_block': {
+            title: "Irritation",
+            text: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Ich bin enttäuscht. Stillstand ist Rückschritt. Ich erwarte von Ihnen Innovationsgeist, keine Blockadehaltung. Bitte überdenken Sie das.'",
+            char: "klara", charName: "Dr. Klara Kompetenz", moodChange: -30,
+            options: [{ text: "Konzept doch erstellen", next: "ai_digital", costTime: 5 }]
+        },
+        'ai_digital': { special: "ai_question", aiId: "hb4_digital", next: "social_issue" },
+
+        'social_issue': {
+            title: "<span style='color:white;'>Aufgabe:</span> Der Vorfall",
+            text: "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Der Stift hat 'Hurensohn' gesagt. Zu mir. Der fliegt. Sofort. Papiere fertig machen!'<br><br><b>Dr. Klara Kompetenz (Personalleitung):</b> 'Herr Hektik, bitte mäßigen Sie sich. Wir kündigen nicht affektgesteuert. Das ist ein Bildungsauftrag. Fördern Sie die <b>Sozialkompetenz</b>.'",
+            char: "klara", charName: "Dr. Klara Kompetenz",
+            options: [
+                { text: "Pädagogische Intervention", next: "ai_social", costTime: 15 },
+                { text: "Horst zustimmen (Kündigung)", next: "fail_pedagogy", costTime: 5 }
+            ]
+        },
+        'fail_pedagogy': {
+            title: "Pädagogisches Versagen",
+            text: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Sie enttäuschen mich. Wir sind Pädagogen, keine Scharfrichter. Versuchen Sie es erneut - mit Verstand!'",
+            char: "klara", charName: "Dr. Klara Kompetenz", moodChange: -20,
+            options: [{ text: "Neuer Versuch", next: "ai_social", costTime: 5 }]
+        },
+        'ai_social': { special: "ai_question", aiId: "hb1_sozial", next: "level_2_intro" },
+
+        'level_2_intro': {
+            title: "Zwischenfazit",
+            text: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Ah, da sind Sie ja! Ich hatte gerade eine Vision... oder war es Hunger? Egal. Wir müssen... größer denken! Strategischer! Kommen Sie in mein Büro.'",
+            char: "chef", charName: "Dr. Peter Planer",
+            options: [{ text: "Zur Strategierunde", next: "strategy_recruit", costTime: 0 }]
+        },
+        'strategy_recruit': {
+            title: "<span style='color:white;'>Aufgabe:</span> Globales Denken",
+            text: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Der Markt ist leer. Wir müssen... in die Ferne schweifen! Ausland! Rekrutierung! Machen Sie das. Planen Sie alles.'<br><b>Alex Engagiert (Betriebsrat):</b> 'Moment mal! § 99 BetrVG. Und Integration. Das muss sauber laufen!'",
+            char: "chef", charName: "Dr. Peter Planer",
+            options: [
+                { text: "Planungsprozess starten", next: "ai_recruit", costTime: 15 },
+                { text: "Einfach mal Stellenanzeige schalten", next: "fail_recruit", costTime: 5 }
+            ]
+        },
+        'fail_recruit': {
+            title: "Betriebsrat veto",
+            text: "<b>Alex Engagiert (Betriebsrat):</b> 'So nicht, Freunde. Ohne Konzept zur Eingliederung und ohne meine Zustimmung läuft hier gar nichts. Das ist gesetzeswidrig!'",
+            char: "alex", charName: "Alex Engagiert", moodChange: -25,
+            options: [{ text: "Ordentlich planen", next: "ai_recruit", costTime: 10 }]
+        },
+        'ai_recruit': { special: "ai_question", aiId: "hb2_recruit", next: "gen_z_scene" },
+
+        'gen_z_scene': {
+            title: "<span style='color:white;'>Aufgabe:</span> Generationenkonflikt",
+            text: "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Die Neuen. Wollen Work-Life-Balance. Ich glaub es hackt. Wer arbeitet hier eigentlich noch?'<br><b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Horst, die Zeiten ändern sich. Wir brauchen ein <b>Bindungskonzept</b> für die Gen Z, sonst sind wir bald alleine.'",
+            char: "horst", charName: "Horst Hektik",
+            options: [
+                { text: "Retention-Konzept", next: "ai_genz", costTime: 15 },
+                { text: "Obstkorb hinstellen", next: "fail_obst", costTime: 5 }
+            ]
+        },
+        'fail_obst': {
+            title: "Das reicht nicht",
+            text: "<b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Ein Obstkorb? Ernsthaft? Die jungen Leute wollen Perspektiven und Sinn, keine Bananen.'",
+            char: "sascha", charName: "Sascha AEVO", moodChange: -10,
+            options: [{ text: "Konzept überarbeiten", next: "ai_genz", costTime: 10 }]
+        },
+        'ai_genz': { special: "ai_question", aiId: "hb3_genz", next: "transfer_scene" },
+
+        'transfer_scene': {
+            title: "<span style='color:white;'>Aufgabe:</span> Schwere Zeiten",
+            text: "<b>Erik Handycap (Sozialarbeit):</b> 'In Anbetracht der bedauerlichen Insolvenz eines Teilbereichs, und unter Berücksichtigung der sozialen Verantwortung, die wir zweifelsohne tragen, ist es unabdingbar, eine Transfergesellschaft zu gründen, deren primäres Ziel es sein muss...' <br><i>(Er redet noch 5 Minuten weiter)</i><br><b>Viola Communikationis (Inklusion):</b> 'Erik. Meint. Wir. Müssen. 50. Leute. Retten. Wir brauchen eine <b>Bildungsbedarfsanalyse</b>.'",
+            char: "erik", charName: "Erik Handycap",
+            options: [{ text: "Analyse-Leitfaden erstellen", next: "ai_transfer", costTime: 15 }]
+        },
+        'ai_transfer': { special: "ai_question", aiId: "hb5_transfer", next: "career_scene" },
+
+        'career_scene': {
+            title: "<span style='color:white;'>Aufgabe:</span> Zukunft",
+            text: "<b>Claudia Papierkram (Verwaltung/KI):</b> 'Ich habe die Daten analysiert. Unsere Effizienz leidet unter Motivationstiefs. Die Leute sehen keinen Aufstieg. Wir brauchen systematische <b>Laufbahnmodelle</b>. Meine KI sagt: Das erhöht die Retention um 40%.'",
+            char: "claudia", charName: "Claudia Papierkram",
+            options: [{ text: "Laufbahnmodelle entwickeln", next: "ai_career", costTime: 15 }]
+        },
+        'ai_career': { special: "ai_question", aiId: "hb6_karriere", next: "klara_leave" },
+
+        // --- NEUES SZENARIO: KLARA GEHT IN MUTTERSCHUTZ ---
+        'klara_leave': {
+            title: "Vertrauliches Gespräch",
+            text: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Kommen Sie doch bitte kurz in mein Büro und schließen Sie die Tür. Ich habe Neuigkeiten: Ich werde in den nächsten Wochen in den Mutterschutz gehen. Ich brauche jemanden, der meine Aufgaben als Personalleitung vertretungsweise übernimmt. Ich traue Ihnen das zu – aber dafür müssen Sie in der Theorie absolut sattelfest sein. Sind Sie bereit für eine <b>Experten-Weiterbildung</b>?'",
+            char: "klara", charName: "Dr. Klara Kompetenz",
+            options: [
+                { text: "Herausforderung annehmen (Weiterbildung starten)", next: "quiz_pe_expert", costTime: 20 },
+                { text: "Ich traue mir das nicht zu", next: "game_over_fail", costTime: 5 } // Wer nicht wagt...
+            ]
+        },
+
+        'quiz_pe_expert': { special: "quiz", quizId: "quiz_pe_expert", next: "calculate_score" },
+
+        'calculate_score': { 
+            title: "Abschluss",
+            text: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Nun, das war eine beeindruckende Tour de Force. Meine Visionen wurden... nun ja, konkretisiert. Lassen Sie uns sehen, was dabei herausgekommen ist. Hier ist Ihr Ergebnis.'<br><br><i>(Er unterschreibt das Dokument mit Schwung.)</i>",
+            char: "chef",
+            charName: "Dr. Peter Planer",
+            options: [{ text: "Zertifikat entgegennehmen 📜", specialExec: "showCertificate" }] 
+        },
+        'game_over_fail': { title: "Entlassen", text: "Sie haben das Unternehmen ruiniert oder wichtige Chancen verpasst.", char: "chef", options: [] },
+        'resolve_warning': { specialExec: "resolveWarning" },
+
+        // --- SZENEN: AUFGEBEN-ESKALATION ---
+        'giveup_1_talk': {
+            title: "Mitarbeitergespräch",
+            text: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Kommen Sie bitte kurz rein. Ich sehe, Sie haben eine Aufgabe abgebrochen. Woran liegt es? Überforderung? Wir bieten interne Schulungen an. Bitte nutzen Sie unsere Ressourcen und geben Sie nicht einfach auf. Wir zählen auf Sie.'",
+            char: "chef", charName: "Dr. Peter Planer", moodChange: -10,
+            options: [{ text: "Verstanden, ich mache weiter.", specialExec: "resumeIntervention" }]
+        },
+        'giveup_2_warning': {
+            title: "Mündliche Verwarnung",
+            text: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Schon wieder? Das ist das zweite Mal, dass Sie eine Aufgabe verweigern. Ich spreche Ihnen hiermit eine mündliche Verwarnung aus. Eine Führungskraft muss Lösungen finden, nicht kapitulieren!'",
+            char: "chef", charName: "Dr. Peter Planer", moodChange: -20,
+            options: [{ text: "Es kommt nicht wieder vor.", specialExec: "resumeIntervention" }]
+        },
+        'giveup_3_written': {
+            title: "Schriftliche Abmahnung",
+            text: "<b>Dr. Klara Kompetenz & Dr. Peter Planer:</b> 'Herr/Frau Kollege/in, das ist das dritte Mal. Wir sind fassungslos. Hiermit überreiche ich Ihnen eine formelle, schriftliche Abmahnung. Dies ist Ihre letzte Chance. Noch ein Abbruch, und wir müssen uns trennen.'",
+            char: "klara", charName: "Dr. Klara Kompetenz", moodChange: -40,
+            options: [{ text: "Ich habe verstanden.", specialExec: "resumeIntervention" }]
+        },
+        'giveup_4_fired': {
+            title: "Kündigung",
+            text: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Es reicht. Vier Arbeitsverweigerungen sind untragbar. Das Vertrauensverhältnis ist zerstört. Sie sind hiermit fristlos gekündigt. Bitte räumen Sie Ihren Schreibtisch.'",
+            char: "chef", charName: "Dr. Peter Planer",
+            options: [] // Keine Optionen = Sackgasse / Game Over
+        }
+    };
+
+    // --- ENGINE ---
+    function renderScene(sceneKey) {
+        state.currentScene = sceneKey;
+        const scene = scenes[sceneKey];
+        
+        const imgEl = document.getElementById('char-image');
+        const fallbackEl = document.getElementById('char-fallback');
+        const bgContainer = document.getElementById('char-bg');
+        const nameBadge = document.getElementById('char-name');
+
+        if (IMAGES[scene.char]) {
+            imgEl.src = IMAGES[scene.char]; imgEl.style.display = 'block'; fallbackEl.style.display = 'none';
+        } else {
+            imgEl.style.display = 'none'; fallbackEl.style.display = 'block';
+            if (scene.char === 'klara') {
+                fallbackEl.innerHTML = '👩🏾‍🏫';
+            } else {
+                let emoji = '👨‍💼';
+                if (scene.char === 'verwaltung' || scene.char === 'claudia' || scene.char === 'viola') emoji = '👩‍💼';
+                if (scene.char === 'horst' || scene.char === 'sebastian') emoji = '👷‍♂️';
+                fallbackEl.innerHTML = emoji;
+            }
+        }
+        
+        if (scene.char === 'klara') {
+            bgContainer.classList.add('klara-mode');
+            nameBadge.classList.add('klara-mode');
+        } else {
+            bgContainer.classList.remove('klara-mode');
+            nameBadge.classList.remove('klara-mode');
+        }
+
+        document.getElementById('char-name').innerText = scene.charName || "";
+        document.getElementById('scene-title').innerHTML = scene.title || "";
+        document.getElementById('scene-text').innerHTML = scene.text || "";
+
+        const actionsDiv = document.getElementById('actions');
+        actionsDiv.innerHTML = "";
+
+        const charExtraDiv = document.getElementById('char-extra');
+        charExtraDiv.innerHTML = ""; 
+        charExtraDiv.style.display = "none";
+        charExtraDiv.style.background = "rgba(0,0,0,0.4)";
+        charExtraDiv.style.border = "1px solid #555";
+        charExtraDiv.style.padding = "20px";
+        charExtraDiv.style.backdropFilter = "blur(5px)";
+
+        const nameInputGroup = document.getElementById('name-input-group');
+        if (sceneKey === 'intro') {
+            nameInputGroup.style.display = 'block';
+            if (scene.leftContent) {
+                charExtraDiv.style.display = "block";
+                charExtraDiv.style.background = "transparent";
+                charExtraDiv.style.border = "none";
+                charExtraDiv.style.padding = "0";
+                charExtraDiv.style.backdropFilter = "none";
+                charExtraDiv.innerHTML = scene.leftContent;
+            }
+        } else {
+            nameInputGroup.style.display = 'none';
+            if (CHAR_DESCRIPTIONS[scene.char]) {
+                 charExtraDiv.style.display = "flex"; 
+                 charExtraDiv.innerHTML = `<div class="role-text">${CHAR_DESCRIPTIONS[scene.char]}</div>`;
+            }
+        }
+
+        if ((state.time <= 0 || state.mood <= 0 || state.budget <= 0) && sceneKey !== 'game_over_fail') { renderScene('game_over_fail'); return; }
+
+        if (scene.special === 'ai_question') {
+            openAiOverlay(scene.aiId, scene.next);
+        } else if (scene.special === 'quiz') {
+            openQuizOverlay(scene.quizId, scene.next);
+        } else if (scene.special === 'calc_score') {
+            // Wait for user interaction
+        } else if (scene.options && scene.options.length === 0 && sceneKey !== 'intro' && sceneKey !== 'giveup_4_fired') { 
+            let btn = document.createElement('button');
+            btn.className = 'choice-btn'; btn.innerHTML = "<strong>🔄 Neu starten</strong>";
+            btn.onclick = () => safeReload(); actionsDiv.appendChild(btn);
+        } else {
+            scene.options.forEach(opt => {
+                let btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                if(opt.specialClass) btn.classList.add(opt.specialClass);
+                let costs = [];
+                if(opt.costTime) costs.push(`⏳ -${opt.costTime}`);
+                if(opt.costBudget) costs.push(`💰 -${opt.costBudget}`);
+                btn.innerHTML = `<strong>${opt.text}</strong>` + (costs.length > 0 ? `<span class="cost-hint">${costs.join(', ')}</span>` : '');
+                
+                if(opt.specialExec) btn.onclick = () => window[opt.specialExec]();
+                else btn.onclick = () => makeDecision(opt);
+                
+                actionsDiv.appendChild(btn);
+            });
+        }
+        updateKPIs(); updateUndoBtn();
+    }
+
+    function startGame() { makeDecision({next:'start'}); }
+
+    function makeDecision(option) {
+        historyStack.push(JSON.parse(JSON.stringify(state)));
+        if(option.costTime) state.time -= option.costTime;
+        if(option.costBudget) state.budget -= option.costBudget;
+        if(option.costMood) state.mood -= option.costMood; 
+        const nextScene = scenes[option.next];
+        if(nextScene && nextScene.moodChange) state.mood += nextScene.moodChange;
+        renderScene(option.next);
+    }
+
+    function undoMove() {
+        if (historyStack.length === 0) return;
+        state = historyStack.pop();
+        renderScene(state.currentScene);
+    }
+    function updateUndoBtn() { document.getElementById('undo-btn').disabled = historyStack.length === 0; }
+    function updateKPIs() { setBar('bar-time', state.time); setBar('bar-budget', state.budget); setBar('bar-mood', state.mood); }
+    function setBar(id, val) {
+        val = Math.max(0, Math.min(100, val));
+        const el = document.getElementById(id); el.style.width = val + '%';
+        if(val < 30) el.style.background = '#e84545'; else if(val < 60) el.style.background = '#f1c40f'; else el.style.background = '#2ecc71';
+    }
+
+    // --- LOGIK FÜR AUFGEBEN (ESKALATION) ---
+    function giveUp() {
+        document.getElementById('overlay-ai').classList.add('hidden');
+        document.getElementById('overlay-quiz').classList.add('hidden');
+        
+        state.giveUpCount = (state.giveUpCount || 0) + 1;
+        
+        resumeSceneAfterIntervention = nextSceneStored; 
+        
+        if (state.giveUpCount === 1) {
+            renderScene('giveup_1_talk');
+        } else if (state.giveUpCount === 2) {
+            renderScene('giveup_2_warning');
+        } else if (state.giveUpCount === 3) {
+            renderScene('giveup_3_written');
+        } else {
+            renderScene('giveup_4_fired');
+        }
+    }
+
+    function resumeIntervention() {
+        if (resumeSceneAfterIntervention && scenes[resumeSceneAfterIntervention]) {
+            renderScene(resumeSceneAfterIntervention);
+        } else {
+            renderScene('intro'); 
+        }
+    }
+
+    // --- DEBUG SKIP ---
+    function debugSkip() {
+        document.getElementById('overlay-ai').classList.add('hidden');
+        document.getElementById('overlay-quiz').classList.add('hidden');
+        if(nextSceneStored) renderScene(nextSceneStored);
+        else renderScene('intro'); 
+    }
+
+    // --- KI & QUIZ LOGIK ---
+    let nextSceneStored = '';
+    
+    function openAiOverlay(aiId, next) {
+        currentAiId = aiId;
+        nextSceneStored = next;
+        const scenario = aiScenarios[aiId];
+        
+        document.getElementById('ai-topic').innerHTML = scenario.title;
+        document.getElementById('ai-intro').innerHTML = scenario.intro ? scenario.intro : "";
+        document.getElementById('ai-input').value = "";
+        document.getElementById('ai-result-box').style.display = 'none';
+        
+        document.getElementById('btn-ai-continue').classList.add('hidden');
+        document.getElementById('btn-ai-retry').classList.add('hidden');
+        document.getElementById('btn-ai-skip').classList.add('hidden');
+        document.getElementById('btn-ai-print').classList.add('hidden');
+        
+        document.getElementById('overlay-ai').classList.remove('hidden');
+    }
+
+    async function analyzeAIAnswer() {
+        const userText = document.getElementById('ai-input').value; 
+        const scenario = aiScenarios[currentAiId]; 
+        
+        const feedbackBox = document.getElementById('ai-result-box');
+        feedbackBox.style.display = 'block';
+        document.getElementById('ai-feedback-text').innerHTML = "<i>Dr. Klara Kompetenz prüft Ihre Ausarbeitung...</i> ⏳";
+        document.getElementById('ai-verdict').innerText = "";
+        document.getElementById('ai-score-fill').style.width = "0%";
+
+        try {
+            const apiUrl = "https://ki-lernaufgaben.vercel.app/api/chat"; 
+            const response = await fetch(apiUrl, { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    messages: [
+                        { 
+                            role: "system", 
+                            content: `Du bist Dr. Klara Kompetenz, eine sehr strenge, aber faire Prüfungsvorsitzende für Berufspädagogik (Master-Niveau).
+                            ${scenario.gradingPrompt || ""}
+                            Lösungshinweise: ${scenario.solutionHint}.
+                            Bewerte die Antwort kurz (max 3 Sätze). Sei wertschätzend aber anspruchsvoll.
+                            Gib am Ende IMMER: "PUNKTE: XX/100".` 
+                        },
+                        { role: "user", content: userText }
+                    ] 
+                })
+            });
+
+            if (!response.ok) throw new Error("Verbindungsfehler");
+            const data = await response.text(); 
+            
+            let score = 0;
+            const scoreMatch = data.match(/PUNKTE:\s*(\d+)/i);
+            if (scoreMatch && scoreMatch[1]) score = parseInt(scoreMatch[1]); else score = 50; 
+            const cleanText = data.replace(/PUNKTE:\s*\d+(\/100)?/i, "").trim();
+
+            displayAiResult(score, cleanText);
+
+        } catch (error) {
+            console.error(error);
+            document.getElementById('ai-feedback-text').innerHTML = 
+                `<span style="color:#e74c3c"><b>Fehler bei der KI-Verbindung:</b><br>${error.message}<br><br>
+                Die lokale Bewertung wird als Fallback genutzt.</span><hr>` + 
+                analyzeAIAnswerLocal(true); 
+        }
+    }
+
+    function analyzeAIAnswerLocal(returnTextOnly = false) {
+        const userText = document.getElementById('ai-input').value.toLowerCase();
+        const scenario = aiScenarios[currentAiId];
+        let matches = 0;
+        scenario.keywords.forEach(kw => { if (userText.includes(kw)) matches++; });
+        let percent = Math.min(100, Math.round((matches / Math.min(4, scenario.keywords.length)) * 100));
+        
+        let text = (percent < 50) ? scenario.thresholds[30] : scenario.thresholds[100];
+        
+        if(returnTextOnly) {
+            displayAiResult(percent, text + " (Offline-Bewertung)");
+            return "";
+        } else {
+            displayAiResult(percent, text + " (Offline-Bewertung)");
+        }
+    }
+
+    function displayAiResult(score, text) {
+        const fill = document.getElementById('ai-score-fill');
+        const verdict = document.getElementById('ai-verdict');
+        const btnContinue = document.getElementById('btn-ai-continue');
+        const btnRetry = document.getElementById('btn-ai-retry');
+        const btnSkip = document.getElementById('btn-ai-skip');
+        const btnPrint = document.getElementById('btn-ai-print');
+        const scenario = aiScenarios[currentAiId];
+
+        setTimeout(() => { fill.style.width = score + "%"; }, 100);
+        
+        if(!document.getElementById('ai-feedback-text').innerHTML.includes("Fehler")) {
+             document.getElementById('ai-feedback-text').innerHTML = text;
+        } else {
+             document.getElementById('ai-feedback-text').innerHTML += "<br>" + text;
+        }
+
+        btnPrint.classList.remove('hidden');
+
+        if (score < 50) {
+            fill.style.background = "#c0392b"; 
+            verdict.innerText = "❌ Nicht bestanden (" + score + "%)"; 
+            verdict.style.color = "#c0392b"; 
+            
+            btnContinue.classList.add('hidden');
+            btnRetry.classList.remove('hidden'); 
+            btnSkip.classList.remove('hidden'); // NEU: Ausweg
+            
+            document.getElementById('ai-feedback-text').innerHTML += `<br><br><b>Tipp:</b> ${scenario.solutionHint}`;
+        } else {
+            fill.style.background = "#2ecc71"; 
+            verdict.innerText = "✅ Bestanden (" + score + "%)"; 
+            verdict.style.color = "#2ecc71"; 
+            
+            btnContinue.classList.remove('hidden');
+            btnRetry.classList.add('hidden');
+            btnSkip.classList.add('hidden');
+        }
+    }
+
+    function closeAiOverlay() { document.getElementById('overlay-ai').classList.add('hidden'); renderScene(nextSceneStored); }
+    function resetAiInput() {
+        document.getElementById('ai-input').value = "";
+        document.getElementById('ai-result-box').style.display = 'none';
+        document.getElementById('ai-input').focus();
+    }
+    function copyAiText() { const copyText = document.getElementById("ai-input"); copyText.select(); navigator.clipboard.writeText(copyText.value); alert("Text kopiert!"); }
+    function printOverlay() { window.print(); }
+    function skipAiTask() {
+        if(confirm("Aufgabe wirklich überspringen? Das gibt leider keine Punkte für das Zertifikat.")) {
+            closeAiOverlay();
+        }
+    }
+
+    // --- QUIZ FUNCTIONS (Standard) ---
+    function openQuizOverlay(quizId, next) {
+        currentQuizId = quizId; nextSceneStored = next; currentQuiz = quizzes[quizId];
+        
+        document.getElementById('quiz-topic').innerHTML = currentQuiz.title; 
+        document.getElementById('quiz-intro').innerHTML = currentQuiz.intro || "Bitte lösen Sie die folgende Aufgabe:";
+        
+        document.getElementById('quiz-law-text').innerHTML = currentQuiz.law; document.getElementById('quiz-law-text').classList.remove('hidden');
+        const container = document.getElementById('quiz-questions-container'); container.innerHTML = "";
+        currentQuiz.questions.forEach((q, index) => {
+            let html = `<div style="margin-bottom:15px; break-inside: avoid;"><strong>${index+1}. ${q.q}</strong><br>`;
+            q.options.forEach(opt => { html += `<label class="quiz-option"><input type="checkbox" name="q${index}" value="${opt.val}"> ${opt.text}</label>`; });
+            html += `</div>`; container.innerHTML += html;
+        });
+        document.getElementById('quiz-feedback').innerText = ""; document.getElementById('btn-quiz-success').classList.add('hidden');
+        document.getElementById('overlay-quiz').classList.remove('hidden');
+    }
+    function checkQuiz() {
+        let allCorrect = true;
+        currentQuiz.questions.forEach((q, index) => {
+            const checkboxes = document.querySelectorAll(`input[name="q${index}"]`);
+            checkboxes.forEach(chk => { if (chk.checked !== (chk.value === 'true')) allCorrect = false; });
+        });
+        const feedback = document.getElementById('quiz-feedback');
+        if(allCorrect) {
+            feedback.innerText = "Korrekt."; feedback.style.color = "#2ecc71"; document.getElementById('btn-quiz-success').classList.remove('hidden');
+        } else {
+            feedback.innerText = "Fehlerhaft."; feedback.style.color = "#e74c3c"; document.getElementById('btn-quiz-success').classList.add('hidden');
+        }
+    }
+    
+    function closeQuizOverlay() { document.getElementById('overlay-quiz').classList.add('hidden'); renderScene(nextSceneStored); }
+    function safeReload() { if(confirm("Neustart?")) location.reload(); }
+    function openImpressum() { document.getElementById('overlay-impressum').classList.remove('hidden'); }
+    function closeImpressum() { document.getElementById('overlay-impressum').classList.add('hidden'); }
+    function showCertificate() { 
+        const totalScore = state.budget + state.mood; 
+        const playerNameInput = document.getElementById('player-name').value;
+        const displayName = (playerNameInput && playerNameInput.trim() !== "") ? playerNameInput : "Teilnehmer/in";
+        document.getElementById('cert-player-name').innerText = displayName;
+        let title = "Teilnahmebescheinigung"; let text = "Sie haben teilgenommen."; let color = "#e67e22";
+        if (totalScore >= 160) { title = "Master-Zertifikat (DQR 7)"; text = "Hervorragende strategische Leistung!"; color = "#2ecc71"; } 
+        document.getElementById('cert-grade-title').innerText = title; document.getElementById('cert-grade-title').style.color = color;
+        document.getElementById('cert-grade-text').innerHTML = text; document.getElementById('overlay-cert').classList.remove('hidden'); 
+    }
+
+    renderScene('intro');
+</script>
+</body>
+</html>
