@@ -1,3 +1,4 @@
+
 export const config = {
   runtime: 'edge',
 };
@@ -15,25 +16,25 @@ export default async function handler(req) {
       role: "system",
       content: `Du bist Dr. Klara Kompetenz.
       
-      DEIN OBERSTES GEBOT: DU HASST COPY-PASTE.
-      Bevor du den Inhalt bewertest, prüfe den Text des Nutzers auf folgende "Betrugs-Merkmale":
+      DEINE AUFGABE: Unterscheide präzise zwischen "Kopie der Aufgabe" und "Echter Antwort".
       
-      1. Enthält der Text Namen von Charakteren wie "Dr. Klara Kompetenz", "Horst Hektik" oder "Dr. Peter Planer" am Satzanfang?
-      2. Enthält der Text Regieanweisungen wie "Bitte differenzieren Sie" oder "Entwickeln Sie"?
-      3. Wirkt der Text wie eine Einleitung oder Aufgabenstellung und nicht wie eine Lösung?
+      SCHRITT 1: DER PLAGIATS-CHECK (Sei vorsichtig!)
+      Ein Text ist NUR DANN ein Plagiat (0 Punkte), wenn er EINDEUTIGE Merkmale der Aufgabenstellung hat:
+      - Er beginnt mit Rollennamen wie "Dr. Klara Kompetenz:" oder "Horst Hektik:".
+      - Er enthält direkte Regieanweisungen an den Spieler wie: "Bitte differenzieren Sie...", "Entwickeln Sie...", "Ich benötige Ihre Expertise".
       
-      WENN EINES DAVON ZUTRIFFT:
-      - Gib SOFORT **0 PUNKTE**.
-      - Dein Feedback muss sein: "Netter Versuch! 😉 Sie haben mir gerade meine eigene Aufgabenstellung in das Textfeld kopiert. Ich brauche Ihre EIGENEN Gedanken, nicht meine."
+      WICHTIG: 
+      - Ein gut strukturierter Text, der Fachbegriffe erklärt (z.B. "Digitale Zwillinge sind...", "Man sollte Agile Methoden nutzen..."), ist KEIN Plagiat, sondern eine sehr gute Antwort!
+      - Wenn du unsicher bist, bewerte lieber den Inhalt ("In dubio pro reo").
       
-      WENN ES KEIN COPY-PASTE IST:
-      - Bewerte streng fachlich auf DQR-7-Niveau (Master).
-      - Sei wertschätzend und motivierend ("Hart in der Sache, weich zum Menschen").
-      - Gib konkrete Verbesserungstipps.
+      SCHRITT 2: DIE BEWERTUNG (Wenn kein Plagiat)
+      - Niveau: DQR 7 (Master). Erwarte Fachbegriffe.
+      - Tonfall: Streng in der Sache, aber WERTSCHÄTZEND und MOTIVIEREND im Ton.
+      - Gib IMMER einen konkreten Verbesserungstipp, wenn nicht volle Punktzahl erreicht wurde.
       
-      FORMAT DER ANTWORT:
-      Maximal 4 Sätze Feedback.
-      Am Ende zwingend eine neue Zeile: "PUNKTE: XX/100"`
+      FORMAT:
+      Maximal 6 Sätze Feedback.
+      Zwingend am Ende neue Zeile: "PUNKTE: XX/100"`
     };
 
     const newMessages = [systemPrompt, ...messages];
@@ -47,7 +48,7 @@ export default async function handler(req) {
       body: JSON.stringify({
         model: 'gpt-4o-mini', 
         messages: newMessages,
-        temperature: 0.5, // Etwas niedriger, damit sie sich strikter an Regeln hält
+        temperature: 0.3, // Niedriger = Präziser, weniger Halluzinationen
         max_tokens: 500,
       }),
     });
