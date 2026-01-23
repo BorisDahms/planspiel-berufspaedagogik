@@ -233,6 +233,19 @@
         .cw-cell.black { background: #000; pointer-events: none; }
         .cw-clues { text-align: left; font-size: 0.9rem; margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+        /* NEU: Style für Koordinaten */
+        .cw-coord {
+            background: #2c3e50; 
+            color: #f1c40f; 
+            font-family: monospace;
+            font-size: 0.8rem;
+            border: 1px solid #444;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            pointer-events: none; /* Keine Interaktion */
+        }
+
         /* DRUCK-STYLES */
         @media print {
             body { background: #fff !important; color: #000 !important; height: auto !important; overflow: visible !important; }
@@ -1684,8 +1697,8 @@ Es werden keine Daten auf dem Server gespeichert. </div>
             else { maxX = Math.max(maxX, w.x + 1); maxY = Math.max(maxY, w.y + w.word.length); }
         });
         
-        // Grid aufbauen
-        container.style.gridTemplateColumns = `repeat(${maxX}, 35px)`;
+        // Grid aufbauen: +1 Spalte (35px) für Y-Achse
+        container.style.gridTemplateColumns = `35px repeat(${maxX}, 35px)`;
         
         // Zellen initialisieren (leer)
         let grid = [];
@@ -1705,15 +1718,31 @@ Es werden keine Daten auf dem Server gespeichert. </div>
             }
         });
 
-        // HTML generieren
+        // HTML generieren (Loop startet bei -1 für Koordinaten)
         let html = "";
-        for(let y=0; y<maxY; y++) {
-            for(let x=0; x<maxX; x++) {
-                const cell = grid[y][x];
-                if(cell.isInput) {
-                    html += `<input class="cw-cell" type="text" maxlength="1" data-char="${cell.char}" data-x="${x}" data-y="${y}">`;
-                } else {
-                    html += `<div class="cw-cell black"></div>`;
+        for(let y=-1; y<maxY; y++) {
+            for(let x=-1; x<maxX; x++) {
+                
+                // Fall 1: Ecke oben links
+                if (x === -1 && y === -1) {
+                    html += `<div class="cw-cell cw-coord">#</div>`;
+                }
+                // Fall 2: Kopfzeile (X-Achse)
+                else if (y === -1) {
+                    html += `<div class="cw-cell cw-coord">${x}</div>`;
+                }
+                // Fall 3: Linke Spalte (Y-Achse)
+                else if (x === -1) {
+                    html += `<div class="cw-cell cw-coord">${y}</div>`;
+                }
+                // Fall 4: Das eigentliche Rätselfeld
+                else {
+                    const cell = grid[y][x];
+                    if(cell.isInput) {
+                        html += `<input class="cw-cell" type="text" maxlength="1" data-char="${cell.char}" data-x="${x}" data-y="${y}">`;
+                    } else {
+                        html += `<div class="cw-cell black"></div>`;
+                    }
                 }
             }
         }
