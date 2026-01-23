@@ -226,6 +226,13 @@
         }
         .debug-skip-btn:hover { opacity: 1; color: white; border-color: white; }
 
+        /* KREUZWORTRÄTSEL STYLES */
+        .crossword-grid { display: grid; gap: 2px; justify-content: center; margin: 20px auto; background: #444; padding: 5px; border-radius: 4px; }
+        .cw-cell { width: 35px; height: 35px; background: #222; border: none; color: white; text-align: center; font-size: 1.2rem; text-transform: uppercase; font-weight: bold; }
+        .cw-cell:focus { background: #444; outline: 1px solid var(--gold); }
+        .cw-cell.black { background: #000; pointer-events: none; }
+        .cw-clues { text-align: left; font-size: 0.9rem; margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
         /* DRUCK-STYLES */
         @media print {
             body { background: #fff !important; color: #000 !important; height: auto !important; overflow: visible !important; }
@@ -340,6 +347,7 @@ Es werden keine Daten auf dem Server gespeichert. </div>
                 <button id="btn-ai-skip" class="choice-btn hidden" style="background: #7f8c8d; font-size:0.9rem;" onclick="skipAiTask()">Weiter (Aufgabe nicht bestanden)</button>
                 
                 <button id="btn-ai-print" class="choice-btn hidden" style="background: #34495e; border: 1px solid #7f8c8d;" onclick="printOverlay()">🖨️ Ergebnis drucken</button>
+                <button id="btn-ai-giveup" class="choice-btn" style="background: #c0392b; font-size:0.9rem;" onclick="giveUp()">🏳️ Ich gebe auf</button>
             </div>
         </div>
     </div>
@@ -357,10 +365,35 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         <div id="quiz-feedback" style="margin:10px; font-weight:bold; font-size:1.2rem;"></div>
         <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
             <button class="choice-btn" style="max-width:300px;" onclick="checkQuiz()">Lösung prüfen</button>
-            <button class="choice-btn" style="max-width:300px; background:linear-gradient(180deg, #c0392b 0%, #96281b 100%);" onclick="giveUp()">Aufgeben</button>
             <button id="btn-quiz-print" class="choice-btn" style="background: #34495e; border: 1px solid #7f8c8d;" onclick="printOverlay()">🖨️ Aufgaben drucken</button>
+            <button class="choice-btn" style="max-width:300px; background:linear-gradient(180deg, #c0392b 0%, #96281b 100%);" onclick="giveUp()">🏳️ Ich gebe auf</button>
         </div>
         <button id="btn-quiz-success" class="choice-btn hidden" style="background: #2ecc71; margin-top:20px;" onclick="closeQuizOverlay()">Verstanden. Weiter.</button>
+    </div>
+</div>
+
+<div id="overlay-crossword" class="overlay hidden">
+    <div class="overlay-card">
+        <button class="debug-skip-btn" onclick="debugSkip()" title="Aufgabe überspringen (Debug)">⏭️</button>
+        <h2 style="color: #3498db;">Begriffs-Check: Kreuzworträtsel</h2>
+        <p style="color: #aaa;">Füllen Sie die gesuchten Fachbegriffe ein.</p>
+        
+        <div id="crossword-container" class="crossword-grid">
+            </div>
+        <div class="cw-clues">
+            <div>1. Waagerecht: Langfristiger Berater (8 B.)</div>
+            <div>2. Senkrecht: Prozessbegleitung (8 B.)</div>
+            <div>3. Waagerecht: Angestrebtes Ergebnis (5 B.)</div>
+        </div>
+
+        <div id="cw-feedback" style="margin-top:15px; font-weight:bold; height:20px;"></div>
+
+        <div style="display:flex; gap:15px; justify-content:center; margin-top:20px;">
+            <button class="choice-btn" style="background:#3498db;" onclick="checkCrossword()">Prüfen</button>
+            <button class="choice-btn" style="background:#f39c12;" onclick="solveCrossword()">💡 Lösung anzeigen</button>
+            <button class="choice-btn" style="background:#c0392b;" onclick="giveUp()">🏳️ Ich gebe auf</button>
+        </div>
+        <button id="btn-cw-success" class="choice-btn hidden" style="background: #2ecc71; margin-top:20px;" onclick="closeCrosswordOverlay()">Gelöst. Weiter.</button>
     </div>
 </div>
 
@@ -401,6 +434,26 @@ Es werden keine Daten auf dem Server gespeichert. </div>
     </div>
 </div>
 
+<div id="overlay-cert" class="overlay hidden">
+    <div class="certificate-container">
+        <h1 style="color:var(--gold); margin-bottom:10px;">Zertifikat</h1>
+        <h3 style="margin-top:0; color:#555;">Bildungscampus Leipzig</h3>
+        <hr style="border:1px solid #ddd; margin: 20px 0;">
+
+        <p>Hiermit wird bestätigt, dass</p>
+        <h2 id="cert-player-name" style="font-size: 2rem; margin: 10px 0;"></h2>
+        <p>das Planspiel "PlanA GmbH" erfolgreich absolviert hat.</p>
+
+        <h2 id="cert-grade-title" style="margin-top: 30px;"></h2>
+        <p id="cert-grade-text" style="font-size: 1.1rem; color: #666;"></p>
+
+        <div style="margin-top: 40px; display:flex; gap:10px; justify-content:center;">
+             <button class="choice-btn" style="background:#34495e; color:white; width:auto;" onclick="window.print()">🖨️ Ausdrucken</button>
+             <button class="choice-btn" style="background:#e74c3c; color:white; width:auto;" onclick="location.reload()">🔄 Neustart</button>
+        </div>
+    </div>
+</div>
+
 <script>
     // Charaktere / Bilder
     const IMAGES = {
@@ -409,7 +462,7 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         chef: 'chef.png',
         verwaltung: 'verwaltung.png',
         azubis: 'azubis.png',
-        // klara entfernt -> Emoji Fallback
+        // klara wurde entfernt, um das neue Emoji-Fallback zu erzwingen
         alex: 'alex.png',
         claudia: 'claudia.png',
         viola: 'viola.png',
@@ -417,15 +470,15 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         sebastian: 'sebastian.png'
     };
 
-    // Charaktere mit spezifischem Duktus-Hinweis für den User - NEUES FORMAT
+    // Charaktere mit spezifischem Duktus-Hinweis für den User
     const CHAR_DESCRIPTIONS = {
         'chef': "<b>Dr. Peter Planer (Geschäftsführung)</b><br>Ein Visionär, manchmal ein bisschen unkonzentriert.<br><i>\"Ich sehe Horizonte... aber wo ist meine Brille?\"</i>",
-        'horst': "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH)</b><br>Praktiker vom Bau. Kurz angebunden.<br><i>\"Muss fertig werden. Basta!\"</i>",
+        'horst': "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH)</b><br>Praktiker vom Bau. Hat einen sehr speziellen Humor.<br><i>\"Was ist schwerer? 1 kg Stahl oder 1 kg Federn?\"</i>",
         'verwaltung': "<b>Franziska Immerda (Verwaltung)</b><br>Zuvorkommend, hilfsbereit, aber bestimmt. Behält das Große und Ganze im Blick.<br><i>\"Ordnung muss sein.\"</i>",
         'sascha': "<b>Sascha AEVO (Verantwortlicher Ausbilder)</b><br>Pflichtbewusst, modern und wertschätzend. Offen für Neuerungen.<br><i>\"Lass uns das gemeinsam angehen.\"</i>",
         'klara': "<b>Dr. Klara Kompetenz (Personalleitung)</b><br>Höflich, wertschätzend und motivierend. Übt Kritik nur an der Sache.<br><i>\"Wir finden eine pädagogische Lösung.\"</i>",
         'alex': "<b>Alex Engagiert (Betriebsrat)</b><br>Achtet auf Bedürfnisse der Mitarbeitenden. Wird bei Verstößen sehr deutlich.<br><i>\"Haben wir an die Kollegen gedacht?\"</i>",
-        'claudia': "<b>Claudia Papierkram (Verwaltung/KI)</b><br>Effizient, freundlich und pedantisch. Liebt KI und Weiterbildung.<br><i>\"Effizienz durch Struktur.\"</i>",
+        'claudia': "<b>Claudia Papierkram (Verwaltung/KI)</b><br>Effizient, freundlich und pedantisch. Liebt KI und Rätsel.<br><i>\"Effizienz durch Struktur.\"</i>",
         'viola': "<b>Viola Communikationis (Inklusion)</b><br>Fachpraktikerausbilderin. Spricht langsam und deutlich.<br><i>\"Wir müssen barrierefrei denken.\"</i>",
         'erik': "<b>Erik Handycap (Sozialarbeit)</b><br>Bildet gerne lange, ausschweifende Schachtelsätze.<br><i>\"In Anbetracht der Umstände, die...\"</i>",
         'sebastian': "<b>Sebastian Domini (Technik)</b><br>Industriemeister Metall/Mechatronik. Kommt aus der Produktion.<br><i>\"Das muss technisch funktionieren.\"</i>"
@@ -437,323 +490,860 @@ Es werden keine Daten auf dem Server gespeichert. </div>
 
     // --- KI-KONFIGURATION (DQR 7 NIVEAU) ---
     const aiScenarios = {
-        'hb4_digital': { 
-            title: "<span style='color:white;'>Aufgabe:</span> Digitale Transformation der Ausbildung",
-            intro: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Verehrter Kollege, wir stehen vor einer paradigmatischen Wende. Die PlanA Soft KG expandiert in den SHK-Bereich. Ich benötige Ihre Expertise: Welche Anforderungen stellen wir an <b>Lernaufgaben</b>, um der digitalen Transformation gerecht zu werden? Bitte differenzieren Sie nach überfachlichen Kompetenzen und methodischen Ansätzen.'",
-            keywords: ["digitale zwillinge", "selbststeuerung", "überfachlich", "kooperationstools", "prozessorientierung", "lerntechniken"],
-            thresholds: { 30: "Zu oberflächlich für DQR 7.", 70: "Gute Ansätze, bitte präziser.", 100: "Exzellente strategische Ableitung!" },
-            solutionHint: "Fokus: Digitale Zwillinge, Selbststeuerung, Methodenkompetenz, Softskills.",
-            gradingPrompt: "Du bist Dr. Klara Kompetenz. Bewerte streng akademisch (DQR 7). Erwarte Begriffe wie 'Digitale Zwillinge', 'Selbststeuerung'."
+    "hb4_digital": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Digitale Transformation der Ausbildung",
+        "intro": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Verehrter Kollege, wir stehen vor einer paradigmatischen Wende. Die PlanA Soft KG expandiert in den <b>Sanitär-, Heizungs- und Klimatechnik (SHK)</b> Bereich. Ich benötige Ihre Expertise: Welche Anforderungen stellen wir an <b>Lernaufgaben</b>, um der digitalen Transformation gerecht zu werden? Bitte differenzieren Sie nach überfachlichen Kompetenzen und methodischen Ansätzen.'",
+        "keywords": [
+            "digitale zwillinge",
+            "selbststeuerung",
+            "überfachlich",
+            "kooperationstools",
+            "prozessorientierung",
+            "lerntechniken"
+        ],
+        "thresholds": {
+            "30": "Zu oberflächlich für DQR 7.",
+            "70": "Gute Ansätze, bitte präziser.",
+            "100": "Exzellente strategische Ableitung!"
         },
-        'hb1_sozial': {
-            title: "<span style='color:white;'>Aufgabe:</span> Lernprozesse & Sozialkompetenz",
-            intro: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Ein bedauerlicher Vorfall. Ein Azubi vergreift sich im Ton. Herr Hektik plädiert für Kündigung. Das ist mir zu... unpädagogisch. Entwickeln Sie bitte eine Intervention zur Förderung der <b>Sozialkompetenz</b>. Ich erwarte ein fundiertes Konzept, keine bloße Strafe.'",
-            keywords: ["feedback", "reflexion", "verhaltenskodex", "perspektivwechsel", "kommunikationstraining", "ursachenanalyse"],
-            thresholds: { 30: "Das ist keine pädagogische Intervention.", 70: "Solider Ansatz.", 100: "Hervorragend differenziert!" },
-            solutionHint: "Fokus: Feedback-Gespräch, Reflexion der Sprachwirkung, gemeinsamer Verhaltenskodex.",
-            gradingPrompt: "Bewerte als Dr. Klara Kompetenz. Sei wertschätzend, aber fordere pädagogische Tiefe."
+        "solutionHint": "Fokus: Digitale Zwillinge, Selbststeuerung, Methodenkompetenz, Softskills.",
+        "gradingPrompt": "Du bist Dr. Klara Kompetenz. Bewerte streng akademisch (DQR 7). Erwarte Begriffe wie 'Digitale Zwillinge', 'Selbststeuerung'."
+    },
+    "hb1_sozial": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Lernprozesse & Sozialkompetenz",
+        "intro": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Ein bedauerlicher Vorfall. Ein Azubi vergreift sich im Ton. Herr Hektik plädiert für Kündigung. Das ist mir zu... unpädagogisch. Entwickeln Sie bitte eine Intervention zur Förderung der <b>Sozialkompetenz</b>. Ich erwarte ein fundiertes Konzept, keine bloße Strafe.'",
+        "keywords": [
+            "feedback",
+            "reflexion",
+            "verhaltenskodex",
+            "perspektivwechsel",
+            "kommunikationstraining",
+            "ursachenanalyse"
+        ],
+        "thresholds": {
+            "30": "Das ist keine pädagogische Intervention.",
+            "70": "Solider Ansatz.",
+            "100": "Hervorragend differenziert!"
         },
-        'hb2_recruit': {
-            title: "<span style='color:white;'>Aufgabe:</span> Planungsprozesse (Ausland)",
-            intro: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Ich sehe... Horizonte! Wir brauchen Fachkräfte. Aus dem Ausland! Aber wie? Planen Sie das Marketing und das Interview. Denken Sie an... alles!'<br><b>Alex Engagiert (Betriebsrat):</b> 'Und vergessen Sie mir den Betriebsrat nicht!'",
-            keywords: ["anerkennung", "betriebsrat", "kultur", "dolmetscher", "onboarding", "qualifikationsbedarf"],
-            thresholds: { 30: "Wichtige Stakeholder vergessen.", 70: "Strukturiert.", 100: "Strategisch umfassend!" },
-            solutionHint: "Fokus: §99 BetrVG, Anerkennung Abschlüsse, Kulturelle Sensibilität, Dolmetscher.",
-            gradingPrompt: "Bewerte strategisch. Prüfe, ob Betriebsrat und kulturelle Aspekte genannt sind."
+        "solutionHint": "Fokus: Feedback-Gespräch, Reflexion der Sprachwirkung, gemeinsamer Verhaltenskodex.",
+        "gradingPrompt": "Bewerte als Dr. Klara Kompetenz. Sei wertschätzend, aber fordere pädagogische Tiefe."
+    },
+    "hb2_recruit": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Planungsprozesse (Ausland)",
+        "intro": "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Ich sehe... Horizonte! Wir brauchen Fachkräfte. Aus dem Ausland! Aber wie? Planen Sie das Marketing und das Interview. Denken Sie an... alles!'<br><b>Alex Engagiert (Betriebsrat):</b> 'Und vergessen Sie mir den Betriebsrat nicht!'",
+        "keywords": [
+            "anerkennung",
+            "betriebsrat",
+            "kultur",
+            "dolmetscher",
+            "onboarding",
+            "qualifikationsbedarf"
+        ],
+        "thresholds": {
+            "30": "Wichtige Stakeholder vergessen.",
+            "70": "Strukturiert.",
+            "100": "Strategisch umfassend!"
         },
-        'hb3_genz': {
-            title: "<span style='color:white;'>Aufgabe:</span> Management & Bindung (Gen Z)",
-            intro: "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Die Jungen hauen alle ab. Wollen Sabbatical. Pff. Mach was.'<br><b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Wir müssen ihre Werte verstehen, Horst. Erstellen Sie ein Retention-Konzept.'",
-            keywords: ["sinnstiftung", "flexibilität", "cafeteria-prinzip", "werte", "work-life-balance", "karrierepfade"],
-            thresholds: { 30: "Zu monetär gedacht.", 70: "Gute Ansätze.", 100: "Exzellentes Verständnis der Zielgruppe!" },
-            solutionHint: "Fokus: Cafeteria-Modell, Sinnstiftung, Flexibilisierung der Arbeit.",
-            gradingPrompt: "Bewerte modern und lebensweltorientiert."
+        "solutionHint": "Fokus: §99 BetrVG, Anerkennung Abschlüsse, Kulturelle Sensibilität, Dolmetscher.",
+        "gradingPrompt": "Bewerte strategisch. Prüfe, ob Betriebsrat und kulturelle Aspekte genannt sind."
+    },
+    "hb3_genz": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Management & Bindung (Gen Z)",
+        "intro": "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Die Jungen hauen alle ab. Wollen Sabbatical. Pff. Mach was.'<br><b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Wir müssen ihre Werte verstehen, Horst. Erstellen Sie ein Retention-Konzept.'",
+        "keywords": [
+            "sinnstiftung",
+            "flexibilität",
+            "cafeteria-prinzip",
+            "werte",
+            "work-life-balance",
+            "karrierepfade"
+        ],
+        "thresholds": {
+            "30": "Zu monetär gedacht.",
+            "70": "Gute Ansätze.",
+            "100": "Exzellentes Verständnis der Zielgruppe!"
         },
-        'hb5_transfer': {
-            title: "<span style='color:white;'>Aufgabe:</span> Weiterbildung (Transfergesellschaft)",
-            intro: "<b>Erik Handycap (Sozialarbeit):</b> 'In Anbetracht der bedauerlichen Insolvenz eines Teilbereichs, und unter Berücksichtigung der sozialen Verantwortung, die wir zweifelsohne tragen, ist es unabdingbar, eine Transfergesellschaft zu gründen, deren primäres Ziel es sein muss...' <br><i>(Er redet noch 5 Minuten weiter)</i><br><b>Viola Communikationis (Inklusion):</b> 'Erik. Meint. Wir. Müssen. 50. Leute. Retten. Wir brauchen eine <b>Bildungsbedarfsanalyse</b>.'",
-            keywords: ["anforderungsprofil", "soll-ist-vergleich", "einzelgespräche", "kompetenzprofil", "empathie", "arbeitsmarktanalyse"],
-            thresholds: { 30: "Zu wenig Struktur.", 70: "Guter Leitfaden.", 100: "Hervorragend strukturiert und empathisch!" },
-            solutionHint: "Fokus: Profiling, Einzelgespräche, Abgleich mit Arbeitsmarktchancen.",
-            gradingPrompt: "Achte auf Struktur und Empathie im Prozess."
+        "solutionHint": "Fokus: Cafeteria-Modell, Sinnstiftung, Flexibilisierung der Arbeit.",
+        "gradingPrompt": "Bewerte modern und lebensweltorientiert."
+    },
+    "hb5_transfer": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Weiterbildung (Transfergesellschaft)",
+        "intro": "<b>Erik Handycap (Sozialarbeit):</b> 'In Anbetracht der bedauerlichen Insolvenz eines Teilbereichs, und unter Berücksichtigung der sozialen Verantwortung, die wir zweifelsohne tragen, ist es unabdingbar, eine Transfergesellschaft zu gründen, deren primäres Ziel es sein muss...' <br><i>(Er redet noch 5 Minuten weiter)</i><br><b>Viola Communikationis (Inklusion):</b> 'Erik. Meint. Wir. Müssen. 50. Leute. Retten. Wir brauchen eine <b>Bildungsbedarfsanalyse</b>.'",
+        "keywords": [
+            "anforderungsprofil",
+            "soll-ist-vergleich",
+            "einzelgespräche",
+            "kompetenzprofil",
+            "empathie",
+            "arbeitsmarktanalyse"
+        ],
+        "thresholds": {
+            "30": "Zu wenig Struktur.",
+            "70": "Guter Leitfaden.",
+            "100": "Hervorragend strukturiert und empathisch!"
         },
-        'hb6_karriere': {
-            title: "<span style='color:white;'>Aufgabe:</span> Personalentwicklung (Karrierewege)",
-            intro: "<b>Claudia Papierkram (Verwaltung/KI):</b> 'Ich habe die Daten analysiert. Unsere Effizienz leidet unter Motivationstiefs. Die Leute sehen keinen Aufstieg. Wir brauchen systematische <b>Laufbahnmodelle</b>. Meine KI sagt: Das erhöht die Retention um 40%.'",
-            keywords: ["fachlaufbahn", "führungslaufbahn", "projektlaufbahn", "durchlässigkeit", "anforderungsprofile", "transparenz"],
-            thresholds: { 30: "Nur Führungslaufbahn bedacht?", 70: "Gute Systematik.", 100: "Exzellente Differenzierung (Fach/Führung/Projekt)!" },
-            solutionHint: "Fokus: Fachlaufbahn vs. Führungslaufbahn vs. Projektlaufbahn.",
-            gradingPrompt: "Bewerte die Systematik der Laufbahnmodelle."
-        }
-    };
+        "solutionHint": "Fokus: Profiling, Einzelgespräche, Abgleich mit Arbeitsmarktchancen.",
+        "gradingPrompt": "Achte auf Struktur und Empathie im Prozess."
+    },
+    "hb6_karriere": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Personalentwicklung (Karrierewege)",
+        "intro": "<b>Claudia Papierkram (Verwaltung/KI):</b> 'Ich habe die Daten analysiert. Unsere Effizienz leidet unter Motivationstiefs. Die Leute sehen keinen Aufstieg. Wir brauchen systematische <b>Laufbahnmodelle</b>. Meine KI sagt: Das erhöht die Retention um 40%.'",
+        "keywords": [
+            "fachlaufbahn",
+            "führungslaufbahn",
+            "projektlaufbahn",
+            "durchlässigkeit",
+            "anforderungsprofile",
+            "transparenz"
+        ],
+        "thresholds": {
+            "30": "Nur Führungslaufbahn bedacht?",
+            "70": "Gute Systematik.",
+            "100": "Exzellente Differenzierung (Fach/Führung/Projekt)!"
+        },
+        "solutionHint": "Fokus: Fachlaufbahn vs. Führungslaufbahn vs. Projektlaufbahn.",
+        "gradingPrompt": "Bewerte die Systematik der Laufbahnmodelle."
+    },
+    "sebastian_eval_feedback": {
+        "title": "<span style='color:white;'>Frage:</span> Evaluation vs. Feedback",
+        "intro": "<b>Sebastian Domini (Technik):</b> 'Chef, ich hab hier zwei Azubis. Der eine will Feedback, der andere fragt nach der Evaluation seiner Leistung. Für mich ist das alles dasselbe: Ich sag denen, was sie falsch gemacht haben. Oder gibt es da theoretisch einen Unterschied, den ich als Meister kennen sollte?'",
+        "keywords": [
+            "prozess",
+            "ergebnis",
+            "formativ",
+            "summativ",
+            "individuell",
+            "systematisch",
+            "entwicklung",
+            "beurteilung"
+        ],
+        "thresholds": {
+            "30": "Zu ungenau.",
+            "70": "Gute Unterscheidung.",
+            "100": "Perfekte pädagogische Differenzierung!"
+        },
+        "solutionHint": "Feedback ist prozessorientiert/formativ/individuell (Lernbegleitung). Evaluation ist ergebnisorientiert/summativ/systematisch (Bewertung/Erfolgskontrolle).",
+        "gradingPrompt": "Du bist Sebastian Domini, ein pragmatischer Meister. Bewerte die Erklärung. Erwarte Begriffe wie 'Prozess vs. Ergebnis' oder 'formativ vs. summativ'."
+    }
+};
     let currentAiId = null;
 
     // --- QUIZ DATEN (Rechtliche Absicherung & EXPERTENKLAUSUR) ---
     const quizzes = {
-        'jarbschg_zeit': {
-            title: "<span style='color:white;'>Aufgabe:</span> JArbSchG - Arbeitszeit & Aufsicht",
-            intro: "<b>Franziska Immerda (Verwaltung):</b> 'Der Vorfall mit Kevin an der Kreissäge hat hohe Wellen geschlagen. Die Berufsgenossenschaft prüft jetzt genau. Beweisen Sie Ihre Rechtssicherheit in Bezug auf Arbeitszeit und gefährliche Arbeiten.'",
-            law: "<strong>§ 22 JArbSchG</strong>: Beschäftigung bei gefährlichen Arbeiten nur unter Aufsicht.<br><strong>§ 8 JArbSchG</strong>: Max 40h/Woche.",
-            questions: [
-                { q: "Darf Kevin (16) alleine an die Kreissäge?", options: [{text:"Ja, wenn es eilt",val:false},{text:"Nein, verboten",val:true}] },
-                { q: "Max. Wochenarbeitszeit Jugendlicher?", options: [{text:"40 Std",val:true},{text:"48 Std",val:false}] }
-            ]
-        },
-        'pe_instrumente': {
-            title: "<span style='color:white;'>Aufgabe:</span> PE-Instrumente (DQR 7 Check)",
-            intro: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Strategische Personalentwicklung erfordert präzises Vokabular. Bevor wir Konzepte schreiben, müssen die Begriffe sitzen. Differenzieren Sie bitte:'",
-            law: "Strategische PE nutzt diverse Instrumente zur Bedarfsdeckung.",
-            questions: [
-                { q: "Was ist Job Enrichment?", options: [{text:"Mehr Aufgaben gleiches Niveau",val:false},{text:"Höheres Anforderungsniveau",val:true}] },
-                { q: "Ziel von Coaching?", options: [{text:"Hilfe zur Selbsthilfe",val:true},{text:"Fachberatung",val:false}] },
-                { q: "Was ist Job Rotation?", options: [{text:"Geplanter Wechsel",val:true},{text:"Kündigung",val:false}] }
-            ]
-        },
-        'quiz_pe_expert': {
-            title: "<span style='color:white;'>Aufgabe:</span> Expertenwissen Personalentwicklung & Führung",
-            intro: "<b>Dr. Klara Kompetenz:</b> 'Bevor ich meine Agenden übergebe, muss ich sicher sein, dass Sie die strategischen Zusammenhänge durchdrungen haben. Beweisen Sie Ihre Expertise in dieser Klausur.'",
-            law: "Hinweis: Diese Fragen basieren auf dem Handlungsbereich 6 (Personalentwicklung und Beratung).",
-            questions: [
-                { 
-                    q: "Was ist ein zentrales Ziel der Personalentwicklung (PE)?", 
-                    options: [
-                        {text: "Gewinnmaximierung der einzelnen Mitarbeiter.", val: false},
-                        {text: "Mitarbeiter auf künftige Entwicklungen (z.B. technologischen Wandel) vorzubereiten.", val: true}
-                    ] 
-                },
-                { 
-                    q: "Was wird in einer Qualifikationsmatrix gegenübergestellt?", 
-                    options: [
-                        {text: "Ist-Qualifikationen vs. Soll-Anforderungen.", val: true},
-                        {text: "Gehaltswünsche vs. Budget.", val: false}
-                    ] 
-                },
-                { 
-                    q: "Was kennzeichnet eine betriebliche Laufbahnplanung?", 
-                    options: [
-                        {text: "Sie beschreibt nur den Lebenslauf vor der Einstellung.", val: false},
-                        {text: "Sie bündelt Entwicklungs- und Aufstiegsmöglichkeiten zur Mitarbeiterbindung.", val: true}
-                    ] 
-                },
-                { 
-                    q: "Welche Phasen umfasst eine professionelle Mitarbeiterbeurteilung?", 
-                    options: [
-                        {text: "Beobachtung, Bewertung und Besprechung.", val: true},
-                        {text: "Nur die spontane Bewertung aus dem Bauch heraus.", val: false}
-                    ] 
-                },
-                { 
-                    q: "Was ist das primäre Ziel eines Coachings?", 
-                    options: [
-                        {text: "Fachliche Anweisungen geben.", val: false},
-                        {text: "Hilfe zur Selbsthilfe leisten.", val: true}
-                    ] 
-                }
-            ]
-        }
-    };
+    "jarbschg_zeit": {
+        "title": "<span style='color:white;'>Aufgabe:</span> JArbSchG - Arbeitszeit & Aufsicht",
+        "intro": "<b>Franziska Immerda (Verwaltung):</b> 'Der Vorfall mit Kevin an der Kreissäge hat hohe Wellen geschlagen. Die Berufsgenossenschaft prüft jetzt genau. Beweisen Sie Ihre Rechtssicherheit in Bezug auf Arbeitszeit und gefährliche Arbeiten.'",
+        "law": "<strong>§ 22 JArbSchG</strong>: Beschäftigung bei gefährlichen Arbeiten nur unter Aufsicht.<br><strong>§ 8 JArbSchG</strong>: Max 40h/Woche.",
+        "questions": [
+            {
+                "q": "Darf Kevin (16) alleine an die Kreissäge?",
+                "options": [
+                    {
+                        "text": "Ja, wenn es eilt",
+                        "val": false
+                    },
+                    {
+                        "text": "Nein, verboten",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Max. Wochenarbeitszeit Jugendlicher?",
+                "options": [
+                    {
+                        "text": "40 Std",
+                        "val": true
+                    },
+                    {
+                        "text": "48 Std",
+                        "val": false
+                    }
+                ]
+            }
+        ]
+    },
+    "pe_instrumente": {
+        "title": "<span style='color:white;'>Aufgabe:</span> PE-Instrumente (DQR 7 Check)",
+        "intro": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Strategische Personalentwicklung erfordert präzises Vokabular. Bevor wir Konzepte schreiben, müssen die Begriffe sitzen. Differenzieren Sie bitte:'",
+        "law": "Strategische PE nutzt diverse Instrumente zur Bedarfsdeckung.",
+        "questions": [
+            {
+                "q": "Was ist Job Enrichment?",
+                "options": [
+                    {
+                        "text": "Mehr Aufgaben gleiches Niveau",
+                        "val": false
+                    },
+                    {
+                        "text": "Höheres Anforderungsniveau",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Ziel von Coaching?",
+                "options": [
+                    {
+                        "text": "Hilfe zur Selbsthilfe",
+                        "val": true
+                    },
+                    {
+                        "text": "Fachberatung",
+                        "val": false
+                    }
+                ]
+            },
+            {
+                "q": "Was ist Job Rotation?",
+                "options": [
+                    {
+                        "text": "Geplanter Wechsel",
+                        "val": true
+                    },
+                    {
+                        "text": "Kündigung",
+                        "val": false
+                    }
+                ]
+            }
+        ]
+    },
+    "quiz_pe_expert": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Expertenwissen Personalentwicklung & Führung",
+        "intro": "<b>Dr. Klara Kompetenz:</b> 'Bevor ich meine Agenden übergebe, muss ich sicher sein, dass Sie die strategischen Zusammenhänge durchdrungen haben. Beweisen Sie Ihre Expertise in dieser Klausur.'",
+        "law": "Hinweis: Diese Fragen basieren auf dem Handlungsbereich 6 (Personalentwicklung und Beratung).",
+        "questions": [
+            {
+                "q": "Was ist ein zentrales Ziel der Personalentwicklung (PE)?",
+                "options": [
+                    {
+                        "text": "Gewinnmaximierung der einzelnen Mitarbeiter.",
+                        "val": false
+                    },
+                    {
+                        "text": "Mitarbeiter auf künftige Entwicklungen (z.B. technologischen Wandel) vorzubereiten.",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Was wird in einer Qualifikationsmatrix gegenübergestellt?",
+                "options": [
+                    {
+                        "text": "Ist-Qualifikationen vs. Soll-Anforderungen.",
+                        "val": true
+                    },
+                    {
+                        "text": "Gehaltswünsche vs. Budget.",
+                        "val": false
+                    }
+                ]
+            },
+            {
+                "q": "Was kennzeichnet eine betriebliche Laufbahnplanung?",
+                "options": [
+                    {
+                        "text": "Sie beschreibt nur den Lebenslauf vor der Einstellung.",
+                        "val": false
+                    },
+                    {
+                        "text": "Sie bündelt Entwicklungs- und Aufstiegsmöglichkeiten zur Mitarbeiterbindung.",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Welche Phasen umfasst eine professionelle Mitarbeiterbeurteilung?",
+                "options": [
+                    {
+                        "text": "Beobachtung, Bewertung und Besprechung.",
+                        "val": true
+                    },
+                    {
+                        "text": "Nur die spontane Bewertung aus dem Bauch heraus.",
+                        "val": false
+                    }
+                ]
+            },
+            {
+                "q": "Was ist das primäre Ziel eines Coachings?",
+                "options": [
+                    {
+                        "text": "Fachliche Anweisungen geben.",
+                        "val": false
+                    },
+                    {
+                        "text": "Hilfe zur Selbsthilfe leisten.",
+                        "val": true
+                    }
+                ]
+            }
+        ]
+    },
+    "viola_comm_quiz": {
+        "title": "Konfliktmanagement & Gespräche",
+        "intro": "<b>Viola Communikationis (Inklusion):</b> 'Kommunikation ist der Schlüssel. Bitte überprüfen Sie diese Grundlagen, bevor wir in die Gespräche gehen.'",
+        "law": "Kommunikation ist der Schlüssel zur Inklusion und Problemlösung.",
+        "questions": [
+            {
+                "q": "Welche Gesprächsform ist 'anlassbezogen'?",
+                "options": [
+                    {
+                        "text": "Jahresgespräch",
+                        "val": false
+                    },
+                    {
+                        "text": "Rückkehrgespräch",
+                        "val": true
+                    },
+                    {
+                        "text": "Zielvereinbarungsgespräch",
+                        "val": false
+                    }
+                ]
+            },
+            {
+                "q": "Was ist das Ziel eines Kritikgesprächs?",
+                "options": [
+                    {
+                        "text": "Mitarbeiter bestrafen",
+                        "val": false
+                    },
+                    {
+                        "text": "Ursachen erkennen & Verhalten ändern",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Was kennzeichnet 'Aktives Zuhören'?",
+                "options": [
+                    {
+                        "text": "Sofortige Ratschläge geben",
+                        "val": false
+                    },
+                    {
+                        "text": "Paraphrasieren & Gefühle spiegeln",
+                        "val": true
+                    }
+                ]
+            }
+        ]
+    },
+    "erik_coaching_quiz": {
+        "title": "Coaching & Lernförderung",
+        "intro": "<b>Erik Handycap (Sozialarbeit):</b> 'Reflexion ist essenziell. Helfen Sie mir, diese Begriffe sauber zu trennen.'",
+        "law": "Coaching ist Hilfe zur Selbsthilfe, keine Fachberatung.",
+        "questions": [
+            {
+                "q": "Wer ist für die Lösung im Coaching verantwortlich?",
+                "options": [
+                    {
+                        "text": "Der Coach",
+                        "val": false
+                    },
+                    {
+                        "text": "Der Coachee (Klient)",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Was gehört zur 'Klärungsphase' im Coaching?",
+                "options": [
+                    {
+                        "text": "Vertragsabschluss",
+                        "val": false
+                    },
+                    {
+                        "text": "Ist-Soll-Analyse & Einbindung Beteiligter",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Was ist 'Job Rotation'?",
+                "options": [
+                    {
+                        "text": "Systematischer Arbeitsplatzwechsel",
+                        "val": true
+                    },
+                    {
+                        "text": "Erweiterung des Aufgabenfeldes",
+                        "val": false
+                    }
+                ]
+            }
+        ]
+    }
+};
     let currentQuizId = null;
 
     // --- STORY SCENES ---
     const scenes = {
-        'intro': {
-            title: "",
-            text: `
-                <div class="intro-title">Willkommen<br>im Bildungscampus Leipzig</div>
-                
-                <p style="text-align: justify;">Wir sind ein neu gegründetes Bildungsunternehmen in Leipzig und bieten vorrangig
-Präsenz- und Onlineschulungen in den Bereichen Aus- und Weiterbildungspädagogik, Berufspädagogik, Ausbildereignung, Personalwirtschaft und Büromanagement an.<br><br>
-Seit kurzer Zeit bilden wir in einem Ausbildungsverbund mit der PlanA GmbH im handwerklichen Bereich auch Tischler aus. Ein Teil dieser Ausbildung findet in einer Produktionslinie der PlanA GmbH statt. Es existiert auch eine eigene Lehrwerkstatt.
-
- </div>
-
-                <p style="text-align: justify;">Wir beschäftigen zur Zeit 8 Mitarbeitende sowie mehrere freiberufliche Dozent*innen</p>
-
-                <div class="team-grid">
-                    <div class="team-role">Geschäftsführung:</div><div class="team-name">Dr. Peter Planer</div>
-                    <div class="team-role">Personalleitung:</div><div class="team-name">Dr. Klara Kompetenz</div>
-                    <div class="team-role">Ausbildungleiter PlanA GmbH:</div><div class="team-name">Horst Hektik</div>
-                    <div class="team-role">Verantwortlicher Ausbilder:</div><div class="team-name">Sascha AEVO</div>
-                    <div class="team-role">Verwaltung:</div><div class="team-name">Franziska Immerda</div>
-                    <div class="team-role">Betriebsrat:</div><div class="team-name">Alex Engagiert</div>
-                    <div class="team-role">weitere Mitarbeitende:</div><div class="team-name">Claudia Papierkram, Viola Communikationis,<br> Erik Handycap und Sebastian Domini</div>
-                </div>
-            `,
-            leftContent: `
-                <div class="role-box-left">
-                    <span class="role-title">IHRE MISSION</span>
-                    <div class="role-description">
-                        Sie sind als Gepr. Berufspädagog*in die neue <b>"Hauptabteilungsleitung Bildung" mit Personalbefugnissen</b>.<br>
-In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen lösen. 
-                    </div>
-                    <button class="start-btn-green" onclick="startGame()">Rolle annehmen & starten </button>
-                </div>
-            `,
-            char: "chef", 
-            charName: "Dr. Peter Planer",
-            options: []
-        },
-        'start': {
-            title: "Der Ernstfall",
-            text: "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Tach. Hör mal. Der Kevin. 16 Jahre. Soll an die Kreissäge. Sofort. Auftrag muss raus. Personal fehlt. Mach da kein Drama draus, ja?'",
-            char: "horst", charName: "Horst Hektik",
-            options: [
-                { text: "Genehmigen (Produktion first)", next: "fail_jarbschg", costTime: 2 },
-                { text: "Ablehnen (Gefährliche Arbeit)", next: "success_jarbschg", costTime: 5 }
-            ]
-        },
-        'fail_jarbschg': {
-            title: "Rechtsbruch!",
-            text: "<b>Franziska Immerda (Verwaltung):</b> 'Ich muss doch sehr bitten! § 22 JArbSchG. Ohne Aufsicht? Unmöglich. Ich habe die BG schon am Telefon gehabt. Das geht so nicht!'",
-            char: "verwaltung", charName: "Franziska Immerda", moodChange: -20,
-            options: [{ text: "Rechtskenntnisse auffrischen", next: "quiz_jarb", costTime: 10 }]
-        },
-        'quiz_jarb': { special: "quiz", quizId: "jarbschg_zeit", next: "success_jarbschg" },
-        'success_jarbschg': {
-            title: "Konflikt gelöst",
-            text: "<b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Danke. Horst ist zwar sauer, aber wir haben einen Unfall verhindert. Und Rechtssicherheit gewahrt. Das war professionell.'",
-            char: "sascha", charName: "Sascha AEVO",
-            options: [{ text: "Zum Termin mit Dr. Kompetenz", next: "klara_audit", costTime: 5 }]
-        },
-        'klara_audit': {
-            title: "<span style='color:white;'>Aufgabe:</span> Digitale Wende",
-            text: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Guten Tag. Ich freue mich, dass Sie da sind. Sehen Sie, wir expandieren in den SHK-Bereich. Unsere Didaktik ist jedoch... nun ja... antiquiert. Ich erbitte ein Konzept zur <b>digitalen Transformation</b> der Lernaufgaben.'",
-            char: "klara", charName: "Dr. Klara Kompetenz",
-            options: [
-                { text: "Konzept erstellen", next: "ai_digital", costTime: 15 },
-                { text: "Ablehnen ('Zu neumodisch')", next: "fail_klara_block", costTime: 5 }
-            ]
-        },
-        'fail_klara_block': {
-            title: "Irritation",
-            text: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Ich bin enttäuscht. Stillstand ist Rückschritt. Ich erwarte von Ihnen Innovationsgeist, keine Blockadehaltung. Bitte überdenken Sie das.'",
-            char: "klara", charName: "Dr. Klara Kompetenz", moodChange: -30,
-            options: [{ text: "Konzept doch erstellen", next: "ai_digital", costTime: 5 }]
-        },
-        'ai_digital': { special: "ai_question", aiId: "hb4_digital", next: "social_issue" },
-
-        'social_issue': {
-            title: "<span style='color:white;'>Aufgabe:</span> Der Vorfall",
-            text: "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Der Stift hat 'Hurensohn' gesagt. Zu mir. Der fliegt. Sofort. Papiere fertig machen!'<br><br><b>Dr. Klara Kompetenz (Personalleitung):</b> 'Herr Hektik, bitte mäßigen Sie sich. Wir kündigen nicht affektgesteuert. Das ist ein Bildungsauftrag. Fördern Sie die <b>Sozialkompetenz</b>.'",
-            char: "klara", charName: "Dr. Klara Kompetenz",
-            options: [
-                { text: "Pädagogische Intervention", next: "ai_social", costTime: 15 },
-                { text: "Horst zustimmen (Kündigung)", next: "fail_pedagogy", costTime: 5 }
-            ]
-        },
-        'fail_pedagogy': {
-            title: "Pädagogisches Versagen",
-            text: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Sie enttäuschen mich. Wir sind Pädagogen, keine Scharfrichter. Versuchen Sie es erneut - mit Verstand!'",
-            char: "klara", charName: "Dr. Klara Kompetenz", moodChange: -20,
-            options: [{ text: "Neuer Versuch", next: "ai_social", costTime: 5 }]
-        },
-        'ai_social': { special: "ai_question", aiId: "hb1_sozial", next: "level_2_intro" },
-
-        'level_2_intro': {
-            title: "Zwischenfazit",
-            text: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Ah, da sind Sie ja! Ich hatte gerade eine Vision... oder war es Hunger? Egal. Wir müssen... größer denken! Strategischer! Kommen Sie in mein Büro.'",
-            char: "chef", charName: "Dr. Peter Planer",
-            options: [{ text: "Zur Strategierunde", next: "strategy_recruit", costTime: 0 }]
-        },
-        'strategy_recruit': {
-            title: "<span style='color:white;'>Aufgabe:</span> Globales Denken",
-            text: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Der Markt ist leer. Wir müssen... in die Ferne schweifen! Ausland! Rekrutierung! Machen Sie das. Planen Sie alles.'<br><b>Alex Engagiert (Betriebsrat):</b> 'Moment mal! § 99 BetrVG. Und Integration. Das muss sauber laufen!'",
-            char: "chef", charName: "Dr. Peter Planer",
-            options: [
-                { text: "Planungsprozess starten", next: "ai_recruit", costTime: 15 },
-                { text: "Einfach mal Stellenanzeige schalten", next: "fail_recruit", costTime: 5 }
-            ]
-        },
-        'fail_recruit': {
-            title: "Betriebsrat veto",
-            text: "<b>Alex Engagiert (Betriebsrat):</b> 'So nicht, Freunde. Ohne Konzept zur Eingliederung und ohne meine Zustimmung läuft hier gar nichts. Das ist gesetzeswidrig!'",
-            char: "alex", charName: "Alex Engagiert", moodChange: -25,
-            options: [{ text: "Ordentlich planen", next: "ai_recruit", costTime: 10 }]
-        },
-        'ai_recruit': { special: "ai_question", aiId: "hb2_recruit", next: "gen_z_scene" },
-
-        'gen_z_scene': {
-            title: "<span style='color:white;'>Aufgabe:</span> Generationenkonflikt",
-            text: "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Die Neuen. Wollen Work-Life-Balance. Ich glaub es hackt. Wer arbeitet hier eigentlich noch?'<br><b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Horst, die Zeiten ändern sich. Wir brauchen ein <b>Bindungskonzept</b> für die Gen Z, sonst sind wir bald alleine.'",
-            char: "horst", charName: "Horst Hektik",
-            options: [
-                { text: "Retention-Konzept", next: "ai_genz", costTime: 15 },
-                { text: "Obstkorb hinstellen", next: "fail_obst", costTime: 5 }
-            ]
-        },
-        'fail_obst': {
-            title: "Das reicht nicht",
-            text: "<b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Ein Obstkorb? Ernsthaft? Die jungen Leute wollen Perspektiven und Sinn, keine Bananen.'",
-            char: "sascha", charName: "Sascha AEVO", moodChange: -10,
-            options: [{ text: "Konzept überarbeiten", next: "ai_genz", costTime: 10 }]
-        },
-        'ai_genz': { special: "ai_question", aiId: "hb3_genz", next: "transfer_scene" },
-
-        'transfer_scene': {
-            title: "<span style='color:white;'>Aufgabe:</span> Schwere Zeiten",
-            text: "<b>Erik Handycap (Sozialarbeit):</b> 'In Anbetracht der bedauerlichen Insolvenz eines Teilbereichs, und unter Berücksichtigung der sozialen Verantwortung, die wir zweifelsohne tragen, ist es unabdingbar, eine Transfergesellschaft zu gründen, deren primäres Ziel es sein muss...' <br><i>(Er redet noch 5 Minuten weiter)</i><br><b>Viola Communikationis (Inklusion):</b> 'Erik. Meint. Wir. Müssen. 50. Leute. Retten. Wir brauchen eine <b>Bildungsbedarfsanalyse</b>.'",
-            char: "erik", charName: "Erik Handycap",
-            options: [{ text: "Analyse-Leitfaden erstellen", next: "ai_transfer", costTime: 15 }]
-        },
-        'ai_transfer': { special: "ai_question", aiId: "hb5_transfer", next: "career_scene" },
-
-        'career_scene': {
-            title: "<span style='color:white;'>Aufgabe:</span> Zukunft",
-            text: "<b>Claudia Papierkram (Verwaltung/KI):</b> 'Ich habe die Daten analysiert. Unsere Effizienz leidet unter Motivationstiefs. Die Leute sehen keinen Aufstieg. Wir brauchen systematische <b>Laufbahnmodelle</b>. Meine KI sagt: Das erhöht die Retention um 40%.'",
-            char: "claudia", charName: "Claudia Papierkram",
-            options: [{ text: "Laufbahnmodelle entwickeln", next: "ai_career", costTime: 15 }]
-        },
-        'ai_career': { special: "ai_question", aiId: "hb6_karriere", next: "klara_leave" },
-
-        // --- NEUES SZENARIO: KLARA GEHT IN MUTTERSCHUTZ ---
-        'klara_leave': {
-            title: "Vertrauliches Gespräch",
-            text: "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Kommen Sie doch bitte kurz in mein Büro und schließen Sie die Tür. Ich habe Neuigkeiten: Ich werde in den nächsten Wochen in den Mutterschutz gehen. Ich brauche jemanden, der meine Aufgaben als Personalleitung vertretungsweise übernimmt. Ich traue Ihnen das zu – aber dafür müssen Sie in der Theorie absolut sattelfest sein. Sind Sie bereit für eine <b>Experten-Weiterbildung</b>?'",
-            char: "klara", charName: "Dr. Klara Kompetenz",
-            options: [
-                { text: "Herausforderung annehmen (Weiterbildung starten)", next: "quiz_pe_expert", costTime: 20 },
-                { text: "Ich traue mir das nicht zu", next: "game_over_fail", costTime: 5 } // Wer nicht wagt...
-            ]
-        },
-
-        'quiz_pe_expert': { special: "quiz", quizId: "quiz_pe_expert", next: "calculate_score" },
-
-        'calculate_score': { 
-            title: "Abschluss",
-            text: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Nun, das war eine beeindruckende Tour de Force. Meine Visionen wurden... nun ja, konkretisiert. Lassen Sie uns sehen, was dabei herausgekommen ist. Hier ist Ihr Ergebnis.'<br><br><i>(Er unterschreibt das Dokument mit Schwung.)</i>",
-            char: "chef",
-            charName: "Dr. Peter Planer",
-            options: [{ text: "Zertifikat entgegennehmen 📜", specialExec: "showCertificate" }] 
-        },
-        'game_over_fail': { title: "Entlassen", text: "Sie haben das Unternehmen ruiniert oder wichtige Chancen verpasst.", char: "chef", options: [] },
-        'resolve_warning': { specialExec: "resolveWarning" },
-
-        // --- SZENEN: AUFGEBEN-ESKALATION ---
-        'giveup_1_talk': {
-            title: "Mitarbeitergespräch",
-            text: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Kommen Sie bitte kurz rein. Ich sehe, Sie haben eine Aufgabe abgebrochen. Woran liegt es? Überforderung? Wir bieten interne Schulungen an. Bitte nutzen Sie unsere Ressourcen und geben Sie nicht einfach auf. Wir zählen auf Sie.'",
-            char: "chef", charName: "Dr. Peter Planer", moodChange: -10,
-            options: [{ text: "Verstanden, ich mache weiter.", specialExec: "resumeIntervention" }]
-        },
-        'giveup_2_warning': {
-            title: "Mündliche Verwarnung",
-            text: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Schon wieder? Das ist das zweite Mal, dass Sie eine Aufgabe verweigern. Ich spreche Ihnen hiermit eine mündliche Verwarnung aus. Eine Führungskraft muss Lösungen finden, nicht kapitulieren!'",
-            char: "chef", charName: "Dr. Peter Planer", moodChange: -20,
-            options: [{ text: "Es kommt nicht wieder vor.", specialExec: "resumeIntervention" }]
-        },
-        'giveup_3_written': {
-            title: "Schriftliche Abmahnung",
-            text: "<b>Dr. Klara Kompetenz & Dr. Peter Planer:</b> 'Herr/Frau Kollege/in, das ist das dritte Mal. Wir sind fassungslos. Hiermit überreiche ich Ihnen eine formelle, schriftliche Abmahnung. Dies ist Ihre letzte Chance. Noch ein Abbruch, und wir müssen uns trennen.'",
-            char: "klara", charName: "Dr. Klara Kompetenz", moodChange: -40,
-            options: [{ text: "Ich habe verstanden.", specialExec: "resumeIntervention" }]
-        },
-        'giveup_4_fired': {
-            title: "Kündigung",
-            text: "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Es reicht. Vier Arbeitsverweigerungen sind untragbar. Das Vertrauensverhältnis ist zerstört. Sie sind hiermit fristlos gekündigt. Bitte räumen Sie Ihren Schreibtisch.'",
-            char: "chef", charName: "Dr. Peter Planer",
-            options: [] // Keine Optionen = Sackgasse / Game Over
-        }
-    };
+    "intro": {
+        "title": "",
+        "text": "\n                <div class=\"intro-title\">Willkommen<br>im Bildungscampus Leipzig</div>\n                \n                <p style=\"text-align: justify;\">Wir sind ein neu gegründetes Bildungsunternehmen in Leipzig und bieten vorrangig\nPräsenz- und Onlineschulungen in den Bereichen Aus- und Weiterbildungspädagogik, Berufspädagogik, Ausbildereignung, Personalwirtschaft und Büromanagement an.<br><br>\nSeit kurzer Zeit bilden wir in einem Ausbildungsverbund mit der PlanA GmbH im handwerklichen Bereich auch Tischler aus. Ein Teil dieser Ausbildung findet in einer Produktionslinie der PlanA GmbH statt. Es existiert auch eine eigene Lehrwerkstatt.\n\n \n\n                <p style=\"text-align: justify;\">Wir beschäftigen zur Zeit 8 Mitarbeitende sowie mehrere freiberufliche Dozent*innen</p>\n\n                <div class=\"team-grid\">\n                    <div class=\"team-role\">Geschäftsführung:</div><div class=\"team-name\">Dr. Peter Planer</div>\n                    <div class=\"team-role\">Personalleitung:</div><div class=\"team-name\">Dr. Klara Kompetenz</div>\n                    <div class=\"team-role\">Ausbildungleiter PlanA GmbH:</div><div class=\"team-name\">Horst Hektik</div>\n                    <div class=\"team-role\">Verantwortlicher Ausbilder:</div><div class=\"team-name\">Sascha AEVO</div>\n                    <div class=\"team-role\">Verwaltung:</div><div class=\"team-name\">Franziska Immerda</div>\n                    <div class=\"team-role\">Betriebsrat:</div><div class=\"team-name\">Alex Engagiert</div>\n                    <div class=\"team-role\">weitere Mitarbeitende:</div><div class=\"team-name\">Claudia Papierkram, Viola Communikationis,<br> Erik Handycap und Sebastian Domini</div>\n                </div>\n            ",
+        "leftContent": "\n                <div class=\"role-box-left\">\n                    <span class=\"role-title\">IHRE MISSION</span>\n                    <div class=\"role-description\">\n                        Sie sind als Gepr. Berufspädagog*in die neue <b>\"Hauptabteilungsleitung Bildung\" mit Personalbefugnissen</b>.<br>\nIn diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen lösen. \n                    </div>\n                    <button class=\"start-btn-green\" onclick=\"startGame()\">Rolle annehmen & starten </button>\n                </div>\n            ",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": []
+    },
+    "start": {
+        "title": "Der Ernstfall",
+        "text": "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Tach. Hör mal. Der Kevin. 16 Jahre. Soll an die Kreissäge. Sofort. Auftrag muss raus. Personal fehlt. Mach da kein Drama draus, ja? Übrigens: Was macht ein Clown im Büro? - Faxen. Hahaha! Aber im Ernst jetzt: Unterschreib das.'",
+        "char": "horst",
+        "charName": "Horst Hektik",
+        "options": [
+            {
+                "text": "Genehmigen (Produktion first)",
+                "next": "fail_jarbschg",
+                "costTime": 2
+            },
+            {
+                "text": "Ablehnen (Gefährliche Arbeit)",
+                "next": "success_jarbschg",
+                "costTime": 5
+            }
+        ]
+    },
+    "fail_jarbschg": {
+        "title": "Rechtsbruch!",
+        "text": "<b>Franziska Immerda (Verwaltung):</b> 'Ich muss doch sehr bitten! § 22 JArbSchG. Ohne Aufsicht? Unmöglich. Ich habe die BG schon am Telefon gehabt. Das geht so nicht!'",
+        "char": "verwaltung",
+        "charName": "Franziska Immerda",
+        "moodChange": -20,
+        "options": [
+            {
+                "text": "Rechtskenntnisse auffrischen",
+                "next": "quiz_jarb",
+                "costTime": 10
+            }
+        ]
+    },
+    "quiz_jarb": {
+        "special": "quiz",
+        "quizId": "jarbschg_zeit",
+        "next": "success_jarbschg"
+    },
+    "success_jarbschg": {
+        "title": "Konflikt gelöst",
+        "text": "<b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Danke. Horst ist zwar sauer, aber wir haben einen Unfall verhindert. Und Rechtssicherheit gewahrt. Das war professionell.'",
+        "char": "sascha",
+        "charName": "Sascha AEVO",
+        "options": [
+            {
+                "text": "Zum Termin mit Dr. Kompetenz",
+                "next": "klara_audit",
+                "costTime": 5
+            }
+        ]
+    },
+    "klara_audit": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Digitale Wende",
+        "text": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Guten Tag. Ich freue mich, dass Sie da sind. Sehen Sie, wir expandieren in den SHK-Bereich. Unsere Didaktik ist jedoch... nun ja... antiquiert. Ich erbitte ein Konzept zur <b>digitalen Transformation</b> der Lernaufgaben.'",
+        "char": "klara",
+        "charName": "Dr. Klara Kompetenz",
+        "options": [
+            {
+                "text": "Konzept erstellen",
+                "next": "ai_digital",
+                "costTime": 15
+            },
+            {
+                "text": "Ablehnen ('Zu neumodisch')",
+                "next": "fail_klara_block",
+                "costTime": 5
+            }
+        ]
+    },
+    "fail_klara_block": {
+        "title": "Irritation",
+        "text": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Ich bin enttäuscht. Stillstand ist Rückschritt. Ich erwarte von Ihnen Innovationsgeist, keine Blockadehaltung. Bitte überdenken Sie das.'",
+        "char": "klara",
+        "charName": "Dr. Klara Kompetenz",
+        "moodChange": -30,
+        "options": [
+            {
+                "text": "Konzept doch erstellen",
+                "next": "ai_digital",
+                "costTime": 5
+            }
+        ]
+    },
+    "ai_digital": {
+        "special": "ai_question",
+        "aiId": "hb4_digital",
+        "next": "social_issue"
+    },
+    "social_issue": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Der Vorfall",
+        "text": "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Der Stift hat 'Hurensohn' gesagt. Zu mir. Der fliegt. Sofort. Papiere fertig machen! Chuck Norris würde ihn einfach... na du weißt schon.'<br><br><b>Dr. Klara Kompetenz (Personalleitung):</b> 'Herr Hektik, bitte mäßigen Sie sich. Wir kündigen nicht affektgesteuert. Das ist ein Bildungsauftrag. Fördern Sie die <b>Sozialkompetenz</b>.'",
+        "char": "klara",
+        "charName": "Dr. Klara Kompetenz",
+        "options": [
+            {
+                "text": "Pädagogische Intervention",
+                "next": "ai_social",
+                "costTime": 15
+            },
+            {
+                "text": "Horst zustimmen (Kündigung)",
+                "next": "fail_pedagogy",
+                "costTime": 5
+            }
+        ]
+    },
+    "fail_pedagogy": {
+        "title": "Pädagogisches Versagen",
+        "text": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Sie enttäuschen mich. Wir sind Pädagogen, keine Scharfrichter. Versuchen Sie es erneut - mit Verstand!'",
+        "char": "klara",
+        "charName": "Dr. Klara Kompetenz",
+        "moodChange": -20,
+        "options": [
+            {
+                "text": "Neuer Versuch",
+                "next": "ai_social",
+                "costTime": 5
+            }
+        ]
+    },
+    "ai_social": {
+        "special": "ai_question",
+        "aiId": "hb1_sozial",
+        "next": "level_2_intro"
+    },
+    "level_2_intro": {
+        "title": "Zwischenfazit",
+        "text": "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Ah, da sind Sie ja! Ich hatte gerade eine Vision... oder war es Hunger? Egal. Wir müssen... größer denken! Strategischer! Kommen Sie in mein Büro.'",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "Zur Strategierunde",
+                "next": "strategy_recruit",
+                "costTime": 0
+            }
+        ]
+    },
+    "strategy_recruit": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Globales Denken",
+        "text": "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Der Markt ist leer. Wir müssen... in die Ferne schweifen! Ausland! Rekrutierung! Machen Sie das. Planen Sie alles.'<br><b>Alex Engagiert (Betriebsrat):</b> 'Moment mal! § 99 BetrVG. Und Integration. Das muss sauber laufen!'",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "Planungsprozess starten",
+                "next": "ai_recruit",
+                "costTime": 15
+            },
+            {
+                "text": "Einfach mal Stellenanzeige schalten",
+                "next": "fail_recruit",
+                "costTime": 5
+            }
+        ]
+    },
+    "fail_recruit": {
+        "title": "Betriebsrat veto",
+        "text": "<b>Alex Engagiert (Betriebsrat):</b> 'So nicht, Freunde. Ohne Konzept zur Eingliederung und ohne meine Zustimmung läuft hier gar nichts. Das ist gesetzeswidrig!'",
+        "char": "alex",
+        "charName": "Alex Engagiert",
+        "moodChange": -25,
+        "options": [
+            {
+                "text": "Ordentlich planen",
+                "next": "ai_recruit",
+                "costTime": 10
+            }
+        ]
+    },
+    "ai_recruit": {
+        "special": "ai_question",
+        "aiId": "hb2_recruit",
+        "next": "gen_z_scene"
+    },
+    "gen_z_scene": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Generationenkonflikt",
+        "text": "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Die Jungen hauen alle ab. Wollen Sabbatical. Pff. Mach was.'<br><b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Wir müssen ihre Werte verstehen, Horst. Erstellen Sie ein Retention-Konzept.'",
+        "char": "horst",
+        "charName": "Horst Hektik",
+        "options": [
+            {
+                "text": "Retention-Konzept",
+                "next": "ai_genz",
+                "costTime": 15
+            },
+            {
+                "text": "Obstkorb hinstellen",
+                "next": "fail_obst",
+                "costTime": 5
+            }
+        ]
+    },
+    "fail_obst": {
+        "title": "Das reicht nicht",
+        "text": "<b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Ein Obstkorb? Ernsthaft? Die jungen Leute wollen Perspektiven und Sinn, keine Bananen.'",
+        "char": "sascha",
+        "charName": "Sascha AEVO",
+        "moodChange": -10,
+        "options": [
+            {
+                "text": "Konzept überarbeiten",
+                "next": "ai_genz",
+                "costTime": 10
+            }
+        ]
+    },
+    "ai_genz": {
+        "special": "ai_question",
+        "aiId": "hb3_genz",
+        "next": "transfer_scene"
+    },
+    "transfer_scene": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Schwere Zeiten",
+        "text": "<b>Erik Handycap (Sozialarbeit):</b> 'In Anbetracht der bedauerlichen Insolvenz eines Teilbereichs, und unter Berücksichtigung der sozialen Verantwortung, die wir zweifelsohne tragen, ist es unabdingbar, eine Transfergesellschaft zu gründen, deren primäres Ziel es sein muss...' <br><i>(Er redet noch 5 Minuten weiter)</i><br><b>Viola Communikationis (Inklusion):</b> 'Erik. Meint. Wir. Müssen. 50. Leute. Retten. Wir brauchen eine <b>Bildungsbedarfsanalyse</b>.'",
+        "char": "erik",
+        "charName": "Erik Handycap",
+        "options": [
+            {
+                "text": "Analyse-Leitfaden erstellen",
+                "next": "ai_transfer",
+                "costTime": 15
+            }
+        ]
+    },
+    "ai_transfer": {
+        "special": "ai_question",
+        "aiId": "hb5_transfer",
+        "next": "career_scene"
+    },
+    "career_scene": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Zukunft",
+        "text": "<b>Claudia Papierkram (Verwaltung/KI):</b> 'Ich habe die Daten analysiert. Unsere Effizienz leidet unter Motivationstiefs. Die Leute sehen keinen Aufstieg. Wir brauchen systematische <b>Laufbahnmodelle</b>. Meine KI sagt: Das erhöht die Retention um 40%.'",
+        "char": "claudia",
+        "charName": "Claudia Papierkram",
+        "options": [
+            {
+                "text": "Laufbahnmodelle entwickeln",
+                "next": "ai_career",
+                "costTime": 15
+            }
+        ]
+    },
+    "ai_career": {
+        "special": "ai_question",
+        "aiId": "hb6_karriere",
+        "next": "klara_leave"
+    },
+    "klara_leave": {
+        "title": "Vertrauliches Gespräch",
+        "text": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Kommen Sie doch bitte kurz in mein Büro. Ich habe Neuigkeiten: Ich werde in den nächsten Wochen in den Mutterschutz gehen. Ich brauche jemanden, der meine Aufgaben als Personalleitung vertretungsweise übernimmt. Ich traue Ihnen das zu – aber dafür müssen Sie in der Theorie absolut sattelfest sein. Sind Sie bereit für eine <b>Experten-Weiterbildung</b>?'",
+        "char": "klara",
+        "charName": "Dr. Klara Kompetenz",
+        "options": [
+            {
+                "text": "Herausforderung annehmen (Weiterbildung starten)",
+                "next": "quiz_pe_expert",
+                "costTime": 20
+            },
+            {
+                "text": "Ich traue mir das nicht zu",
+                "next": "game_over_fail",
+                "costTime": 5
+            }
+        ]
+    },
+    "quiz_pe_expert": {
+        "special": "quiz",
+        "quizId": "quiz_pe_expert",
+        "next": "crossword_intro"
+    },
+    "crossword_intro": {
+        "title": "Begriffs-Verwirrung",
+        "text": "<b>Claudia Papierkram (Verwaltung/KI):</b> 'Hallo! Bevor Sie zu Sebastian gehen... ich sortiere gerade unser Glossar. Meine KI ist abgestürzt und ich muss diese Begriffe manuell zuordnen. Helfen Sie mir kurz beim <b>Kreuzworträtsel</b>? Es geht um PE-Begriffe.'",
+        "char": "claudia",
+        "charName": "Claudia Papierkram",
+        "options": [
+            {
+                "text": "Rätsel lösen",
+                "next": "crossword_scene",
+                "costTime": 10
+            }
+        ]
+    },
+    "crossword_scene": {
+        "char": "claudia",
+        "charName": "Claudia Papierkram",
+        "special": "crossword",
+        "next": "sebastian_intro",
+        "cwId": "crossword_scene_cw_config"
+    },
+    "sebastian_intro": {
+        "title": "Der Praktiker fragt",
+        "text": "<b>Sebastian Domini (Technik):</b> 'Gut, dass Sie da sind. Ich habe hier ein theoretisches Problem in der Werkstatt. Meine Azubis wollen Feedback, die IHK will Evaluation. Wo liegt denn da genau der Unterschied? Können Sie mir das kurz und knapp erklären, damit ich nichts Falsches erzähle?'",
+        "char": "sebastian",
+        "charName": "Sebastian Domini",
+        "options": [
+            {
+                "text": "Unterschied erklären",
+                "next": "ai_sebastian",
+                "costTime": 10
+            }
+        ]
+    },
+    "ai_sebastian": {
+        "special": "ai_question",
+        "aiId": "sebastian_eval_feedback",
+        "next": "sebastian_thanks"
+    },
+    "sebastian_thanks": {
+        "title": "Erkenntnis",
+        "text": "<b>Sebastian Domini (Technik):</b> 'Aha! Feedback für den Prozess, Evaluation für das Ergebnis. Verstanden. Das hilft mir sehr. Danke für die Aufklärung! <br><br> Übrigens, Viola sucht Sie schon. Es gibt wohl Redebedarf.'",
+        "char": "sebastian",
+        "charName": "Sebastian Domini",
+        "moodChange": 10,
+        "options": [
+            {
+                "text": "Zu Viola Communikationis gehen",
+                "next": "viola_intro",
+                "costTime": 5
+            }
+        ]
+    },
+    "viola_intro": {
+        "title": "Gesprächsbedarf",
+        "text": "<b>Viola Communikationis (Inklusion):</b> 'Hallo. Ich brauche Ihre Unterstützung. Wir haben einige Konflikte im Team, und ich möchte sicherstellen, dass unsere Kritikgespräche barrierefrei und wertschätzend ablaufen. Können Sie mein Wissen zu <b>Gesprächsführung</b> kurz überprüfen?'",
+        "char": "viola",
+        "charName": "Viola Communikationis",
+        "options": [
+            {
+                "text": "Wissen überprüfen (Quiz)",
+                "next": "quiz_viola",
+                "costTime": 10
+            }
+        ]
+    },
+    "quiz_viola": {
+        "special": "quiz",
+        "quizId": "viola_comm_quiz",
+        "next": "viola_thanks"
+    },
+    "viola_thanks": {
+        "title": "Barrierefrei kommunizieren",
+        "text": "<b>Viola Communikationis (Inklusion):</b> 'Vielen Dank. Das gibt mir Sicherheit. Besonders das aktive Zuhören ist wichtig. Ich werde das sofort im nächsten Meeting anwenden.<br><br>Erik wartet übrigens im Büro nebenan.'",
+        "char": "viola",
+        "charName": "Viola Communikationis",
+        "moodChange": 10,
+        "options": [
+            {
+                "text": "Zu Erik Handycap gehen",
+                "next": "erik_intro",
+                "costTime": 5
+            }
+        ]
+    },
+    "erik_intro": {
+        "title": "Hilfe zur Selbsthilfe",
+        "text": "<b>Erik Handycap (Sozialarbeit):</b> 'In Anbetracht der komplexen psychosozialen Dynamiken... kurz gesagt: Ich coache gerade einen Mitarbeiter in einer schwierigen Phase. Ich möchte sichergehen, dass ich die Rolle des Coaches richtig interpretiere. Dürfte ich Sie um eine kurze fachliche Einschätzung bitten?'",
+        "char": "erik",
+        "charName": "Erik Handycap",
+        "options": [
+            {
+                "text": "Coaching-Kompetenz checken (Quiz)",
+                "next": "quiz_erik",
+                "costTime": 10
+            }
+        ]
+    },
+    "quiz_erik": {
+        "special": "quiz",
+        "quizId": "erik_coaching_quiz",
+        "next": "erik_thanks"
+    },
+    "erik_thanks": {
+        "title": "Klarheit",
+        "text": "<b>Erik Handycap (Sozialarbeit):</b> 'Ausgezeichnet. Die Abgrenzung zur Fachberatung war der entscheidende Punkt. Ich danke Ihnen vielmals für diese kollegiale Beratung.<br><br>Ich glaube, Dr. Kompetenz wollte Sie nun abschließend sprechen.'",
+        "char": "erik",
+        "charName": "Erik Handycap",
+        "moodChange": 10,
+        "options": [
+            {
+                "text": "Zum Abschlussgespräch",
+                "next": "calculate_score",
+                "costTime": 5
+            }
+        ]
+    },
+    "calculate_score": {
+        "title": "Abschluss",
+        "text": "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Nun, das war eine beeindruckende Tour de Force. Meine Visionen wurden... nun ja, konkretisiert. Lassen Sie uns sehen, was dabei herausgekommen ist. Hier ist Ihr Ergebnis.'<br><br><i>(Er unterschreibt das Dokument mit Schwung.)</i>",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "Zertifikat entgegennehmen 📜",
+                "specialExec": "showCertificate"
+            }
+        ]
+    },
+    "game_over_fail": {
+        "title": "Entlassen",
+        "text": "Sie haben das Unternehmen ruiniert oder wichtige Chancen verpasst.",
+        "char": "chef",
+        "options": []
+    },
+    "resolve_warning": {
+        "specialExec": "resolveWarning"
+    },
+    "giveup_1_talk": {
+        "title": "Motivierende Ermahnung",
+        "text": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Hören Sie mal, ich sehe, dass Sie diese Aufgabe abgebrochen haben. Lassen Sie den Kopf nicht hängen! Aller Anfang ist schwer. Ich empfehle Ihnen dringend, sich Zeit für das Selbststudium in unserer Bibliothek zu nehmen. Versuchen Sie es danach erneut – ich weiß, dass Sie das können!'",
+        "char": "klara",
+        "charName": "Dr. Klara Kompetenz",
+        "moodChange": -10,
+        "options": [
+            {
+                "text": "Danke, ich versuche es weiter.",
+                "specialExec": "resumeIntervention"
+            }
+        ]
+    },
+    "giveup_2_warning": {
+        "title": "Mündliche Verwarnung",
+        "text": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Sie haben erneut eine Aufgabe verweigert. Das entspricht nicht dem Führungsanspruch, den wir hier haben. Ich spreche Ihnen hiermit eine mündliche Verwarnung aus. Wir erwarten Lösungen, keine Kapitulation.'",
+        "char": "klara",
+        "charName": "Dr. Klara Kompetenz",
+        "moodChange": -20,
+        "options": [
+            {
+                "text": "Ich werde mich bessern.",
+                "specialExec": "resumeIntervention"
+            }
+        ]
+    },
+    "giveup_3_written": {
+        "title": "Schriftliche Abmahnung",
+        "text": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Das ist nun das dritte Mal. Wir sind zutiefst enttäuscht. Hiermit überreiche ich Ihnen eine formelle, schriftliche Abmahnung wegen Arbeitsverweigerung. Dies ist Ihre allerletzte Chance.'",
+        "char": "klara",
+        "charName": "Dr. Klara Kompetenz",
+        "moodChange": -40,
+        "options": [
+            {
+                "text": "Ich habe verstanden.",
+                "specialExec": "resumeIntervention"
+            }
+        ]
+    },
+    "giveup_4_fired": {
+        "title": "Kündigung",
+        "text": "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Es reicht. Frau Dr. Kompetenz hat mich informiert. Vier mal aufgegeben? Das Vertrauensverhältnis ist zerstört. Sie sind hiermit fristlos gekündigt. Bitte räumen Sie Ihren Schreibtisch.'",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": []
+    }
+};
 
     // --- ENGINE ---
     function renderScene(sceneKey) {
@@ -827,6 +1417,8 @@ In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen l
             openAiOverlay(scene.aiId, scene.next);
         } else if (scene.special === 'quiz') {
             openQuizOverlay(scene.quizId, scene.next);
+        } else if (scene.special === 'crossword') {
+            openCrosswordOverlay(scene.next, scene.cwId);
         } else if (scene.special === 'calc_score') {
             // Wait for user interaction
         } else if (scene.options && scene.options.length === 0 && sceneKey !== 'intro' && sceneKey !== 'giveup_4_fired') { 
@@ -881,6 +1473,7 @@ In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen l
     function giveUp() {
         document.getElementById('overlay-ai').classList.add('hidden');
         document.getElementById('overlay-quiz').classList.add('hidden');
+        document.getElementById('overlay-crossword').classList.add('hidden');
         
         state.giveUpCount = (state.giveUpCount || 0) + 1;
         
@@ -909,8 +1502,275 @@ In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen l
     function debugSkip() {
         document.getElementById('overlay-ai').classList.add('hidden');
         document.getElementById('overlay-quiz').classList.add('hidden');
+        document.getElementById('overlay-crossword').classList.add('hidden');
         if(nextSceneStored) renderScene(nextSceneStored);
         else renderScene('intro'); 
+    }
+
+  // --- NEUE DYNAMISCHE KREUZWORTRÄTSEL LOGIK ---
+    
+    // Standard-Daten (Fallback), falls im Admin-Tool noch nichts gespeichert wurde
+    let crosswordData = {
+    "default_cw": {
+        "words": [
+            {
+                "word": "MENTORING",
+                "clu": "Langfristiger Berater (8 B.)",
+                "x": 0,
+                "y": 0,
+                "dir": "h"
+            },
+            {
+                "word": "COACHING",
+                "clu": "Prozessbegleitung (8 B.)",
+                "x": 5,
+                "y": 0,
+                "dir": "v"
+            },
+            {
+                "word": "ZIELE",
+                "clu": "Angestrebtes Ergebnis (5 B.)",
+                "x": 4,
+                "y": 4,
+                "dir": "h"
+            }
+        ]
+    },
+    "crossword_scene_cw_config": {
+        "words": [
+            {
+                "word": "MENTORING",
+                "clu": "Begleitung nach dem Onboarding",
+                "x": 3,
+                "y": 6,
+                "dir": "h"
+            },
+            {
+                "word": "COACHING",
+                "clu": "Hilfe zur Selbsthilfe",
+                "x": 5,
+                "y": 0,
+                "dir": "v"
+            },
+            {
+                "word": "ZIEL",
+                "clu": "Angestrebtes Ergebnis ",
+                "x": 9,
+                "y": 5,
+                "dir": "v"
+            },
+            {
+                "word": "AZUBI",
+                "clu": "Kurzwort für Auszubildende",
+                "x": 5,
+                "y": 2,
+                "dir": "h"
+            },
+            {
+                "word": "BETRIEBSRAT",
+                "clu": "Mitarbeitervertretung",
+                "x": 0,
+                "y": 0,
+                "dir": "v"
+            },
+            {
+                "word": "KOTTER",
+                "clu": "Erfinder des 8-Stufenmodells",
+                "x": 7,
+                "y": 5,
+                "dir": "v"
+            },
+            {
+                "word": "IHK",
+                "clu": "Zuständige Stelle",
+                "x": 4,
+                "y": 4,
+                "dir": "h"
+            },
+            {
+                "word": "BBIG",
+                "clu": "Abk. Berufsbildungsgesetz",
+                "x": 9,
+                "y": 0,
+                "dir": "v"
+            },
+            {
+                "word": "AUSBILDER",
+                "clu": "männlicher Lernprozessbegleiter für Azubis",
+                "x": 0,
+                "y": 9,
+                "dir": "h"
+            },
+            {
+                "word": "ATS",
+                "clu": "Software zur Bewerberauswahl",
+                "x": 2,
+                "y": 7,
+                "dir": "v"
+            },
+            {
+                "word": "BILDUNG",
+                "clu": "",
+                "x": 11,
+                "y": 0,
+                "dir": "v"
+            },
+            {
+                "word": "ROI",
+                "clu": "Return of Investment",
+                "x": 0,
+                "y": 3,
+                "dir": "h"
+            },
+            {
+                "word": "KMK",
+                "clu": "Abkürzung für das Zusammetntreffen der Kultusminister",
+                "x": 9,
+                "y": 10,
+                "dir": "h"
+            },
+            {
+                "word": "BORIS",
+                "clu": "Toller Dozent aus Leipzig",
+                "x": 2,
+                "y": 0,
+                "dir": "v"
+            },
+            {
+                "word": "LAM",
+                "clu": "Abkürzung Lern- und Arbeitsmethodik",
+                "x": 9,
+                "y": 8,
+                "dir": "h"
+            },
+            {
+                "word": "EGO",
+                "clu": "Selbstbild, das eine Person von sich hat",
+                "x": 0,
+                "y": 1,
+                "dir": "h"
+            },
+            {
+                "word": "ICON",
+                "clu": "Grafisches Symbol auf  einem Computermonitor",
+                "x": 4,
+                "y": 0,
+                "dir": "h"
+            },
+            {
+                "word": "KI",
+                "clu": "Abkürzung Künstliche Intelligenz",
+                "x": 4,
+                "y": 8,
+                "dir": "v"
+            }
+        ]
+    }
+};
+    let currentCwId = null;
+
+    function openCrosswordOverlay(next, cwId = 'default_cw') {
+        nextSceneStored = next;
+        currentCwId = cwId;
+        const data = crosswordData[cwId] || crosswordData['default_cw'];
+        
+        const container = document.getElementById('crossword-container');
+        container.innerHTML = "";
+        
+        // Grid-Größe automatisch ermitteln
+        let maxX = 0; let maxY = 0;
+        data.words.forEach(w => {
+            if(w.dir === 'h') { maxX = Math.max(maxX, w.x + w.word.length); maxY = Math.max(maxY, w.y + 1); }
+            else { maxX = Math.max(maxX, w.x + 1); maxY = Math.max(maxY, w.y + w.word.length); }
+        });
+        
+        // Grid aufbauen
+        container.style.gridTemplateColumns = `repeat(${maxX}, 35px)`;
+        
+        // Zellen initialisieren (leer)
+        let grid = [];
+        for(let y=0; y<maxY; y++) {
+            grid[y] = [];
+            for(let x=0; x<maxX; x++) {
+                grid[y][x] = { char: null, isInput: false };
+            }
+        }
+
+        // Wörter ins Grid eintragen
+        data.words.forEach(w => {
+            for(let i=0; i<w.word.length; i++) {
+                let cx = w.x + (w.dir === 'h' ? i : 0);
+                let cy = w.y + (w.dir === 'v' ? i : 0);
+                grid[cy][cx] = { char: w.word[i], isInput: true };
+            }
+        });
+
+        // HTML generieren
+        let html = "";
+        for(let y=0; y<maxY; y++) {
+            for(let x=0; x<maxX; x++) {
+                const cell = grid[y][x];
+                if(cell.isInput) {
+                    html += `<input class="cw-cell" type="text" maxlength="1" data-char="${cell.char}" data-x="${x}" data-y="${y}">`;
+                } else {
+                    html += `<div class="cw-cell black"></div>`;
+                }
+            }
+        }
+        container.innerHTML = html;
+
+        // Hinweise anzeigen
+        const cluesBox = document.querySelector('.cw-clues');
+        cluesBox.innerHTML = "";
+        data.words.forEach((w, index) => {
+            let label = (w.dir === 'h') ? "Waagerecht" : "Senkrecht";
+            cluesBox.innerHTML += `<div>${index+1}. ${label}: ${w.clu}</div>`;
+        });
+
+        document.getElementById('overlay-crossword').classList.remove('hidden');
+        document.getElementById('btn-cw-success').classList.add('hidden');
+        document.getElementById('cw-feedback').innerText = "";
+    }
+
+    function checkCrossword() {
+        const inputs = document.querySelectorAll('#crossword-container input');
+        let allCorrect = true;
+        inputs.forEach(input => {
+            if (!input.value || input.value.toUpperCase() !== input.dataset.char) {
+                input.style.backgroundColor = "#e74c3c";
+                allCorrect = false;
+            } else {
+                input.style.backgroundColor = "#2ecc71";
+            }
+        });
+        
+        if(allCorrect) {
+            document.getElementById('cw-feedback').innerText = "Perfekt gelöst!";
+            document.getElementById('cw-feedback').style.color = "#2ecc71";
+            document.getElementById('btn-cw-success').classList.remove('hidden');
+            
+            // PUNKTE
+            state.time += 5; state.budget += 5; state.mood += 5;
+            updateKPIs();
+        } else {
+            document.getElementById('cw-feedback').innerText = "Da stimmt was nicht.";
+            document.getElementById('cw-feedback').style.color = "#e74c3c";
+        }
+    }
+
+    // NEUE FUNKTION: LÖSUNG ANZEIGEN
+    function solveCrossword() {
+        const inputs = document.querySelectorAll('#crossword-container input');
+        inputs.forEach(input => {
+            input.value = input.dataset.char;
+        });
+        // Sofort prüfen lassen, damit es grün wird und der Weiter-Button kommt
+        checkCrossword();
+    }
+    
+    function closeCrosswordOverlay() {
+        document.getElementById('overlay-crossword').classList.add('hidden');
+        renderScene(nextSceneStored);
     }
 
     // --- KI & QUIZ LOGIK ---
@@ -945,21 +1805,13 @@ In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen l
         document.getElementById('ai-score-fill').style.width = "0%";
 
         try {
-           const apiUrl = "/api/chat"; 
+            const apiUrl = "/api/chat"; // Vercel API
             const response = await fetch(apiUrl, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     messages: [
-                        { 
-                            role: "system", 
-                            content: `Du bist Dr. Klara Kompetenz, eine sehr strenge, aber faire Prüfungsvorsitzende für Berufspädagogik (Master-Niveau).
-                            ${scenario.gradingPrompt || ""}
-                            Lösungshinweise: ${scenario.solutionHint}.
-                            Bewerte die Antwort kurz (max 3 Sätze). Sei wertschätzend aber anspruchsvoll.
-                            Gib am Ende IMMER: "PUNKTE: XX/100".` 
-                        },
-                        { role: "user", content: userText }
+                        { role: "user", content: userText } 
                     ] 
                 })
             });
@@ -1026,7 +1878,7 @@ In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen l
             
             btnContinue.classList.add('hidden');
             btnRetry.classList.remove('hidden'); 
-            btnSkip.classList.remove('hidden'); // NEU: Ausweg
+            btnSkip.classList.remove('hidden'); 
             
             document.getElementById('ai-feedback-text').innerHTML += `<br><br><b>Tipp:</b> ${scenario.solutionHint}`;
         } else {
@@ -1034,6 +1886,13 @@ In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen l
             verdict.innerText = "✅ Bestanden (" + score + "%)"; 
             verdict.style.color = "#2ecc71"; 
             
+            // --- ZUSATZPUNKTE VERGEBEN ---
+            state.time += 5;
+            state.budget += 5;
+            state.mood += 5;
+            updateKPIs();
+            // -----------------------------
+
             btnContinue.classList.remove('hidden');
             btnRetry.classList.add('hidden');
             btnSkip.classList.add('hidden');
@@ -1047,7 +1906,31 @@ In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen l
         document.getElementById('ai-input').focus();
     }
     function copyAiText() { const copyText = document.getElementById("ai-input"); copyText.select(); navigator.clipboard.writeText(copyText.value); alert("Text kopiert!"); }
-    function printOverlay() { window.print(); }
+    
+    // DIE NEUE INTELLIGENTE DRUCK-FUNKTION
+    function printOverlay() { 
+        const textarea = document.getElementById('ai-input');
+        const printDiv = document.createElement('div');
+        printDiv.innerText = textarea.value;
+        printDiv.className = 'ai-input-area'; 
+        printDiv.style.height = 'auto'; 
+        printDiv.style.overflow = 'visible';
+        printDiv.style.border = '1px solid #ccc';
+        printDiv.style.color = '#000';
+        printDiv.style.background = '#fff';
+        printDiv.id = 'temp-print-div';
+
+        textarea.style.display = 'none';
+        textarea.parentNode.insertBefore(printDiv, textarea);
+
+        window.print();
+
+        setTimeout(() => {
+            printDiv.remove();
+            textarea.style.display = 'block';
+        }, 500);
+    }
+
     function skipAiTask() {
         if(confirm("Aufgabe wirklich überspringen? Das gibt leider keine Punkte für das Zertifikat.")) {
             closeAiOverlay();
@@ -1080,6 +1963,14 @@ In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen l
         const feedback = document.getElementById('quiz-feedback');
         if(allCorrect) {
             feedback.innerText = "Korrekt."; feedback.style.color = "#2ecc71"; document.getElementById('btn-quiz-success').classList.remove('hidden');
+            
+            // --- ZUSATZPUNKTE VERGEBEN ---
+            state.time += 5;
+            state.budget += 5;
+            state.mood += 5;
+            updateKPIs();
+            // -----------------------------
+
         } else {
             feedback.innerText = "Fehlerhaft."; feedback.style.color = "#e74c3c"; document.getElementById('btn-quiz-success').classList.add('hidden');
         }
@@ -1089,19 +1980,41 @@ In diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen l
     function safeReload() { if(confirm("Neustart?")) location.reload(); }
     function openImpressum() { document.getElementById('overlay-impressum').classList.remove('hidden'); }
     function closeImpressum() { document.getElementById('overlay-impressum').classList.add('hidden'); }
+    
+    // ZERTIFIKAT-LOGIK MIT ABSTUFUNGEN
     function showCertificate() { 
         const totalScore = state.budget + state.mood; 
         const playerNameInput = document.getElementById('player-name').value;
         const displayName = (playerNameInput && playerNameInput.trim() !== "") ? playerNameInput : "Teilnehmer/in";
         document.getElementById('cert-player-name').innerText = displayName;
-        let title = "Teilnahmebescheinigung"; let text = "Sie haben teilgenommen."; let color = "#e67e22";
-        if (totalScore >= 160) { title = "Master-Zertifikat (DQR 7)"; text = "Hervorragende strategische Leistung!"; color = "#2ecc71"; } 
-        document.getElementById('cert-grade-title').innerText = title; document.getElementById('cert-grade-title').style.color = color;
-        document.getElementById('cert-grade-text').innerHTML = text; document.getElementById('overlay-cert').classList.remove('hidden'); 
+        
+        let title, text, color;
+
+        if (totalScore >= 170) {
+            title = "Exzellenz-Zertifikat (Visionär)";
+            text = "Eine überragende Leistung. Sie haben die PlanA GmbH strategisch perfektioniert!";
+            color = "#9b59b6"; // Lila
+        } else if (totalScore >= 140) {
+            title = "Master-Zertifikat (DQR 7)";
+            text = "Hervorragende strategische Leistung! Sie haben die meisten Hürden gemeistert.";
+            color = "#2ecc71"; // Grün
+        } else if (totalScore >= 100) {
+            title = "Kompetenz-Zertifikat";
+            text = "Solide Leistung. Sie haben das Planspiel erfolgreich abgeschlossen.";
+            color = "#3498db"; // Blau
+        } else {
+            title = "Teilnahmebescheinigung";
+            text = "Sie haben das Szenario durchlaufen. Es besteht noch Potenzial zur Optimierung.";
+            color = "#e67e22"; // Orange
+        }
+
+        document.getElementById('cert-grade-title').innerText = title; 
+        document.getElementById('cert-grade-title').style.color = color;
+        document.getElementById('cert-grade-text').innerHTML = text; 
+        document.getElementById('overlay-cert').classList.remove('hidden'); 
     }
 
     renderScene('intro');
 </script>
 </body>
-
 </html>
