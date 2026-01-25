@@ -7,7 +7,6 @@
     <style>
         /* --- GRUNDLEGENDES DESIGN --- */
         *, *::before, *::after { box-sizing: border-box; }
-
         :root {
             --bg-color: #2b2e4a;
             --text-color: #ffffff;
@@ -18,7 +17,6 @@
             --error: #c0392b;
             --ai-color: #9b59b6; 
         }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -43,7 +41,6 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.6);
             z-index: 50;
         }
-
         .header-left { display: flex; align-items: center; }
         .bc-logo { height: 55px; background: rgba(255,255,255,0.95); padding: 5px; border-radius: 4px; margin-right: 20px; }
         .title-group { display: flex; flex-direction: column; }
@@ -75,7 +72,6 @@
             font-size: 0.7rem; color: #aaa; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 8px; line-height: 1.3;
             background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; width: 100%; border-left: 2px solid #888;
         }
-
         .undo-btn {
             background: #444; border: 1px solid #666; color: white; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;
             display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; width: 100%; margin-bottom: 10px;
@@ -195,6 +191,7 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px);
         }
         .hidden { display: none !important; }
+
         .overlay-card {
             background: #222; border: 2px solid var(--accent); padding: 40px; border-radius: 12px;
             max-width: 1000px; width: 95%; text-align: center; box-shadow: 0 0 30px rgba(232, 69, 69, 0.2);
@@ -215,6 +212,7 @@
 
         .certificate-container { border: 10px solid var(--gold); padding: 40px; background: #fff; color: #222; width: 80%; max-width: 700px; text-align: center; box-shadow: 0 0 50px rgba(241, 196, 15, 0.5); animation: popIn 0.8s ease-out; }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
         .watermark { position: fixed; bottom: 20px; right: 30px; opacity: 0.1; font-size: 3rem; font-weight: bold; pointer-events: none; color: white; z-index: 0; }
         
         /* SKIP BUTTON STYLE */
@@ -228,11 +226,25 @@
 
         /* KREUZWORTRÄTSEL STYLES */
         .crossword-grid { display: grid; gap: 2px; justify-content: center; margin: 20px auto; background: #444; padding: 5px; border-radius: 4px; }
-        .cw-cell { width: 35px; height: 35px; background: #222; border: none; color: white; text-align: center; font-size: 1.2rem; text-transform: uppercase; font-weight: bold; }
+        .cw-cell { 
+            width: 35px; height: 35px; background: #222; border: none; color: white; text-align: center; font-size: 1.2rem; text-transform: uppercase; font-weight: bold; 
+            position: relative; /* WICHTIG FÜR ZAHLEN */
+        }
         .cw-cell:focus { background: #444; outline: 1px solid var(--gold); }
         .cw-cell.black { background: #000; pointer-events: none; }
+        
+        /* Die kleine Zahl im Kreuzworträtsel */
+        .cw-start-num {
+            position: absolute;
+            top: 1px; left: 2px;
+            font-size: 0.55rem;
+            color: #f1c40f; 
+            line-height: 1;
+            z-index: 5;
+            pointer-events: none;
+        }
         .cw-clues { text-align: left; font-size: 0.9rem; margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
+        
         /* NEU: Style für Koordinaten */
         .cw-coord {
             background: #2c3e50; 
@@ -245,6 +257,43 @@
             justify-content: center;
             pointer-events: none; /* Keine Interaktion */
         }
+
+        /* BUCHSTABENSALAT STYLES */
+        .search-grid { 
+            display: grid; 
+            gap: 2px; 
+            justify-content: center; 
+            margin: 20px auto; 
+            background: #222; 
+            padding: 5px; 
+            border-radius: 4px;
+        }
+        .search-cell { 
+            width: 35px; 
+            height: 35px; 
+            background: #444; 
+            color: #ddd; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            cursor: pointer; 
+            user-select: none;
+            border-radius: 2px;
+            transition: background 0.1s;
+        }
+        .search-cell:hover { background: #555; }
+        .search-cell.selected { background: #f1c40f; color: #2c3e50; transform: scale(0.95); } /* Gelb bei Auswahl */
+        .search-cell.solved { background: #2ecc71 !important; color: white !important; cursor: default; } /* Grün bei Erfolg */
+        .search-cell.wrong { background: #e74c3c !important; animation: shake 0.3s; } /* Rot bei Fehler */
+        
+        .search-word-list {
+            display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; color: #aaa; font-size: 0.9rem;
+        }
+        .search-word-item {
+            background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 10px; border: 1px solid #555;
+        }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } 100% { transform: translateX(0); } }
 
         /* DRUCK-STYLES */
         @media print {
@@ -271,7 +320,6 @@
     </style>
 </head>
 <body>
-
 <div class="watermark">© Bildungscampus Leipzig</div>
 
 <header>
@@ -282,7 +330,6 @@
             <div class="sub-title"><b>Planspiel - Unternehmenssimulation (DQR 7)</b></div>
         </div>
     </div>
-
     <div class="kpi-container">
         <div class="kpi-box">
             <span class="kpi-label">⏳ Zeitfenster</span>
@@ -296,6 +343,7 @@
             <span class="kpi-label">⚖️ Recht/Team</span>
             <div class="progress-bg"><div id="bar-mood" class="progress-fill" style="width: 100%; background: #f1c40f;"></div></div>
             <span class="impressum-link" onclick="openImpressum()">Impressum</span>
+            <span onclick="adminCheat()" style="opacity: 0.2; cursor: pointer; font-size: 0.8rem; margin-left: 5px; display: block;" title="Skip/Cheat">O</span>
         </div>
     </div>
 </header>
@@ -304,12 +352,9 @@
     <div class="char-column">
         <div class="privacy-hint-sidebar">
             <span style="font-size: 1.2rem;">🔒</span> 
-            <div>Datenschutz-Hinweis:<br>Die Datenverarbeitung erfolgt ausschließlich lokal in Ihrem Browser.
-Es werden keine Daten auf dem Server gespeichert. </div>
+            <div>Datenschutz-Hinweis:<br>Die Datenverarbeitung erfolgt ausschließlich lokal in Ihrem Browser.Es werden keine Daten auf dem Server gespeichert. </div>
         </div>
-
         <button class="undo-btn" id="undo-btn" onclick="undoMove()" disabled>↩ Schritt zurück</button>
-
         <div class="name-input-group" id="name-input-group">
             <label class="name-label">Bitte geben Sie für Ihre Arbeit einen Namen an:</label>
             <input type="text" id="player-name" class="name-input" placeholder="Ihr Name...">
@@ -331,7 +376,6 @@ Es werden keine Daten auf dem Server gespeichert. </div>
             <div id="scene-text" class="dialog-content"></div>
             <div class="side-info" id="scene-info"></div>
         </div>
-
         <div class="actions-container" id="actions"></div>
     </div>
 </div>
@@ -344,15 +388,19 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         <h3 id="ai-topic" style="color: white; margin: 0; font-weight: 300;"></h3>
         <p id="ai-intro" style="color: #aaa; font-size: 0.95rem; margin: 10px 0 20px; text-align: left; line-height:1.5;">
             </p>
+
         <textarea id="ai-input" class="ai-input-area" placeholder="Formulieren Sie Ihre Strategie auf Master-Niveau..."></textarea>
+        
         <div style="display:flex; gap:15px; justify-content:center;">
             <button class="choice-btn" style="background:var(--ai-color);" onclick="analyzeAIAnswer()">🤖 Konzept einreichen</button>
             <button class="choice-btn" style="background:#444;" onclick="copyAiText()">📋 Text kopieren</button>
         </div>
+
         <div id="ai-result-box" class="ai-feedback-box">
             <strong id="ai-verdict" style="font-size: 1.2rem;"></strong>
             <div class="ai-score-bar"><div id="ai-score-fill" class="ai-score-fill"></div></div>
             <p id="ai-feedback-text" style="color: #ddd; margin-top:10px;"></p>
+            
             <div style="display:flex; gap:10px; margin-top:20px; justify-content:center; flex-wrap:wrap;">
                 <button id="btn-ai-continue" class="choice-btn hidden" style="background: #2ecc71;" onclick="closeAiOverlay()">Weiter</button>
                 
@@ -369,13 +417,15 @@ Es werden keine Daten auf dem Server gespeichert. </div>
 <div id="overlay-quiz" class="overlay hidden">
     <div class="overlay-card">
         <button class="debug-skip-btn" onclick="debugSkip()" title="Aufgabe überspringen (Debug)">⏭️</button>
-
         <h2 style="color: var(--gold);">Rechtliche Prüfung</h2>
         <h3 id="quiz-topic" style="color: white; margin: 0; font-weight: 300;"></h3>
         <p id="quiz-intro" style="color: #aaa; font-size: 0.95rem; margin: 10px 0 20px; text-align: left; line-height:1.5;"></p>
+        
         <div id="quiz-law-text" class="law-text hidden"></div>
         <div id="quiz-questions-container"></div>
+        
         <div id="quiz-feedback" style="margin:10px; font-weight:bold; font-size:1.2rem;"></div>
+
         <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
             <button class="choice-btn" style="max-width:300px;" onclick="checkQuiz()">Lösung prüfen</button>
             <button id="btn-quiz-print" class="choice-btn" style="background: #34495e; border: 1px solid #7f8c8d;" onclick="printOverlay()">🖨️ Aufgaben drucken</button>
@@ -394,11 +444,7 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         <div id="crossword-container" class="crossword-grid">
             </div>
         <div class="cw-clues">
-            <div>1. Waagerecht: Langfristiger Berater (8 B.)</div>
-            <div>2. Senkrecht: Prozessbegleitung (8 B.)</div>
-            <div>3. Waagerecht: Angestrebtes Ergebnis (5 B.)</div>
-        </div>
-
+            </div>
         <div id="cw-feedback" style="margin-top:15px; font-weight:bold; height:20px;"></div>
 
         <div style="display:flex; gap:15px; justify-content:center; margin-top:20px;">
@@ -410,6 +456,27 @@ Es werden keine Daten auf dem Server gespeichert. </div>
     </div>
 </div>
 
+<div id="overlay-search" class="overlay hidden">
+    <div class="overlay-card">
+        <button class="debug-skip-btn" onclick="debugSkip()" title="Aufgabe überspringen (Debug)">⏭️</button>
+        <h2 style="color: #e67e22;">Buchstabensalat: Ablage</h2>
+        <p style="color: #aaa;">Helfen Sie Franziska Immerda, die durcheinandergeratenen Begriffe zu finden.</p>
+        
+        <div id="search-container" class="search-grid"></div>
+        
+        <div id="search-words-display" class="search-word-list"></div>
+
+        <div id="search-feedback" style="margin-top:15px; font-weight:bold; height:20px;"></div>
+
+        <div style="display:flex; gap:15px; justify-content:center; margin-top:20px;">
+            <button class="choice-btn" style="background:#e67e22;" onclick="checkSearchPuzzle()">Prüfen</button>
+            <button class="choice-btn" style="background:#f39c12;" onclick="solveSearchPuzzle()">💡 Lösung anzeigen</button>
+            <button class="choice-btn" style="background:#c0392b;" onclick="giveUp()">🏳️ Ich gebe auf</button>
+        </div>
+        <button id="btn-search-success" class="choice-btn hidden" style="background: #2ecc71; margin-top:20px;" onclick="closeSearchOverlay()">Gefunden! Weiter.</button>
+    </div>
+</div>
+
 <div id="overlay-impressum" class="overlay hidden">
     <div class="overlay-card" style="max-width: 800px;">
         <h2 style="color: var(--gold);">Impressum</h2>
@@ -418,13 +485,11 @@ Es werden keine Daten auf dem Server gespeichert. </div>
             <p>Bildungscampus Leipzig<br>Hebelstraße 27<br>04177 Leipzig</p>
             <h3>Vertreten durch</h3>
             <p>Geschäftsleitung: Boris Dahms</p>
-
             <h3>Kontakt</h3>
             <p>
                 Telefon: +49 (0) 123 44 55 66<br>
                 E-Mail: mail@bildungscampus-leipzig.de
             </p>
-
             <h3>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h3>
             <p>
                 Boris Dahms<br>
@@ -441,7 +506,6 @@ Es werden keine Daten auf dem Server gespeichert. </div>
                 Alle innerhalb des Angebotes genannten und ggf. durch Dritte geschützten Marken- und Warenzeichen unterliegen uneingeschränkt den Bestimmungen des jeweils gültigen Kennzeichenrechts und den Besitzrechten der jeweiligen eingetragenen Eigentümer. Allein aufgrund der bloßen Nennung ist nicht der Schluss zu ziehen, dass Markenzeichen nicht durch Rechte Dritter geschützt sind! Das Copyright für veröffentlichte, vom Autor selbst erstellte Objekte bleibt allein beim Autor der Seiten. Eine Vervielfältigung oder Verwendung solcher Grafiken, Tondokumente, Videosequenzen und Texte in anderen elektronischen oder gedruckten Publikationen ist ohne ausdrückliche Zustimmung des Autors nicht gestattet.<br><br>
                 Leipzig 2025 Boris Dahms
             </div>
-
             <button class="choice-btn" onclick="closeImpressum()">Schließen</button>
         </div>
     </div>
@@ -452,14 +516,11 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         <h1 style="color:var(--gold); margin-bottom:10px;">Zertifikat</h1>
         <h3 style="margin-top:0; color:#555;">Bildungscampus Leipzig</h3>
         <hr style="border:1px solid #ddd; margin: 20px 0;">
-
         <p>Hiermit wird bestätigt, dass</p>
         <h2 id="cert-player-name" style="font-size: 2rem; margin: 10px 0;"></h2>
         <p>das Planspiel "PlanA GmbH" erfolgreich absolviert hat.</p>
-
         <h2 id="cert-grade-title" style="margin-top: 30px;"></h2>
         <p id="cert-grade-text" style="font-size: 1.1rem; color: #666;"></p>
-
         <div style="margin-top: 40px; display:flex; gap:10px; justify-content:center;">
              <button class="choice-btn" style="background:#34495e; color:white; width:auto;" onclick="window.print()">🖨️ Ausdrucken</button>
              <button class="choice-btn" style="background:#e74c3c; color:white; width:auto;" onclick="location.reload()">🔄 Neustart</button>
@@ -475,7 +536,6 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         chef: 'chef.png',
         verwaltung: 'verwaltung.png',
         azubis: 'azubis.png',
-        // klara wurde entfernt, um das neue Emoji-Fallback zu erzwingen
         alex: 'alex.png',
         claudia: 'claudia.png',
         viola: 'viola.png',
@@ -490,7 +550,8 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         'verwaltung': "<b>Franziska Immerda (Verwaltung)</b><br>Zuvorkommend, hilfsbereit, aber bestimmt. Behält das Große und Ganze im Blick.<br><i>\"Ordnung muss sein.\"</i>",
         'sascha': "<b>Sascha AEVO (Verantwortlicher Ausbilder)</b><br>Pflichtbewusst, modern und wertschätzend. Offen für Neuerungen.<br><i>\"Lass uns das gemeinsam angehen.\"</i>",
         'klara': "<b>Dr. Klara Kompetenz (Personalleitung)</b><br>Höflich, wertschätzend und motivierend. Übt Kritik nur an der Sache.<br><i>\"Wir finden eine pädagogische Lösung.\"</i>",
-        'alex': "<b>Alex Engagiert (Betriebsrat)</b><br>Achtet auf Bedürfnisse der Mitarbeitenden. Wird bei Verstößen sehr deutlich.<br><i>\"Haben wir an die Kollegen gedacht?\"</i>",
+        'alex': "<b>Alex Engagiert (Betriebsrat)</b><br>Achtet auf Bedürfnisse der Mitarbeitenden. Wird bei Verstößen sehr deutlich.<br><i>\"Haben wir an die Kollegen gedacht?\"</i>", 
+        'Boris': "<b>Boris Gemini (IT-Abteilung)</b><br>Ist begeistert von der Arbeit mit künstlicher Intelligenz und mischt sich oft ungefragt in andere Gespräche ein<br><i>\"Warum machen wir das nicht mit KI???\"</i>",
         'claudia': "<b>Claudia Papierkram (Verwaltung/KI)</b><br>Effizient, freundlich und pedantisch. Liebt KI und Rätsel.<br><i>\"Effizienz durch Struktur.\"</i>",
         'viola': "<b>Viola Communikationis (Inklusion)</b><br>Fachpraktikerausbilderin. Spricht langsam und deutlich.<br><i>\"Wir müssen barrierefrei denken.\"</i>",
         'erik': "<b>Erik Handycap (Sozialarbeit)</b><br>Bildet gerne lange, ausschweifende Schachtelsätze.<br><i>\"In Anbetracht der Umstände, die...\"</i>",
@@ -637,8 +698,23 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         },
         "solutionHint": "Feedback ist prozessorientiert/formativ/individuell (Lernbegleitung). Evaluation ist ergebnisorientiert/summativ/systematisch (Bewertung/Erfolgskontrolle).",
         "gradingPrompt": "Du bist Sebastian Domini, ein pragmatischer Meister. Bewerte die Erklärung. Erwarte Begriffe wie 'Prozess vs. Ergebnis' oder 'formativ vs. summativ'."
+    },
+    "Boris-Gemini_befragen_config": {
+        "title": "<span style='color:white;'>Chat:</span> Fragen Sie Boris Gemini",
+        "intro": "<b>Boris Gemini (IT/KI):</b> 'Hallo! Ich bin Ihre Schnittstelle zur KI. Ich kann Ihnen zwar keine Entscheidungen abnehmen, aber ich kann Begriffe erklären, Ideen generieren oder Emails vorformulieren. Was kann ich für Sie tun?'",
+        "solutionHint": "Stellen Sie eine offene Frage.",
+        "keywords": [
+            "?"
+        ],
+        "thresholds": {
+            "30": "Ich habe Sie nicht verstanden.",
+            "70": "Verstanden.",
+            "100": "Hier ist meine Antwort:"
+        },
+        "gradingPrompt": "Du bist Boris Gemini, ein freundlicher und hilfsbereiter KI-Experte in einem Planspiel. Der User stellt dir eine Frage oder gibt dir eine Aufgabe. ANTWORTE direkt und hilfreich auf diese Frage. WICHTIG: Schreibe am ganz am Ende deiner Antwort in eine neue Zeile: 'PUNKTE: 100'. Damit zeigst du dem System, dass die Anfrage erfolgreich bearbeitet wurde."
     }
 };
+
     let currentAiId = null;
 
     // --- QUIZ DATEN (Rechtliche Absicherung & EXPERTENKLAUSUR) ---
@@ -891,6 +967,7 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         ]
     }
 };
+
     let currentQuizId = null;
 
     // --- STORY SCENES ---
@@ -947,15 +1024,66 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         "charName": "Sascha AEVO",
         "options": [
             {
-                "text": "Zum Termin mit Dr. Kompetenz",
-                "next": "klara_audit",
+                "text": "Zu Franziska Immerda (Ablage sortieren)",
+                "next": "franziska_search_intro",
                 "costTime": 5
+            }
+        ]
+    },
+    "franziska_search_intro": {
+        "title": "Chaos in der Ablage",
+        "text": "<b>Franziska Immerda (Verwaltung):</b> 'Puh, das war knapp. Aber durch den ganzen Trubel sind meine Akten völlig durcheinander geraten. Ich finde nichts mehr wieder! Könnten Sie mir bitte helfen, die wichtigsten Begriffe in diesem Stapel zu finden? Ordnung ist das halbe Leben!'",
+        "char": "verwaltung",
+        "charName": "Franziska Immerda",
+        "options": [
+            {
+                "text": "Beim Suchen helfen",
+                "next": "franziska_search_puzzle",
+                "costTime": 10
+            }
+        ]
+    },
+    "franziska_search_puzzle": {
+        "special": "search",
+        "searchId": "franziska_chaos",
+        "next": "franziska_search_done"
+    },
+    "franziska_search_done": {
+        "title": "Ordnung wiederhergestellt",
+        "text": "<b>Franziska Immerda (Verwaltung):</b> 'Vielen Dank! Jetzt ist alles wieder dort, wo es hingehört. Sie haben wirklich ein Auge für Details.<br><br>Übrigens, Dr. Kompetenz hat schon nach Ihnen gefragt. Es geht um etwas Digitales.' Vielleicht bereiten Sie sich in Ihrem Büro zunächst vor?",
+        "char": "verwaltung",
+        "charName": "Franziska Immerda",
+        "options": [
+            {
+                "text": "Zu Dr. Klara Kompetenz gehen",
+                "next": "klara_audit",
+                "costTime": 3
+            },
+            {
+                "text": "Erst ins Büro gehen",
+                "next": "Bürozeit_1"
+            }
+        ]
+    },
+    "Bürozeit_1": {
+        "title": "Bürozeit 1",
+        "text": "Sie haben verschiedene Anliegen der Mitarbeitenden und der Unternehmensleitung abgearbeitet. Sie haben jetzt Zeit, weitere Aufgaben anzugehen, die Ihnen schon länger am Herzen liegen oder Ihr berufspädagogisches und betriebswirtschaftliches Wissen zu vertiefen.\n\nWählen Sie dafür eine Aufgabe aus",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "Stufenmodell nach Kotter",
+                "next": "Wissen_vertiefen_1"
+            },
+            {
+                "text": "Boris Gemini befragen",
+                "next": "Boris-Gemini_befragen"
             }
         ]
     },
     "klara_audit": {
         "title": "<span style='color:white;'>Aufgabe:</span> Digitale Wende",
-        "text": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Guten Tag. Ich freue mich, dass Sie da sind. Sehen Sie, wir expandieren in den SHK-Bereich. Unsere Didaktik ist jedoch... nun ja... antiquiert. Ich erbitte ein Konzept zur <b>digitalen Transformation</b> der Lernaufgaben.'",
+        "text": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Guten Tag. Ich freue mich, dass Sie da sind. Sehen Sie, unser Bildungspartner, die PlanA GmbH expandiert in den Sanitär-, Heizungs- und Klimabereich. Unsere Didaktik ist jedoch... nun ja... antiquiert. Ich erbitte ein Konzept zur <b>digitalen Transformation</b> der Lernaufgaben.'",
         "char": "klara",
         "charName": "Dr. Klara Kompetenz",
         "options": [
@@ -1238,11 +1366,6 @@ Es werden keine Daten auf dem Server gespeichert. </div>
             }
         ]
     },
-    "quiz_viola": {
-        "special": "quiz",
-        "quizId": "viola_comm_quiz",
-        "next": "viola_thanks"
-    },
     "viola_thanks": {
         "title": "Barrierefrei kommunizieren",
         "text": "<b>Viola Communikationis (Inklusion):</b> 'Vielen Dank. Das gibt mir Sicherheit. Besonders das aktive Zuhören ist wichtig. Ich werde das sofort im nächsten Meeting anwenden.<br><br>Erik wartet übrigens im Büro nebenan.'",
@@ -1256,6 +1379,11 @@ Es werden keine Daten auf dem Server gespeichert. </div>
                 "costTime": 5
             }
         ]
+    },
+    "quiz_viola": {
+        "special": "quiz",
+        "quizId": "viola_comm_quiz",
+        "next": "viola_thanks"
     },
     "erik_intro": {
         "title": "Hilfe zur Selbsthilfe",
@@ -1355,6 +1483,27 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         "char": "chef",
         "charName": "Dr. Peter Planer",
         "options": []
+    },
+    "Wissen_vertiefen_1": {
+        "title": "8-Stufenmodell nach Kotter",
+        "text": "Das 8-Stufen-Modell eines Veränderungsprozesses (englisch 8-Step Process for Leading Change) ist eines der populärsten Change-Management-Modelle. Es wurde 1996 von John P. Kotter vor dem Hintergrund eines durch VUCA geprägten, globalisierten Marktumfeldes entwickelt.",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "Zurück ins Büro",
+                "next": "Bürozeit_1",
+                "costTime": 5,
+                "costBudget": 5
+            }
+        ]
+    },
+    "Boris-Gemini_befragen": {
+        "char": "Boris",
+        "charName": "Boris Gemini (KI)",
+        "special": "ai_question",
+        "aiId": "Boris-Gemini_befragen_config",
+        "next": "Bürozeit_1"
     }
 };
 
@@ -1406,6 +1555,7 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         charExtraDiv.style.backdropFilter = "blur(5px)";
 
         const nameInputGroup = document.getElementById('name-input-group');
+
         if (sceneKey === 'intro') {
             nameInputGroup.style.display = 'block';
             if (scene.leftContent) {
@@ -1418,9 +1568,9 @@ Es werden keine Daten auf dem Server gespeichert. </div>
             }
         } else {
             nameInputGroup.style.display = 'none';
-            if (CHAR_DESCRIPTIONS[scene.char]) {
-                 charExtraDiv.style.display = "flex"; 
-                 charExtraDiv.innerHTML = `<div class="role-text">${CHAR_DESCRIPTIONS[scene.char]}</div>`;
+            if (CHAR_DESCRIPTIONS[scene.char]) { 
+                charExtraDiv.style.display = "flex";  
+                charExtraDiv.innerHTML = `<div class="role-text">${CHAR_DESCRIPTIONS[scene.char]}</div>`;
             }
         }
 
@@ -1432,6 +1582,8 @@ Es werden keine Daten auf dem Server gespeichert. </div>
             openQuizOverlay(scene.quizId, scene.next);
         } else if (scene.special === 'crossword') {
             openCrosswordOverlay(scene.next, scene.cwId);
+        } else if (scene.special === 'search') {
+            openSearchOverlay(scene.next, scene.searchId);
         } else if (scene.special === 'calc_score') {
             // Wait for user interaction
         } else if (scene.options && scene.options.length === 0 && sceneKey !== 'intro' && sceneKey !== 'giveup_4_fired') { 
@@ -1443,6 +1595,7 @@ Es werden keine Daten auf dem Server gespeichert. </div>
                 let btn = document.createElement('button');
                 btn.className = 'choice-btn';
                 if(opt.specialClass) btn.classList.add(opt.specialClass);
+
                 let costs = [];
                 if(opt.costTime) costs.push(`⏳ -${opt.costTime}`);
                 if(opt.costBudget) costs.push(`💰 -${opt.costBudget}`);
@@ -1474,8 +1627,11 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         state = historyStack.pop();
         renderScene(state.currentScene);
     }
+
     function updateUndoBtn() { document.getElementById('undo-btn').disabled = historyStack.length === 0; }
+
     function updateKPIs() { setBar('bar-time', state.time); setBar('bar-budget', state.budget); setBar('bar-mood', state.mood); }
+
     function setBar(id, val) {
         val = Math.max(0, Math.min(100, val));
         const el = document.getElementById(id); el.style.width = val + '%';
@@ -1487,6 +1643,7 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         document.getElementById('overlay-ai').classList.add('hidden');
         document.getElementById('overlay-quiz').classList.add('hidden');
         document.getElementById('overlay-crossword').classList.add('hidden');
+        document.getElementById('overlay-search').classList.add('hidden');
         
         state.giveUpCount = (state.giveUpCount || 0) + 1;
         
@@ -1511,13 +1668,46 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         }
     }
 
-    // --- DEBUG SKIP ---
+    // --- DEBUG SKIP & ADMIN CHEAT ---
     function debugSkip() {
+        // Diese Funktion wird in den Overlays genutzt
         document.getElementById('overlay-ai').classList.add('hidden');
         document.getElementById('overlay-quiz').classList.add('hidden');
         document.getElementById('overlay-crossword').classList.add('hidden');
+        document.getElementById('overlay-search').classList.add('hidden');
         if(nextSceneStored) renderScene(nextSceneStored);
         else renderScene('intro'); 
+    }
+
+    function adminCheat() {
+        // 1. Ressourcen auffüllen (Unsterblichkeit)
+        state.time = 100;
+        state.budget = 100;
+        state.mood = 100;
+        updateKPIs();
+        // 2. Prüfen, ob ein Overlay offen ist
+        const overlays = ['overlay-ai', 'overlay-quiz', 'overlay-crossword', 'overlay-search', 'overlay-cert'];
+        let overlayOpen = false;
+        overlays.forEach(id => {
+            if (!document.getElementById(id).classList.contains('hidden')) {
+                overlayOpen = true;
+                // Overlay schließen und weiter
+                document.getElementById(id).classList.add('hidden');
+                if(nextSceneStored) renderScene(nextSceneStored);
+            }
+        });
+        if (overlayOpen) return;
+        // 3. Wenn kein Overlay: Erste Option der aktuellen Szene wählen
+        const current = scenes[state.currentScene];
+        if (current && current.options && current.options.length > 0) {
+            const nextKey = current.options[0].next;
+            if (nextKey) renderScene(nextKey);
+        } else if (current && current.specialExec) { 
+            // Sonderfall Zertifikat oder ähnliches 
+            window[current.specialExec]();
+        } else {
+            alert("Ende der Fahnenstange oder keine automatische Option verfügbar.");
+        }
     }
 
   // --- NEUE DYNAMISCHE KREUZWORTRÄTSEL LOGIK ---
@@ -1680,6 +1870,7 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         ]
     }
 };
+
     let currentCwId = null;
 
     function openCrosswordOverlay(next, cwId = 'default_cw') {
@@ -1692,9 +1883,16 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         
         // Grid-Größe automatisch ermitteln
         let maxX = 0; let maxY = 0;
+        // Speichere Startpositionen für die kleinen Zahlen (wie im Admin Tool)
+        let startNumbers = {}; 
+        let wordIndex = 1;
         data.words.forEach(w => {
             if(w.dir === 'h') { maxX = Math.max(maxX, w.x + w.word.length); maxY = Math.max(maxY, w.y + 1); }
             else { maxX = Math.max(maxX, w.x + 1); maxY = Math.max(maxY, w.y + w.word.length); }
+            // Startnummer speichern
+            if(!startNumbers[w.y]) startNumbers[w.y] = {};
+            if(!startNumbers[w.y][w.x]) startNumbers[w.y][w.x] = [];
+            startNumbers[w.y][w.x].push(wordIndex++);
         });
         
         // Grid aufbauen: +1 Spalte (35px) für Y-Achse
@@ -1708,7 +1906,6 @@ Es werden keine Daten auf dem Server gespeichert. </div>
                 grid[y][x] = { char: null, isInput: false };
             }
         }
-
         // Wörter ins Grid eintragen
         data.words.forEach(w => {
             for(let i=0; i<w.word.length; i++) {
@@ -1727,19 +1924,27 @@ Es werden keine Daten auf dem Server gespeichert. </div>
                 if (x === -1 && y === -1) {
                     html += `<div class="cw-cell cw-coord">#</div>`;
                 }
-                // Fall 2: Kopfzeile (X-Achse)
+                // Fall 2: Kopfzeile (X + 1)
                 else if (y === -1) {
-                    html += `<div class="cw-cell cw-coord">${x}</div>`;
+                    html += `<div class="cw-cell cw-coord">${x+1}</div>`;
                 }
-                // Fall 3: Linke Spalte (Y-Achse)
+                // Fall 3: Linke Spalte (Y + 1)
                 else if (x === -1) {
-                    html += `<div class="cw-cell cw-coord">${y}</div>`;
+                    html += `<div class="cw-cell cw-coord">${y+1}</div>`;
                 }
                 // Fall 4: Das eigentliche Rätselfeld
                 else {
                     const cell = grid[y][x];
+                    let cellContent = "";
+                    
+                    // Kleine Zahl oben links?
+                    if(startNumbers[y] && startNumbers[y][x]) {
+                        cellContent += `<span class="cw-start-num">${startNumbers[y][x].join(',')}</span>`;
+                    }
+
                     if(cell.isInput) {
-                        html += `<input class="cw-cell" type="text" maxlength="1" data-char="${cell.char}" data-x="${x}" data-y="${y}">`;
+                        cellContent += `<input class="cw-cell" type="text" maxlength="1" data-char="${cell.char}" data-x="${x}" data-y="${y}" style="background:transparent; border:none; width:100%; height:100%; text-align:center; font-weight:bold; color:white; font-size:1.2rem; text-transform:uppercase;">`;
+                        html += `<div class="cw-cell" style="padding:0;">${cellContent}</div>`;
                     } else {
                         html += `<div class="cw-cell black"></div>`;
                     }
@@ -1748,12 +1953,12 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         }
         container.innerHTML = html;
 
-        // Hinweise anzeigen
+        // Hinweise anzeigen (mit Nummern)
         const cluesBox = document.querySelector('.cw-clues');
         cluesBox.innerHTML = "";
         data.words.forEach((w, index) => {
             let label = (w.dir === 'h') ? "Waagerecht" : "Senkrecht";
-            cluesBox.innerHTML += `<div>${index+1}. ${label}: ${w.clu}</div>`;
+            cluesBox.innerHTML += `<div><b>${index+1}. (${label}):</b> ${w.clu}</div>`;
         });
 
         document.getElementById('overlay-crossword').classList.remove('hidden');
@@ -1765,11 +1970,12 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         const inputs = document.querySelectorAll('#crossword-container input');
         let allCorrect = true;
         inputs.forEach(input => {
+            // Hinweis: input.parentElement ist das div.cw-cell
             if (!input.value || input.value.toUpperCase() !== input.dataset.char) {
-                input.style.backgroundColor = "#e74c3c";
+                input.parentElement.style.backgroundColor = "#e74c3c";
                 allCorrect = false;
             } else {
-                input.style.backgroundColor = "#2ecc71";
+                input.parentElement.style.backgroundColor = "#2ecc71";
             }
         });
         
@@ -1799,6 +2005,526 @@ Es werden keine Daten auf dem Server gespeichert. </div>
     
     function closeCrosswordOverlay() {
         document.getElementById('overlay-crossword').classList.add('hidden');
+        renderScene(nextSceneStored);
+    }
+
+    // --- BUCHSTABENSALAT DATEN ---
+    let searchPuzzles = {
+    "default_search": {
+        "words": [
+            "TEST",
+            "SALAT"
+        ],
+        "gridSize": 5,
+        "grid": [
+            [
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "O",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "L",
+                    "isSalad": true
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                }
+            ],
+            [
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                }
+            ]
+        ]
+    },
+    "franziska_chaos": {
+        "words": [
+            "ORDNUNG",
+            "AKTE",
+            "FRIST",
+            "RECHT",
+            "BUERO"
+        ],
+        "gridSize": 8,
+        "grid": [
+            [
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "C",
+                    "isSalad": false
+                },
+                {
+                    "char": "H",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "L",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "O",
+                    "isSalad": true
+                },
+                {
+                    "char": "S",
+                    "isSalad": true
+                },
+                {
+                    "char": "Q",
+                    "isSalad": true
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "K",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": true
+                },
+                {
+                    "char": "Z",
+                    "isSalad": true
+                },
+                {
+                    "char": "U",
+                    "isSalad": true
+                },
+                {
+                    "char": "I",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "N",
+                    "isSalad": true
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "J",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "G",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "D",
+                    "isSalad": true
+                },
+                {
+                    "char": "S",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "O",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "C",
+                    "isSalad": true
+                },
+                {
+                    "char": "V",
+                    "isSalad": true
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "N",
+                    "isSalad": true
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "L",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "B",
+                    "isSalad": false
+                },
+                {
+                    "char": "U",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "J",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "D",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "U",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "G",
+                    "isSalad": false
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                }
+            ]
+        ]
+    }
+};
+
+    let currentSearchId = null;
+
+    // --- BUCHSTABENSALAT LOGIK ---
+    
+    function openSearchOverlay(next, searchId = 'default_search') {
+        nextSceneStored = next;
+        currentSearchId = searchId;
+        const data = searchPuzzles[searchId] || searchPuzzles['default_search'];
+        
+        const container = document.getElementById('search-container');
+        container.innerHTML = "";
+        
+        container.style.gridTemplateColumns = `repeat(${data.gridSize}, 35px)`;
+        
+        const listDiv = document.getElementById('search-words-display');
+        listDiv.innerHTML = "";
+        if(data.words) {
+            data.words.forEach(w => {
+                listDiv.innerHTML += `<div class="search-word-item">${w}</div>`;
+            });
+        }
+        
+        if(data.grid) {
+            data.grid.forEach((row, rIndex) => {
+                row.forEach((cell, cIndex) => {
+                    const div = document.createElement('div');
+                    div.className = 'search-cell';
+                    div.innerText = cell.char;
+                    div.dataset.r = rIndex;
+                    div.dataset.c = cIndex;
+                    
+                    div.onclick = function() {
+                        if(this.classList.contains('solved')) return; 
+                        this.classList.toggle('selected');
+                    };
+                    container.appendChild(div);
+                });
+            });
+        }
+
+        document.getElementById('search-feedback').innerText = "";
+        document.getElementById('btn-search-success').classList.add('hidden');
+        document.getElementById('overlay-search').classList.remove('hidden');
+    }
+
+    function checkSearchPuzzle() {
+        const data = searchPuzzles[currentSearchId] || searchPuzzles['default_search'];
+        const cells = document.querySelectorAll('.search-cell');
+        let mistakes = 0;
+        let missing = 0;
+
+        cells.forEach(div => {
+            const r = parseInt(div.dataset.r);
+            const c = parseInt(div.dataset.c);
+            const isSelected = div.classList.contains('selected');
+            
+            const cellData = data.grid[r][c];
+            const isTarget = !cellData.isSalad; 
+
+            if(cellData.isSalad && isSelected) {
+                div.classList.add('wrong');
+                setTimeout(() => div.classList.remove('wrong'), 500); 
+                mistakes++;
+            }
+            else if(isTarget && !isSelected) {
+                missing++;
+            }
+        });
+
+        const feedback = document.getElementById('search-feedback');
+        
+        if(mistakes === 0 && missing === 0) {
+            feedback.innerText = "Hervorragend! Alles gefunden.";
+            feedback.style.color = "#2ecc71";
+            
+            cells.forEach(div => {
+                if(div.classList.contains('selected')) div.classList.add('solved');
+            });
+            
+            document.getElementById('btn-search-success').classList.remove('hidden');
+            
+            state.time += 5; state.budget += 5; updateKPIs();
+        } else {
+            feedback.style.color = "#e74c3c";
+            if(mistakes > 0) feedback.innerText = `${mistakes} falsche Buchstaben markiert!`;
+            else feedback.innerText = "Da fehlen noch Buchstaben!";
+        }
+    }
+
+    // NEUE FUNKTION: Buchstabensalat lösen
+    function solveSearchPuzzle() {
+        const data = searchPuzzles[currentSearchId] || searchPuzzles['default_search'];
+        const cells = document.querySelectorAll('.search-cell');
+        cells.forEach(div => {
+            const r = parseInt(div.dataset.r);
+            const c = parseInt(div.dataset.c);
+            const cellData = data.grid[r][c];
+            // Wenn es KEIN Salat ist (also Teil eines Wortes), dann auswählen
+            if (!cellData.isSalad) {
+                div.classList.add('selected');
+            } else {
+                div.classList.remove('selected'); // Falls falsche ausgewählt waren
+            }
+        });
+        // Prüfung auslösen, damit der grüne Erfolgstext erscheint
+        checkSearchPuzzle();
+    }
+
+    function closeSearchOverlay() {
+        document.getElementById('overlay-search').classList.add('hidden');
         renderScene(nextSceneStored);
     }
 
@@ -1840,6 +2566,8 @@ Es werden keine Daten auf dem Server gespeichert. </div>
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     messages: [
+                        // System Prompt wird mit Grading Prompt angereichert
+                        { role: "system", content: scenario.gradingPrompt },
                         { role: "user", content: userText } 
                     ] 
                 })
@@ -1849,10 +2577,11 @@ Es werden keine Daten auf dem Server gespeichert. </div>
             const data = await response.text(); 
             
             let score = 0;
+            // Der KI wurde gesagt, sie soll PUNKTE: 100 schreiben
             const scoreMatch = data.match(/PUNKTE:\s*(\d+)/i);
             if (scoreMatch && scoreMatch[1]) score = parseInt(scoreMatch[1]); else score = 50; 
-            const cleanText = data.replace(/PUNKTE:\s*\d+(\/100)?/i, "").trim();
 
+            const cleanText = data.replace(/PUNKTE:\s*\d+(\/100)?/i, "").trim();
             displayAiResult(score, cleanText);
 
         } catch (error) {
@@ -1892,10 +2621,10 @@ Es werden keine Daten auf dem Server gespeichert. </div>
 
         setTimeout(() => { fill.style.width = score + "%"; }, 100);
         
-        if(!document.getElementById('ai-feedback-text').innerHTML.includes("Fehler")) {
-             document.getElementById('ai-feedback-text').innerHTML = text;
-        } else {
-             document.getElementById('ai-feedback-text').innerHTML += "<br>" + text;
+        if(!document.getElementById('ai-feedback-text').innerHTML.includes("Fehler")) { 
+            document.getElementById('ai-feedback-text').innerHTML = text;
+        } else { 
+            document.getElementById('ai-feedback-text').innerHTML += "<br>" + text;
         }
 
         btnPrint.classList.remove('hidden');
@@ -1929,11 +2658,13 @@ Es werden keine Daten auf dem Server gespeichert. </div>
     }
 
     function closeAiOverlay() { document.getElementById('overlay-ai').classList.add('hidden'); renderScene(nextSceneStored); }
+
     function resetAiInput() {
         document.getElementById('ai-input').value = "";
         document.getElementById('ai-result-box').style.display = 'none';
         document.getElementById('ai-input').focus();
     }
+
     function copyAiText() { const copyText = document.getElementById("ai-input"); copyText.select(); navigator.clipboard.writeText(copyText.value); alert("Text kopiert!"); }
     
     // DIE NEUE INTELLIGENTE DRUCK-FUNKTION
@@ -1948,7 +2679,6 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         printDiv.style.color = '#000';
         printDiv.style.background = '#fff';
         printDiv.id = 'temp-print-div';
-
         textarea.style.display = 'none';
         textarea.parentNode.insertBefore(printDiv, textarea);
 
@@ -1983,6 +2713,7 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         document.getElementById('quiz-feedback').innerText = ""; document.getElementById('btn-quiz-success').classList.add('hidden');
         document.getElementById('overlay-quiz').classList.remove('hidden');
     }
+
     function checkQuiz() {
         let allCorrect = true;
         currentQuiz.questions.forEach((q, index) => {
@@ -1999,14 +2730,15 @@ Es werden keine Daten auf dem Server gespeichert. </div>
             state.mood += 5;
             updateKPIs();
             // -----------------------------
-
         } else {
             feedback.innerText = "Fehlerhaft."; feedback.style.color = "#e74c3c"; document.getElementById('btn-quiz-success').classList.add('hidden');
         }
     }
     
     function closeQuizOverlay() { document.getElementById('overlay-quiz').classList.add('hidden'); renderScene(nextSceneStored); }
+
     function safeReload() { if(confirm("Neustart?")) location.reload(); }
+
     function openImpressum() { document.getElementById('overlay-impressum').classList.remove('hidden'); }
     function closeImpressum() { document.getElementById('overlay-impressum').classList.add('hidden'); }
     
@@ -2018,10 +2750,9 @@ Es werden keine Daten auf dem Server gespeichert. </div>
         document.getElementById('cert-player-name').innerText = displayName;
         
         let title, text, color;
-
         if (totalScore >= 170) {
             title = "Exzellenz-Zertifikat (Visionär)";
-            text = "Eine überragende Leistung. Sie haben die PlanA GmbH strategisch perfektioniert!";
+            text = "Eine überragende Leistung. Sie haben den Bildungscampus strategisch perfektioniert!";
             color = "#9b59b6"; // Lila
         } else if (totalScore >= 140) {
             title = "Master-Zertifikat (DQR 7)";
@@ -2036,7 +2767,6 @@ Es werden keine Daten auf dem Server gespeichert. </div>
             text = "Sie haben das Szenario durchlaufen. Es besteht noch Potenzial zur Optimierung.";
             color = "#e67e22"; // Orange
         }
-
         document.getElementById('cert-grade-title').innerText = title; 
         document.getElementById('cert-grade-title').style.color = color;
         document.getElementById('cert-grade-text').innerHTML = text; 
