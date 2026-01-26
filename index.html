@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planspiel: PlanA GmbH - Bildungscampus Leipzig</title>
+    <title>Planspiel: Bildungscampus Leipzig - Unternehmenssimulation</title>
     <style>
         /* --- GRUNDLEGENDES DESIGN --- */
         *, *::before, *::after { box-sizing: border-box; }
@@ -36,7 +36,8 @@
             justify-content: space-between;
             align-items: center; 
             border-bottom: 3px solid var(--accent);
-            height: 80px; 
+            height: auto;
+            min-height: 80px;
             flex-shrink: 0;
             box-shadow: 0 5px 20px rgba(0,0,0,0.6);
             z-index: 50;
@@ -115,7 +116,7 @@
         /* SPEZIELLER STYLE FÜR 'IHRE ROLLE' BOX (LINKS) */
         .role-box-left {
             width: 100%;
-            background: #1a1a2e; /* Dunkler Hintergrund wie im Bild */
+            background: #1a1a2e;
             border: 1px solid #444;
             border-radius: 8px;
             padding: 15px;
@@ -123,7 +124,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
         .role-title {
-            color: #f1c40f; /* Gelb */
+            color: #f1c40f;
             font-weight: bold;
             text-transform: uppercase;
             font-size: 0.8rem;
@@ -171,6 +172,48 @@
         }
         button.choice-btn:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 0 #000; }
         
+        /* DYNAMISCHES DASHBOARD (Admin-Tool freundlich) */
+        /* Wenn der Container im Dashboard-Modus ist: 3 Spalten */
+        .actions-container.dashboard-mode {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 Spalten nebeneinander */
+            gap: 15px;
+        }
+        
+        /* Die Buttons darin werden zu hohen Kacheln */
+        .actions-container.dashboard-mode .choice-btn {
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 0.95rem;
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            border: 1px solid #4a69bd;
+        }
+        
+        .actions-container.dashboard-mode .choice-btn:hover {
+            transform: translateY(-3px);
+            border-color: var(--gold);
+        }
+
+        /* Der Exit-Button soll trotzdem breit sein (über alle Spalten) */
+        .actions-container.dashboard-mode .choice-btn.exit-btn {
+            grid-column: 1 / -1; /* Volle Breite */
+            min-height: 50px;    /* Flacher */
+            background: linear-gradient(180deg, #c0392b 0%, #96281b 100%) !important;
+            border: 1px solid #e74c3c !important;
+            flex-direction: row; /* Icon wieder neben Text */
+        }
+
+        /* Handy-Anpassung für das Grid */
+        @media (max-width: 600px) {
+            .actions-container.dashboard-mode {
+                grid-template-columns: 1fr 1fr; /* Auf Handy nur 2 Spalten */
+            }
+        }
+
         /* Start Button (Grün) */
         button.start-btn-green {
             background: linear-gradient(180deg, #27ae60 0%, #219150 100%); border: 1px solid #2ecc71;
@@ -317,6 +360,63 @@
             .char-column { width: 100%; height: auto; margin-bottom: 30px; }
             .actions-container { grid-template-columns: 1fr; }
         }
+
+/* --- NEU: TEAM SIDEBAR (Rechts) --- */
+        .sidebar-overlay {
+            position: fixed; top: 0; right: 0; width: 320px; height: 100%;
+            background: rgba(26, 26, 46, 0.98); /* Dunkelblau, fast undurchsichtig */
+            border-left: 3px solid #e84545; /* Roter Rand passend zum Design */
+            box-shadow: -10px 0 50px rgba(0,0,0,0.8); 
+            z-index: 9999; /* Ganz weit oben */
+            transform: translateX(100%); /* Standardmäßig versteckt (rechts draußen) */
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Sanftes Reinfahren */
+            padding: 25px; overflow-y: auto; backdrop-filter: blur(5px);
+        }
+        .sidebar-overlay.open { transform: translateX(0); } /* Klasse zum Einblenden */
+        
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #444; padding-bottom: 10px; }
+        .sidebar-title { font-size: 1.4rem; color: #f1c40f; font-weight: bold; margin: 0; }
+        .sidebar-close { background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; line-height: 1; }
+        .sidebar-close:hover { color: #e84545; }
+
+        .team-list-item { display: flex; align-items: center; margin-bottom: 15px; animation: fadeIn 0.5s; }
+        .team-emoji { font-size: 2.2rem; margin-right: 15px; width: 50px; text-align: center; }
+        .team-info { display: flex; flex-direction: column; }
+        .team-name-side { font-weight: bold; color: #fff; font-size: 1rem; }
+        .team-role-side { font-size: 0.8rem; color: #aaa; font-style: italic; }
+
+        /* Der Knopf oben im Header */
+        .team-toggle-btn { 
+            cursor: pointer; margin-left: 10px; font-size: 0.85rem; color: #ccc; 
+            border: 1px solid #555; padding: 4px 10px; border-radius: 4px; display: inline-block; transition:0.2s;
+        }
+        .team-toggle-btn:hover { background: #e84545; color: white; border-color: #e84545; }
+
+/* Neuer Knopf im Dialog-Fenster */
+        .team-btn-corner {
+            position: absolute; /* WICHTIG: Löst den Knopf aus dem Textfluss */
+            top: 10px;          /* Hier geändert: Kleinerer Wert = Höher */
+            right: 20px;        /* In der rechten Ecke */
+            background: rgba(0,0,0,0.4);
+            border: 1px solid #666;
+            color: #ddd;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            z-index: 20;
+        }
+        .team-btn-corner:hover {
+            background: #e84545;
+            color: white;
+            border-color: #e84545;
+            transform: scale(1.05);
+        }
+        /* --- NEU: Style für den zweiten Button "ins Büro" --- */
+        .team-btn-corner.pos-2 {
+            top: 50px; /* Position unter dem Team-Button */
+        }
     </style>
 </head>
 <body>
@@ -330,19 +430,23 @@
             <div class="sub-title"><b>Planspiel - Unternehmenssimulation (DQR 7)</b></div>
         </div>
     </div>
-    <div class="kpi-container">
+  <div class="kpi-container">
         <div class="kpi-box">
             <span class="kpi-label">⏳ Zeitfenster</span>
             <div class="progress-bg"><div id="bar-time" class="progress-fill" style="width: 100%; background: #3498db;"></div></div>
         </div>
+        
         <div class="kpi-box">
             <span class="kpi-label">💰 Budget</span>
             <div class="progress-bg"><div id="bar-budget" class="progress-fill" style="width: 100%; background: #2ecc71;"></div></div>
         </div>
+        
         <div class="kpi-box">
             <span class="kpi-label">⚖️ Recht/Team</span>
             <div class="progress-bg"><div id="bar-mood" class="progress-fill" style="width: 100%; background: #f1c40f;"></div></div>
+            
             <span class="impressum-link" onclick="openImpressum()">Impressum</span>
+            
             <span onclick="adminCheat()" style="opacity: 0.2; cursor: pointer; font-size: 0.8rem; margin-left: 5px; display: block;" title="Skip/Cheat">O</span>
         </div>
     </div>
@@ -372,6 +476,9 @@
 
     <div class="dialog-column">
         <div class="dialog-box">
+            <button class="team-btn-corner" onclick="toggleTeamSidebar()">Unser 👥 Team ansehen?</button>
+            <button class="team-btn-corner pos-2" onclick="goToOffice()">Ins Büro gehen 💼</button>
+            
             <h2 id="scene-title">Laden...</h2>
             <div id="scene-text" class="dialog-content"></div>
             <div class="side-info" id="scene-info"></div>
@@ -389,7 +496,7 @@
         <p id="ai-intro" style="color: #aaa; font-size: 0.95rem; margin: 10px 0 20px; text-align: left; line-height:1.5;">
             </p>
 
-        <textarea id="ai-input" class="ai-input-area" placeholder="Formulieren Sie Ihre Strategie auf Master-Niveau..."></textarea>
+        <textarea id="ai-input" class="ai-input-area" placeholder="Bitte formulieren Sie Ihre Strategie auf Master-Niveau..."></textarea>
         
         <div style="display:flex; gap:15px; justify-content:center;">
             <button class="choice-btn" style="background:var(--ai-color);" onclick="analyzeAIAnswer()">🤖 Konzept einreichen</button>
@@ -439,7 +546,7 @@
     <div class="overlay-card">
         <button class="debug-skip-btn" onclick="debugSkip()" title="Aufgabe überspringen (Debug)">⏭️</button>
         <h2 style="color: #3498db;">Begriffs-Check: Kreuzworträtsel</h2>
-        <p style="color: #aaa;">Füllen Sie die gesuchten Fachbegriffe ein.</p>
+        <p style="color: #aaa;">Tragen Sie bitte die gesuchten Fachbegriffe ein.</p>
         
         <div id="crossword-container" class="crossword-grid">
             </div>
@@ -528,19 +635,28 @@
     </div>
 </div>
 
+<div id="team-sidebar" class="sidebar-overlay">
+    <div class="sidebar-header">
+        <h3 class="sidebar-title">Das Team</h3>
+        <button class="sidebar-close" onclick="toggleTeamSidebar()">×</button>
+    </div>
+    <div id="team-sidebar-content">
+        </div>
+</div>
+
 <script>
-    // Charaktere / Bilder
-    const IMAGES = {
-        sascha: 'sascha.png',
-        horst: 'horst.png',
-        chef: 'chef.png',
-        verwaltung: 'verwaltung.png',
-        azubis: 'azubis.png',
-        alex: 'alex.png',
-        claudia: 'claudia.png',
-        viola: 'viola.png',
-        erik: 'erik.png',
-        sebastian: 'sebastian.png'
+    // Charaktere / Bilder (jetzt als Emojis)
+    const AVATARS = {        'chef': '👨🏼‍💼',          // Dr. Peter Planer
+        'horst': '👷🏻',         // Horst Hektik (Bauhelm)
+        'verwaltung': '👩‍💼',    // Franziska Immerda
+        'sascha': '👨🏽‍⚖️',       // Sascha AEVO
+        'klara': '🤵🏾‍♀️',        // Dr. Klara Kompetenz (Dunkler Hautton)
+        'alex': '🙎🏻‍♂️',          // Alex Engagiert (Betriebsrat/Sprachrohr)
+        'Boris': '👨🏻‍💻',         // Boris Gemini (IT, Brille/Nerd)
+        'claudia': '🤷🏻‍♀️',       // Claudia Papierkram (Archiv)
+        'viola': '🙋🏻‍♀️',         // Viola Communikationis (Gebärden/Offenheit)
+        'erik': '🧑‍🦽',         // Erik Handycap (Rollstuhlfahrer)
+        'sebastian': '👨🏻‍🔧'      // Sebastian Domini (Zahnrad/Technik)
     };
 
     // Charaktere mit spezifischem Duktus-Hinweis für den User
@@ -562,26 +678,30 @@
     let historyStack = [];
     let resumeSceneAfterIntervention = ''; 
 
-    // --- KI-KONFIGURATION (DQR 7 NIVEAU) ---
+    
+
+ // --- KI-KONFIGURATION (DQR 7 NIVEAU) ---
     const aiScenarios = {
     "hb4_digital": {
         "title": "<span style='color:white;'>Aufgabe:</span> Digitale Transformation der Ausbildung",
-        "intro": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Verehrter Kollege, wir stehen vor einer paradigmatischen Wende. Die PlanA Soft KG expandiert in den <b>Sanitär-, Heizungs- und Klimatechnik (SHK)</b> Bereich. Ich benötige Ihre Expertise: Welche Anforderungen stellen wir an <b>Lernaufgaben</b>, um der digitalen Transformation gerecht zu werden? Bitte differenzieren Sie nach überfachlichen Kompetenzen und methodischen Ansätzen.'",
+        "intro": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Verehrter Kollege, wir stehen vor einer paradigmatischen Wende. Unser Bildungspartner, die PlanA GmbH expandiert in den <b>Sanitär-, Heizungs- und Klimatechnik (SHK)</b> Bereich. Ich benötige Ihre Expertise: Welche Anforderungen stellen wir an <b>Lernaufgaben für die Azubis der PlanA Gmbh</b>, um der digitalen Transformation in der Ausbildung gerecht zu werden? Bitte differenzieren Sie nach fachlichen Kompetenzen und methodischen Ansätzen.'",
         "keywords": [
-            "digitale zwillinge",
+            "Lehr- und Lernmedien",
             "selbststeuerung",
-            "überfachlich",
+            "fachlich",
             "kooperationstools",
             "prozessorientierung",
-            "lerntechniken"
+            "lerntechniken",
+            "berufliche Handlungsfähigkeit",
+            "Assistenzsysteme"
         ],
         "thresholds": {
             "30": "Zu oberflächlich für DQR 7.",
             "70": "Gute Ansätze, bitte präziser.",
             "100": "Exzellente strategische Ableitung!"
         },
-        "solutionHint": "Fokus: Digitale Zwillinge, Selbststeuerung, Methodenkompetenz, Softskills.",
-        "gradingPrompt": "Du bist Dr. Klara Kompetenz. Bewerte streng akademisch (DQR 7). Erwarte Begriffe wie 'Digitale Zwillinge', 'Selbststeuerung'."
+        "solutionHint": "Fokus: Lehr- und Lernmedien, Selbststeuerung, Methodenkompetenz, Softskills.",
+        "gradingPrompt": "Du bist Dr. Klara Kompetenz. Bewerte akademisch aber wertschätzend und motivierend (DQR 7). Erwarte Begriffe wie 'Lehr- und Lernmedien', 'Selbststeuerung'."
     },
     "hb1_sozial": {
         "title": "<span style='color:white;'>Aufgabe:</span> Lernprozesse & Sozialkompetenz",
@@ -623,7 +743,7 @@
     },
     "hb3_genz": {
         "title": "<span style='color:white;'>Aufgabe:</span> Management & Bindung (Gen Z)",
-        "intro": "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Die Jungen hauen alle ab. Wollen Sabbatical. Pff. Mach was.'<br><b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Wir müssen ihre Werte verstehen, Horst. Erstellen Sie ein Retention-Konzept.'",
+        "intro": "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Die Jungen hauen alle ab. Wollen Sabbatical. Pff. Mach was.'<br><b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Wir müssen ihre Werte verstehen, Horst. Erstellen Sie ein Konzept für strategische Maßnahmen zur Mitarbeiterbindung.'",
         "keywords": [
             "sinnstiftung",
             "flexibilität",
@@ -661,7 +781,7 @@
     },
     "hb6_karriere": {
         "title": "<span style='color:white;'>Aufgabe:</span> Personalentwicklung (Karrierewege)",
-        "intro": "<b>Claudia Papierkram (Verwaltung/KI):</b> 'Ich habe die Daten analysiert. Unsere Effizienz leidet unter Motivationstiefs. Die Leute sehen keinen Aufstieg. Wir brauchen systematische <b>Laufbahnmodelle</b>. Meine KI sagt: Das erhöht die Retention um 40%.'",
+        "intro": "<b>D, Klara Kompetenz (Personalleitung):</b> 'ich habe mal mit Boris Gemini von der IT gesprochen. Wir unsere Daten analysieren lassen. Unsere Effizienz leidet unter Motivationstiefs. Die Leute sehen keinen Aufstieg. Wir brauchen systematische <b>Laufbahnmodelle</b>. Die KI sagt: Das erhöht die Mitarbeiterbindung bestimmt um 40%.'",
         "keywords": [
             "fachlaufbahn",
             "führungslaufbahn",
@@ -801,7 +921,7 @@
     "quiz_pe_expert": {
         "title": "<span style='color:white;'>Aufgabe:</span> Expertenwissen Personalentwicklung & Führung",
         "intro": "<b>Dr. Klara Kompetenz:</b> 'Bevor ich meine Agenden übergebe, muss ich sicher sein, dass Sie die strategischen Zusammenhänge durchdrungen haben. Beweisen Sie Ihre Expertise in dieser Klausur.'",
-        "law": "Hinweis: Diese Fragen basieren auf dem Handlungsbereich 6 (Personalentwicklung und Beratung).",
+        "law": "Hinweis: Diese Fragen basieren auf dem Thema Personalentwicklung und Beratung.",
         "questions": [
             {
                 "q": "Was ist ein zentrales Ziel der Personalentwicklung (PE)?",
@@ -974,7 +1094,7 @@
     const scenes = {
     "intro": {
         "title": "",
-        "text": "\n                <div class=\"intro-title\">Willkommen<br>im Bildungscampus Leipzig</div>\n                \n                <p style=\"text-align: justify;\">Wir sind ein neu gegründetes Bildungsunternehmen in Leipzig und bieten vorrangig\nPräsenz- und Onlineschulungen in den Bereichen Aus- und Weiterbildungspädagogik, Berufspädagogik, Ausbildereignung, Personalwirtschaft und Büromanagement an.<br><br>\nSeit kurzer Zeit bilden wir in einem Ausbildungsverbund mit der PlanA GmbH im handwerklichen Bereich auch Tischler aus. Ein Teil dieser Ausbildung findet in einer Produktionslinie der PlanA GmbH statt. Es existiert auch eine eigene Lehrwerkstatt.\n\n \n\n                <p style=\"text-align: justify;\">Wir beschäftigen zur Zeit 8 Mitarbeitende sowie mehrere freiberufliche Dozent*innen</p>\n\n                <div class=\"team-grid\">\n                    <div class=\"team-role\">Geschäftsführung:</div><div class=\"team-name\">Dr. Peter Planer</div>\n                    <div class=\"team-role\">Personalleitung:</div><div class=\"team-name\">Dr. Klara Kompetenz</div>\n                    <div class=\"team-role\">Ausbildungleiter PlanA GmbH:</div><div class=\"team-name\">Horst Hektik</div>\n                    <div class=\"team-role\">Verantwortlicher Ausbilder:</div><div class=\"team-name\">Sascha AEVO</div>\n                    <div class=\"team-role\">Verwaltung:</div><div class=\"team-name\">Franziska Immerda</div>\n                    <div class=\"team-role\">Betriebsrat:</div><div class=\"team-name\">Alex Engagiert</div>\n                    <div class=\"team-role\">weitere Mitarbeitende:</div><div class=\"team-name\">Claudia Papierkram, Viola Communikationis,<br> Erik Handycap und Sebastian Domini</div>\n                </div>\n            ",
+        "text": "\n                <div class=\"intro-title\">Willkommen<br>im Bildungscampus Leipzig</div>\n                \n                <p style=\"text-align: justify;\">Wir sind ein neu gegründetes Bildungsunternehmen in Leipzig und bieten vorrangig\nPräsenz- und Onlineschulungen in den Bereichen Aus- und Weiterbildungspädagogik, Berufspädagogik, Ausbildereignung, Personalwirtschaft und Büromanagement an.</p>\n<p style=\"text-align: justify;\">\nSeit kurzer Zeit bilden wir in einem Ausbildungsverbund mit der PlanA GmbH im handwerklichen Bereich auch Tischler aus. Ein Teil dieser Ausbildung findet in einer Produktionslinie der PlanA GmbH statt. Es existiert auch eine eigene Lehrwerkstatt.</p>\n\n \n\n                <p style=\"text-align: justify;\">Wir beschäftigen zur Zeit 11 Mitarbeitende sowie mehrere freiberufliche Dozent*innen</p>\n\n                <div class=\"team-grid\">\n                    <div class=\"team-role\">Geschäftsführung:</div><div class=\"team-name\">Dr. Peter Planer 👨🏼‍💼</div>\n                    <div class=\"team-role\">Personalleitung:</div><div class=\"team-name\">Dr. Klara Kompetenz 🤵🏾‍♀️</div>\n                    <div class=\"team-role\">Ausbildungleiter PlanA GmbH:</div><div class=\"team-name\">Horst Hektik 👷🏻</div>\n                    <div class=\"team-role\">Verantwortlicher Ausbilder:</div><div class=\"team-name\">Sascha AEVO 👨🏽‍⚖️</div>\n                    <div class=\"team-role\">Verwaltung:</div><div class=\"team-name\">Franziska Immerda 👩‍💼</div>\n                    <div class=\"team-role\">IT-Abteilung:</div><div class=\"team-name\">Boris Gemini 👨🏻‍💻</div>\n                    <div class=\"team-role\">Betriebsrat:</div><div class=\"team-name\">Alex Engagiert 🙎🏻‍♂️</div>\n                    <div class=\"team-role\">weitere Mitarbeitende:</div><div class=\"team-name\">Claudia Papierkram 🤷🏻‍♀️, Viola Communikationis 🙋🏻‍♀️,<br> Erik Handycap 🧑‍🦽 und Sebastian Domini 👨🏻‍🔧</div>\n                </div>\n            ",
         "leftContent": "\n                <div class=\"role-box-left\">\n                    <span class=\"role-title\">IHRE MISSION</span>\n                    <div class=\"role-description\">\n                        Sie sind als Gepr. Berufspädagog*in die neue <b>\"Hauptabteilungsleitung Bildung\" mit Personalbefugnissen</b>.<br>\nIn diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen lösen. \n                    </div>\n                    <button class=\"start-btn-green\" onclick=\"startGame()\">Rolle annehmen & starten </button>\n                </div>\n            ",
         "char": "chef",
         "charName": "Dr. Peter Planer",
@@ -1000,7 +1120,7 @@
     },
     "fail_jarbschg": {
         "title": "Rechtsbruch!",
-        "text": "<b>Franziska Immerda (Verwaltung):</b> 'Ich muss doch sehr bitten! § 22 JArbSchG. Ohne Aufsicht? Unmöglich. Ich habe die BG schon am Telefon gehabt. Das geht so nicht!'",
+        "text": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Ich muss doch sehr bitten! § 22 JArbSchG. Ohne Aufsicht? Unmöglich. Ich habe die BG schon am Telefon gehabt. Das geht so nicht!'",
         "char": "verwaltung",
         "charName": "Franziska Immerda",
         "moodChange": -20,
@@ -1044,9 +1164,11 @@
         ]
     },
     "franziska_search_puzzle": {
+        "char": "verwaltung",
+        "charName": "Franziska Immerda",
         "special": "search",
-        "searchId": "franziska_chaos",
-        "next": "franziska_search_done"
+        "next": "franziska_search_done",
+        "searchId": "franziska_search_puzzle_search_config"
     },
     "franziska_search_done": {
         "title": "Ordnung wiederhergestellt",
@@ -1066,18 +1188,121 @@
         ]
     },
     "Bürozeit_1": {
-        "title": "Bürozeit 1",
-        "text": "Sie haben verschiedene Anliegen der Mitarbeitenden und der Unternehmensleitung abgearbeitet. Sie haben jetzt Zeit, weitere Aufgaben anzugehen, die Ihnen schon länger am Herzen liegen oder Ihr berufspädagogisches und betriebswirtschaftliches Wissen zu vertiefen.\n\nWählen Sie dafür eine Aufgabe aus",
+        "title": "Ihr Schreibtisch",
+        "text": "Willkommen in Ihrer Zentrale. Hier verwalten Sie Ihr Wissen und Ihr Team.<br>Was möchten Sie tun?",
         "char": "chef",
         "charName": "Dr. Peter Planer",
+        "layout": "dashboard",
         "options": [
             {
-                "text": "Stufenmodell nach Kotter",
+                "text": "📚<br>Bibliothek",
+                "next": "library_main"
+            },
+            {
+                "text": "🤖<br>KI-Chat",
+                "next": "Boris-Gemini_befragen"
+            },
+            {
+                "text": "👥<br>Bewerberpool",
+                "next": "office_applicants"
+            },
+            {
+                "text": "📝<br>Notizen",
+                "next": "office_notes"
+            },
+            {
+                "text": "✉️<br>E-Mails",
+                "next": "office_emails"
+            },
+            {
+                "text": "📊<br>Statistik",
+                "next": "office_stats"
+            },
+            {
+                "text": "🚪 Zurück an die Arbeit",
+                "specialExec": "returnFromOffice",
+                "specialClass": "exit-btn"
+            }
+        ]
+    },
+    "library_main": {
+        "title": "Fachbibliothek",
+        "text": "Hier finden Sie gesammeltes Fachwissen und Modelle, die für Ihre Arbeit relevant sind.<br>Welches Werk möchten Sie konsultieren?",
+        "char": "claudia",
+        "charName": "Claudia Papierkram",
+        "options": [
+            {
+                "text": "8 Stufenmodell nach Kotter",
                 "next": "Wissen_vertiefen_1"
             },
             {
-                "text": "Boris Gemini befragen",
-                "next": "Boris-Gemini_befragen"
+                "text": "3 Stufenmodell nach Lewin",
+                "next": "Wissen_vertiefen_2"
+            },
+            {
+                "text": "Das Manageriel Grid",
+                "next": "Wissen_vertiefen_3"
+            },
+            {
+                "text": "Übersicht der Lerntheorien",
+                "next": "Wissen_vertiefen_4"
+            },
+            {
+                "text": "Zielvereinbarungen",
+                "next": "Wissen_vertiefen_5"
+            },
+            {
+                "text": "Gruppendynamik",
+                "next": "Wissen_vertiefen_6"
+            },
+            {
+                "text": "Lernzieltaxonomie nach Bloom",
+                "next": "Wissen_vertiefen_7"
+            },
+            {
+                "text": "Lerntypen und Lernstile",
+                "next": "Wissen_vertiefen_8"
+            },
+            {
+                "text": "🔙 Zurück zum Schreibtisch",
+                "next": "Bürozeit_1"
+            }
+        ]
+    },
+    "office_applicants": {
+        "title": "Bewerberpool",
+        "text": "<b>Wieso landet eigentlich immer alles auf meinem Tisch???</b><br>\nIch werde das später im Detail prüfen und mit Dr. Klara Kompetenz besprechen. Aber ein erster Blick schadet nicht...<br><br>\n\n<b>Aktuelle Mappe (Initiativbewerbungen):</b><br><br>\n\n👤 <b>1. Max Mustermann (22 J., Tischlergeselle)</b><br>\n<i>\"Ich will anpacken, nicht Akten schleppen!\"</i><br>\n<b>Profil:</b> Frisch aus der Ausbildung. Praxisnote: \"Sehr gut\", Theorie: \"Ausreichend\".<br>\n<b>Plus:</b> Jung, körperlich belastbar, hochmotiviert für Montage.<br>\n<b>Minus:</b> Katastrophale Rechtschreibung im Anschreiben, Zeugnis voller unentschuldigter Fehlzeiten in der Berufsschule.<br><br>\n\n👤 <b>2. Lisa Lustig (35 J., Gepr. Bürokauffrau)</b><br>\n<i>\"Organisation ist mein zweiter Vorname.\"</i><br>\n<b>Profil:</b> 10 Jahre Berufserfahrung, Zusatzquali \"Digitales Office\", Arbeitszeugnisse alle \"Sehr gut\".<br>\n<b>Plus:</b> Kann sofort loslegen, benötigt keine Einarbeitung.<br>\n<b>Minus:</b> Alleinerziehend, besteht auf Arbeitszeiten starr von 08:00 - 12:00 Uhr (keine Nachmittage).<br><br>\n\n👤 <b>3. Kevin Chaos (19 J., Schulabgänger)</b><br>\n<i>\"Jo, ich such halt was.\"</i><br>\n<b>Profil:</b> Bewerbung als \"Chef oder so\".<br>\n<b>Plus:</b> Hat (versehentlich?) ein sehr gutes IT-Zertifikat für Python-Programmierung angehängt.<br>\n<b>Minus:</b> Bewerbungsfoto zeigt ihn mit Bier am Strand. Betreffzeile: \"Bewerbung an Firma Dings\". Anrede: \"Hallo Leute\".<br><br>\n\n👤 <b>4. Renate 'Erfahrung' (59 J., Personalfachkauffrau)</b><br>\n<i>\"Die Jugend rennt, ich kenne den Weg.\"</i><br>\n<b>Profil:</b> 35 Jahre Führungserfahrung, top vernetzt in Leipzig.<br>\n<b>Plus:</b> Enormes Fachwissen, sofort einsetzbar.<br>\n<b>Minus:</b> Gehaltsvorstellung liegt 20% über unserem Budget. Schreibt im Lebenslauf: \"Suche letzte Station vor der Rente.\"",
+        "char": "verwaltung",
+        "charName": "Franziska Immerda",
+        "options": [
+            {
+                "text": "🔙 Zurück zum Schreibtisch",
+                "next": "Bürozeit_1"
+            }
+        ]
+    },
+    "office_emails": {
+        "title": "Posteingang",
+        "text": "Sie haben <b>8 ungelesene Nachrichten</b> im Posteingang:<br><br>\n\n📧 <b>Von: Dr. Peter Planer</b><br>\nBetreff: Visionen...<br>\n<i>\"Ich hatte da eine Idee heute Nacht... wir brauchen mehr Synergie!\"</i><br><br>\n\n📧 <b>Von: Horst Hektik</b><br>\nBetreff: KREISSÄGE!!!<br>\n<i>\"WANN KOMMT DER NEUE AZUBI??? DAS HOLZ SÄGT SICH NICHT VON ALLEINE!\"</i><br><br>\n\n📧 <b>Von: Boris Gemini (IT)</b><br>\nBetreff: Witz des Tages (KI)<br>\n<i>\"Treffen sich zwei KIs. Sagt die eine: 'Na, wie ist das Wetter?' Sagt die andere: 'Keine Ahnung, ich bin in der Cloud, hier ist es immer bewölkt.' ☁️😂\"</i><br><br>\n\n📧 <b>Von: IHK Leipzig (Prüfungsausschuss)</b><br>\nBetreff: WICHTIG: Neue Termine Sommer 2026<br>\n<i>\"Sehr geehrte Damen und Herren, anbei die vorläufigen Termine für die schriftlichen Abschlussprüfungen. Bitte beachten Sie die Anmeldefrist!\"</i><br><br>\n\n📧 <b>Von: IHK Leipzig (Finanzen)</b><br>\nBetreff: Rückfrage Prüferabrechnung<br>\n<i>\"In Ihrer Reisekostenabrechnung fehlt Anlage 3b (Parkticket). Bitte umgehend nachreichen, sonst keine Auszahlung.\"</i><br><br>\n\n📧 <b>Von: Boris Gemini (IT)</b><br>\nBetreff: Noch einer (Sorry!)<br>\n<i>\"Was ist groß, grau und telefoniert aus Afrika? Ein Telefant. 🐘📞 (Den hat mir ChatGPT erzählt...)\"</i><br><br>\n\n📧 <b>Von: Dr. Peter Planer</b><br>\nBetreff: Einladung: 'Synergie & Sekt'<br>\n<i>\"Liebes Team, um unseren Teamspirit zu zünden, lade ich am Freitag zur spontanen Betriebsparty ein! Es gibt Schnittchen (und Visionen).\"</i><br><br>\n\n📧 <b>Von: Claudia Papierkram</b><br>\nBetreff: Wer hat den Locher?<br>\n<i>\"Mein großer Leitz-Locher (schwarz) ist verschwunden. Er hat ein Etikett 'Eigentum Verwaltung'. Bitte sofort zurückbringen!\"</i>",
+        "char": "verwaltung",
+        "charName": "Franziska Immerda",
+        "options": [
+            {
+                "text": "🔙 Zurück zum Schreibtisch",
+                "next": "Bürozeit_1"
+            }
+        ]
+    },
+    "office_stats": {
+        "title": "Leistungsdaten",
+        "text": "<b>Aktueller Statusbericht:</b><br><br>Budget-Effizienz: 🟢 Stabil<br>Team-Zufriedenheit: 🟡 Ausbaufähig<br>Projekt-Fortschritt: 45%",
+        "char": "boris",
+        "charName": "Boris Gemini (IT)",
+        "options": [
+            {
+                "text": "🔙 Zurück zum Schreibtisch",
+                "next": "Bürozeit_1",
+                "specialClass": "exit-btn"
             }
         ]
     },
@@ -1120,7 +1345,7 @@
     },
     "social_issue": {
         "title": "<span style='color:white;'>Aufgabe:</span> Der Vorfall",
-        "text": "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Der Stift hat 'Hurensohn' gesagt. Zu mir. Der fliegt. Sofort. Papiere fertig machen! Chuck Norris würde ihn einfach... na du weißt schon.'<br><br><b>Dr. Klara Kompetenz (Personalleitung):</b> 'Herr Hektik, bitte mäßigen Sie sich. Wir kündigen nicht affektgesteuert. Das ist ein Bildungsauftrag. Fördern Sie die <b>Sozialkompetenz</b>.'",
+        "text": "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Der Stift hat 'Hurensohn' gesagt. Zu mir. Der fliegt. Sofort. Papiere fertig machen! Man müsste ihn einfach... na du weißt schon.'<br><br><b>Dr. Klara Kompetenz (Personalleitung):</b> 'Herr Hektik, bitte mäßigen Sie sich. Wir kündigen nicht affektgesteuert. Das ist ein Bildungsauftrag. Fördern Sie die <b>Sozialkompetenz</b>.'",
         "char": "klara",
         "charName": "Dr. Klara Kompetenz",
         "options": [
@@ -1157,7 +1382,7 @@
     },
     "level_2_intro": {
         "title": "Zwischenfazit",
-        "text": "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Ah, da sind Sie ja! Ich hatte gerade eine Vision... oder war es Hunger? Egal. Wir müssen... größer denken! Strategischer! Kommen Sie in mein Büro.'",
+        "text": "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Ah, da sind Sie ja! Ich hatte gerade eine Vision... Welche war das nochmal? Egal. Wir müssen... größer denken! Strategischer! Kommen Sie in mein Büro.'",
         "char": "chef",
         "charName": "Dr. Peter Planer",
         "options": [
@@ -1207,12 +1432,12 @@
     },
     "gen_z_scene": {
         "title": "<span style='color:white;'>Aufgabe:</span> Generationenkonflikt",
-        "text": "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Die Jungen hauen alle ab. Wollen Sabbatical. Pff. Mach was.'<br><b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Wir müssen ihre Werte verstehen, Horst. Erstellen Sie ein Retention-Konzept.'",
+        "text": "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Die Jungen hauen alle ab. Wollen Sabbatical. Pff. Mach was.'<br><b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Wir müssen ihre Werte verstehen, Horst. Erstellen Sie ein Konzept zur Mitarbeiterbindung.'",
         "char": "horst",
         "charName": "Horst Hektik",
         "options": [
             {
-                "text": "Retention-Konzept",
+                "text": "Konzept zur Mitarbeiterbindung",
                 "next": "ai_genz",
                 "costTime": 15
             },
@@ -1244,7 +1469,7 @@
     },
     "transfer_scene": {
         "title": "<span style='color:white;'>Aufgabe:</span> Schwere Zeiten",
-        "text": "<b>Erik Handycap (Sozialarbeit):</b> 'In Anbetracht der bedauerlichen Insolvenz eines Teilbereichs, und unter Berücksichtigung der sozialen Verantwortung, die wir zweifelsohne tragen, ist es unabdingbar, eine Transfergesellschaft zu gründen, deren primäres Ziel es sein muss...' <br><i>(Er redet noch 5 Minuten weiter)</i><br><b>Viola Communikationis (Inklusion):</b> 'Erik. Meint. Wir. Müssen. 50. Leute. Retten. Wir brauchen eine <b>Bildungsbedarfsanalyse</b>.'",
+        "text": "<b>Erik Handycap (Sozialarbeit):</b> 'In Anbetracht der bedauerlichen Insolvenz eines Teilbereichs der PlanA GmbH, und unter Berücksichtigung der sozialen Verantwortung, die wir zweifelsohne tragen, ist es unabdingbar, eine Transfergesellschaft zu gründen, deren primäres Ziel es sein muss...' <br><i>(Er redet noch 5 Minuten weiter)</i><br><b>Viola Communikationis (Inklusion):</b> 'Erik. Meint. Wir. Müssen. 50. Leute. Retten. Wir brauchen eine <b>Bildungsbedarfsanalyse</b>.'",
         "char": "erik",
         "charName": "Erik Handycap",
         "options": [
@@ -1262,9 +1487,9 @@
     },
     "career_scene": {
         "title": "<span style='color:white;'>Aufgabe:</span> Zukunft",
-        "text": "<b>Claudia Papierkram (Verwaltung/KI):</b> 'Ich habe die Daten analysiert. Unsere Effizienz leidet unter Motivationstiefs. Die Leute sehen keinen Aufstieg. Wir brauchen systematische <b>Laufbahnmodelle</b>. Meine KI sagt: Das erhöht die Retention um 40%.'",
-        "char": "claudia",
-        "charName": "Claudia Papierkram",
+        "text": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Ich habe noch einmal verschiedene Daten aus Evaluationsfragebögen analysiert. Unsere betriebliche Effizienz leidet unter Motivationstiefs. Die Leute sehen keinen Aufstieg. Wir brauchen systematische <b>Laufbahnmodelle</b>. Meine KI sagt: Das erhöht die Retention um 40%.'",
+        "char": "klara",
+        "charName": "Dr. Klara Kompetenz",
         "options": [
             {
                 "text": "Laufbahnmodelle entwickeln",
@@ -1341,7 +1566,7 @@
     },
     "sebastian_thanks": {
         "title": "Erkenntnis",
-        "text": "<b>Sebastian Domini (Technik):</b> 'Aha! Feedback für den Prozess, Evaluation für das Ergebnis. Verstanden. Das hilft mir sehr. Danke für die Aufklärung! <br><br> Übrigens, Viola sucht Sie schon. Es gibt wohl Redebedarf.'",
+        "text": "<b>Sebastian Domini (Technik):</b> 'Aha! Feedback für den Prozess, Evaluation für das Ergebnis. Verstanden. Das hilft mir sehr. Danke für die Aufklärung! <br><br> Boris Gemini schaut kurz zur Tür rein: Treffen sich zwei KIs im Serverraum. Sagt die eine: \"Puh, ist mir heiß...\" Antwortet die andere: \"Keine Sorge, gleich kommt eine komplexe User-Anfrage rein, dann laufen die Lüfter wieder auf Hochtouren!\" <br><br>Sebastian Domini verdreht die Augen: Übrigens, Viola sucht Sie schon. Es gibt wohl Redebedarf.'",
         "char": "sebastian",
         "charName": "Sebastian Domini",
         "moodChange": 10,
@@ -1433,6 +1658,7 @@
         "title": "Entlassen",
         "text": "Sie haben das Unternehmen ruiniert oder wichtige Chancen verpasst.",
         "char": "chef",
+        "charName": "Dr. Peter Planer",
         "options": []
     },
     "resolve_warning": {
@@ -1486,27 +1712,172 @@
     },
     "Wissen_vertiefen_1": {
         "title": "8-Stufenmodell nach Kotter",
-        "text": "Das 8-Stufen-Modell eines Veränderungsprozesses (englisch 8-Step Process for Leading Change) ist eines der populärsten Change-Management-Modelle. Es wurde 1996 von John P. Kotter vor dem Hintergrund eines durch VUCA geprägten, globalisierten Marktumfeldes entwickelt.",
+        "text": "<b>Das 8-Stufen-Modell nach John P. Kotter</b><br><br>\nChange Management scheitert oft, weil Schritte übersprungen werden. Kotter beschreibt einen Prozess, um Veränderungen nachhaltig zu gestalten:<br><br>\n\n<b>Phase 1: Das Klima für den Wandel schaffen</b><br>\n1. <b>Gefühl der Dringlichkeit erzeugen:</b> Machen Sie Mitarbeitenden und Führungskräften klar, warum <i>jetzt</i> gehandelt werden muss (Marktdruck, Krisen, Chancen).<br>\n2. <b>Führungskoalition aufbauen:</b> Bilden Sie ein Team mit genug Macht und Einfluss, um den Wandel voranzutreiben.<br>\n3. <b>Vision und Strategie entwickeln:</b> Eine klare Vision motiviert mehr als dicke Handbücher. Wohin geht die Reise?<br><br>\n\n<b>Phase 2: Die Organisation befähigen und einbinden</b><br>\n4. <b>Die Vision kommunizieren:</b> Nutzen Sie jeden Kanal. Vorleben ist die beste Kommunikation.<br>\n5. <b>Hindernisse aus dem Weg räumen:</b> Ändern Sie Strukturen, die die Vision untergraben. Befähigen Sie Mitarbeiter zum Handeln (Empowerment).<br>\n6. <b>Kurzfristige Erfolge (Quick Wins) erzielen:</b> Planen Sie sichtbare Erfolge, um Kritiker zu überzeugen und Motivation zu tanken.<br><br>\n\n<b>Phase 3: Den Wandel umsetzen und erhalten</b><br>\n7. <b>Veränderung weiter antreiben:</b> Geben Sie sich nicht zu früh zufrieden. Nutzen Sie die Glaubwürdigkeit der ersten Erfolge für größere Projekte.<br>\n8. <b>Veränderungen in der Kultur verankern:</b> Der Wandel ist erst abgeschlossen, wenn er \"die Art, wie wir hier arbeiten\" geworden ist.",
         "char": "chef",
         "charName": "Dr. Peter Planer",
         "options": [
             {
-                "text": "Zurück ins Büro",
-                "next": "Bürozeit_1",
-                "costTime": 5,
-                "costBudget": 5
+                "text": "🔙 Zurück zur Bibliothek",
+                "next": "library_main"
+            }
+        ]
+    },
+    "Wissen_vertiefen_2": {
+        "title": "Das 3-Phasen-Modell nach Kurt Lewin",
+        "text": "<b>Das 3-Phasen-Modell nach Kurt Lewin</b><br><br>\nKurt Lewin beschreibt soziale Systeme (wie Unternehmen) als ein \"Kräftefeld\". Um Wandel zu erzeugen, reicht es nicht, einfach neue Regeln aufzustellen. Der Prozess gleicht dem Aggregatzustand von Wasser:<br><br>\n\n<b>Phase 1: Unfreezing (Auftauen)</b><br>\nDer aktuelle Zustand (\"Status Quo\") ist fest gefroren. Um ihn zu formen, muss er aufgetaut werden.<br>\n<i>Aufgabe der Führung:</i> Bereiten Sie die Betroffenen vor. Bauen Sie Widerstände ab, indem Sie die Notwendigkeit des Wandels erklären. Die \"treibenden Kräfte\" müssen stärker werden als die \"beharrenden Kräfte\".<br><br>\n\n<b>Phase 2: Moving / Changing (Verändern)</b><br>\nDer Zustand ist nun flüssig und formbar. Hier passiert die eigentliche Veränderung (neue Software, neue Prozesse, Umstrukturierung).<br>\n<i>Aufgabe der Führung:</i> Schulen und trainieren Sie die Mitarbeiter. Probieren Sie Neues aus (\"Trial & Error\"). Führungskräfte müssen als Vorbilder vorangehen.<br><br>\n\n<b>Phase 3: Refreezing (Einfrieren/Stabilisieren)</b><br>\nDas Wasser wird in der neuen Form wieder eingefroren. Ohne diesen Schritt kehren Mitarbeiter schnell in alte Muster zurück.<br>\n<i>Aufgabe der Führung:</i> Feiern Sie Erfolge. Integrieren Sie das Neue in den Alltag (z.B. durch angepasste Arbeitsanweisungen oder Belohnungssysteme). Machen Sie den Wandel zur neuen Gewohnheit.",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "🔙 Zurück zur Bibliothek",
+                "next": "library_main"
+            }
+        ]
+    },
+    "Wissen_vertiefen_3": {
+        "title": "Das Managerial Grid",
+        "text": "<b>Das Managerial Grid nach Blake & Mouton</b><br><br>\nFührungserfolg hängt davon ab, wie zwei grundlegende Orientierungen kombiniert werden. Stellen Sie sich ein Koordinatensystem (1 bis 9) vor:<br><br>\n\n<b>Die zwei Dimensionen:</b><br>\n👉 <b>Sachorientierung (x-Achse):</b> Fokus auf Leistung, Kennzahlen und Produktionsziele.<br>\n👉 <b>Menschenorientierung (y-Achse):</b> Fokus auf Zwischenmenschliches, Vertrauen und Betriebsklima.<br><br>\n\n<b>Die 5 Leittypen der Führung:</b><br><br>\n\n<b>Typ 1.1: Der \"Überlebens-Management\" (Gleichgültigkeit)</b><br>\n<i>Minimaler Einsatz für Aufgabe und Menschen.</i><br>\nDer Vorgesetzte macht nur das Nötigste, um nicht gekündigt zu werden. Er ist eigentlich nur \"anwesend\".<br><br>\n\n<b>Typ 1.9: Der \"Glacehandschuh-Management\" (Country Club)</b><br>\n<i>Hoher Fokus auf Mensch, kaum Fokus auf Leistung.</i><br>\nEs herrscht eine gemütliche, freundliche Atmosphäre. Konflikte werden vermieden, aber es wird kaum gearbeitet. \"Hauptsache wir haben uns lieb.\"<br><br>\n\n<b>Typ 9.1: Der \"Befehl-Gehorsam-Management\"</b><br>\n<i>Maximale Leistung, der Mensch ist egal.</i><br>\nMenschen sind nur Werkzeuge der Produktion. Fehler werden bestraft. Klassischer autoritärer Stil. (Erinnert an Horst Hektik?)<br><br>\n\n<b>Typ 5.5: Der \"Organisations-Management\" (Kompromiss)</b><br>\n<i>Die goldene Mitte.</i><br>\nMan versucht, beides zu balancieren, erreicht aber nirgendwo Spitzenwerte. \"Bloß nicht anecken.\"<br><br>\n\n<b>Typ 9.9: Das \"Team-Management\" (Das Ideal)</b><br>\n<i>Hohe Leistung DURCH zufriedene Mitarbeiter.</i><br>\nZiele werden gemeinsam erarbeitet. Es herrscht Vertrauen und Respekt. Arbeit macht Spaß und ist hochproduktiv.",
+        "char": "klara",
+        "charName": "Dr. Klara Kompetenz",
+        "options": [
+            {
+                "text": "🔙 Zurück zur Bibliothek",
+                "next": "library_main"
             }
         ]
     },
     "Boris-Gemini_befragen": {
         "char": "Boris",
         "charName": "Boris Gemini (KI)",
-        "special": "ai_question",
-        "aiId": "Boris-Gemini_befragen_config",
-        "next": "Bürozeit_1"
+        "title": "Chat mit Boris Gemini",
+        "text": "Ich bin mit unserer KI Verbunden 😁. Wir stellen die Fragen einfach direkt hier im Chat-Fenster:<br><br><iframe src='https://lernchatserver-2025.vercel.app/' style='width:100%; height:500px; border:2px solid #9b59b6; border-radius:8px;'></iframe>",
+        "options": [
+            {
+                "text": "Zurück ins Büro",
+                "next": "Bürozeit_1",
+                "costTime": 5
+            }
+        ]
+    },
+    "office_notes": {
+        "title": "Notizblock",
+        "text": "<b>Wie gut, dass ich mir Notizen gamacht habe</b>",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "🔙 Zurück zum Schreibtisch",
+                "next": "Bürozeit_1"
+            },
+            {
+                "text": "Wie verläuft ein Planungsprozess",
+                "next": "Notizblatt_1"
+            },
+            {
+                "text": "Zielgruppenanalyse",
+                "next": "Notizblatt_2"
+            }
+        ]
+    },
+    "Wissen_vertiefen_4": {
+        "title": "Übersicht der Lerntheorien",
+        "text": "<b>Übersicht der Lerntheorien</b><br><br>\nLernen verändert sich von der reinen Wissensaufnahme hin zur selbstorganisierten Kompetenzentwicklung. Hier die vier großen Strömungen:<br><br>\n\n<b>TEIL 1: Fremdgesteuerte Lernprozesse</b><br><br>\n<b>1. Behaviorismus</b><br>\n<i>\"Der Mensch als Black-Box.\"</i><br>\nLernen erfolgt durch ein <b>Reiz-Reaktions-Modell</b> (Konditionierung).<br>\n👉 <b>Rolle der Lehrenden:</b> Lehrer (vermittelt Faktenwissen, gibt Orientierung).<br>\n👉 <b>Ziel:</b> Initiierung von gewünschtem Verhalten.<br><br>\n\n<b>2. Kognitivismus</b><br>\n<i>\"Lernen durch Einsicht.\"</i><br>\nInformationen werden verarbeitet. Lernen geschieht durch <b>Denken und Verstehen</b>.<br>\n👉 <b>Rolle der Lehrenden:</b> Trainer & Tutor (zeigt Methoden, berät).<br>\n👉 <b>Ziel:</b> Zielgerichtete Handlungen.<br><br>\n\n<hr style=\"border:0; border-top:1px solid #555; margin: 10px 0;\"><br>\n\n<b>TEIL 2: Selbstorganisierte Lernprozesse</b><br><br>\n<b>3. Konstruktivismus</b><br>\n<i>\"Jeder baut sich seine Welt.\"</i><br>\nLernen ist ein individueller Prozess basierend auf <b>Erfahrung</b>.<br>\n👉 <b>Rolle der Begleitenden:</b> Coach (ermöglicht situiertes und informelles Lernen).<br>\n👉 <b>Ziel:</b> Individuelle Problemlösungen.<br><br>\n\n<b>4. Konnektivismus</b><br>\n<i>\"Wissen ist im Netzwerk.\"</i><br>\nLernen findet im <b>Netzwerk</b> und durch Verknüpfungen statt (digital & analog).<br>\n👉 <b>Rolle der Begleitenden:</b> Mentor (teilt Erfahrungswissen, fördert Kollaboration).<br>\n👉 <b>Ziel:</b> Gemeinsame Problemlösungen.",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "🔙 Zurück zur Bibliothek",
+                "next": "library_main"
+            }
+        ]
+    },
+    "Wissen_vertiefen_5": {
+        "title": "Zielvereinbarungen",
+        "text": "Text...<b>Zielvereinbarungen (Management by Objectives)</b><br><br>\nFührung heißt nicht, jeden Schritt zu kontrollieren, sondern Ziele vorzugeben und den Weg dorthin freizugeben. Eine gute Zielvereinbarung motiviert und schafft Klarheit.<br><br>\n\n<b>Die SMART-Formel</b><br>\nDamit ein Ziel funktioniert, muss es fünf Kriterien erfüllen:<br><br>\n🎯 <b>S - Spezifisch:</b> Das Ziel muss eindeutig definiert sein. (Nicht: \"Mehr Umsatz\", sondern: \"Steigerung des Umsatzes bei Produkt X\").<br>\n📏 <b>M - Messbar:</b> Woran erkennen wir den Erfolg? (Zahlen, Daten, Fakten oder klare Zustände).<br>\n✅ <b>A - Attraktiv (oder Akzeptiert):</b> Der Mitarbeiter muss Lust haben, das Ziel zu erreichen. Es muss herausfordernd, aber machbar sein.<br>\n🙌 <b>R - Realistisch:</b> Das Ziel muss mit den vorhandenen Ressourcen erreichbar sein.<br>\n📅 <b>T - Terminiert:</b> Bis wann soll das Ziel erreicht werden? (Datum).<br><br>\n\n<b>Der Prozess:</b><br>\n1. <b>Vorbereitung:</b> Beide Seiten machen sich Gedanken.<br>\n2. <b>Gespräch:</b> Dialog! Das Ziel wird <i>vereinbart</i>, nicht diktiert.<br>\n3. <b>Schriftliche Fixierung:</b> Damit es keine Missverständnisse gibt.<br>\n4. <b>Meilensteine:</b> Regelmäßige kurze Checks (nicht erst am Jahresende!).",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "🔙 Zurück zur Bibliothek",
+                "next": "library_main"
+            }
+        ]
+    },
+    "Wissen_vertiefen_6": {
+        "title": "Lernzieltaxonomie nach Bloom",
+        "text": "<b>Die Lernzieltaxonomie nach Bloom</b><br><br>\nLernen findet auf unterschiedlichen Niveaustufen statt. Bloom unterteilt den kognitiven Bereich in sechs hierachische Stufen. Wer eine höhere Stufe erreichen will, muss die darunterliegenden beherrschen.<br><br>\n\n<b>Die 6 Kognitiven Lernzielstufen (Revidiert):</b><br><br>\n\n<b>1. Erinnern (Wissen):</b><br>\nFakten, Begriffe oder Konzepte aus dem Gedächtnis abrufen.<br>\n<i>Verben:</i> nennen, aufzählen, definieren, beschreiben.<br><br>\n\n<b>2. Verstehen:</b><br>\nDie Bedeutung von Informationen erfassen und in eigenen Worten wiedergeben.<br>\n<i>Verben:</i> erklären, zusammenfassen, interpretieren, vergleichen.<br><br>\n\n<b>3. Anwenden:</b><br>\nDas Gelernte in einer neuen, konkreten Situation nutzen.<br>\n<i>Verben:</i> berechnen, demonstrieren, lösen, anwenden, erstellen.<br><br>\n\n<b>4. Analysieren:</b><br>\nKomplexe Sachverhalte in ihre Bestandteile zerlegen und Zusammenhänge verstehen.<br>\n<i>Verben:</i> untersuchen, gliedern, differenzieren, prüfen.<br><br>\n\n<b>5. Beurteilen (Evaluieren):</b><br>\nEin Urteil anhand von Kriterien fällen und begründen.<br>\n<i>Verben:</i> bewerten, entscheiden, kritisieren, rechtfertigen, auswählen.<br><br>\n\n<b>6. Erschaffen (Synthese/Kreieren):</b><br>\nElemente zu einem neuen Ganzen zusammenfügen (höchstes Niveau).<br>\n<i>Verben:</i> entwerfen, entwickeln, konstruieren, planen, erfinden.",
+        "char": "sascha",
+        "charName": "Sascha AEVO",
+        "options": [
+            {
+                "text": "🔙 Zurück zur Bibliothek",
+                "next": "library_main"
+            }
+        ]
+    },
+    "Wissen_vertiefen_7": {
+        "title": "Gruppendynamik",
+        "text": "<b>Formelle vs. Informelle Gruppen</b><br><br>\nIn jedem Unternehmen existieren zwei Strukturen parallel. Für Führungskräfte ist es überlebenswichtig, beide zu erkennen und zu steuern.<br><br>\n\n<b>1. Formelle Gruppen (Die \"offizielle\" Struktur)</b><br>\nDiese Gruppen werden von der Unternehmensleitung geplant und gebildet.<br>\n👉 <b>Grundlage:</b> Organigramm, Stellenbeschreibungen.<br>\n👉 <b>Ziel:</b> Erfüllung betrieblicher Aufgaben (Effizienz).<br>\n👉 <b>Führung:</b> Durch ernannte Vorgesetzte (Instanz).<br>\n👉 <b>Kommunikation:</b> Dienstwege, Meetings, Berichte.<br>\n<i>Beispiel:</i> Die Buchhaltung, das Projektteam \"Digitalisierung\", die Schichtgruppe A.<br><br>\n\n<b>2. Informelle Gruppen (Das \"Schattenreich\")</b><br>\nDiese Gruppen bilden sich spontan und ungeplant durch menschliche Interaktion.<br>\n👉 <b>Grundlage:</b> Sympathie, gleiche Interessen, räumliche Nähe.<br>\n👉 <b>Ziel:</b> Befriedigung sozialer Bedürfnisse (Zugehörigkeit, Schutz, Anerkennung).<br>\n👉 <b>Führung:</b> Durch \"informelle Führer\" (Meinungsführer), die Anerkennung der Gruppe genießen.<br>\n👉 <b>Kommunikation:</b> Flurfunk, Gerüchteküche, Kaffeepause.<br>\n<i>Beispiel:</i> Die \"Raucher-Clique\", die Fahrgemeinschaft, die \"alten Hasen\".<br><br>\n\n<b>Die Gefahr und die Chance</b><br>\nInformelle Gruppen können die formellen Ziele unterstützen (kurze Dienstwege, Hilfe) oder boykottieren (Mobbing, Leistungszurückhaltung).<br>\n<i>Tipp: Identifizieren Sie die informellen Führer und gewinnen Sie diese für Ihre Ziele!</i>",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "🔙 Zurück zur Bibliothek",
+                "next": "library_main"
+            }
+        ]
+    },
+    "Wissen_vertiefen_8": {
+        "title": "Betriebliche Mitbestimmung",
+        "text": "<b>Grundlagen der betrieblichen Mitbestimmung</b><br>\nEine vertrauensvolle Zusammenarbeit zwischen Arbeitgeber und Betriebsrat ist gesetzlich vorgeschrieben (§ 2 BetrVG). Doch wie entsteht das Gremium und welche Macht hat es wirklich?<br><br>\n\n<b>TEIL 1: Die Betriebsratswahl</b><br>\nEin Betriebsrat wird nicht vom Arbeitgeber bestimmt, sondern von der Belegschaft in einem streng formalisierten Verfahren demokratisch gewählt. Fehler im Wahlverfahren können zur Anfechtbarkeit oder Nichtigkeit der Wahl führen.<br><br>\n\n<b>Wann wird gewählt?</b><br>\nDie regulären Wahlen finden alle vier Jahre im Zeitraum vom <b>1. März bis 31. Mai</b> statt. Außerhalb dieses Zeitraums wird nur gewählt, wenn z.B. noch kein Betriebsrat besteht oder der alte zurückgetreten ist.<br><br>\n\n<b>Wer darf wählen und kandidieren?</b><br>\n👉 <b>Aktives Wahlrecht:</b> Wählen dürfen alle Arbeitnehmer des Betriebs, die das 18. Lebensjahr vollendet haben (auch Leiharbeitnehmer, wenn sie länger als 3 Monate im Betrieb sind).<br>\n👉 <b>Passives Wahlrecht:</b> Gewählt werden darf, wer wahlberechtigt ist und dem Betrieb seit mindestens sechs Monaten angehört.<br><br>\n\n<b>Schutzmechanismen</b><br>\nUm die Unabhängigkeit der Wahl zu sichern, genießen Mitglieder des Wahlvorstands und Wahlbewerber einen <b>besonderen Kündigungsschutz</b> (ab Aufstellung des Wahlvorschlags bis 6 Monate nach der Wahl).<br><br>\n<hr style=\"border:0; border-top:1px solid #555; margin: 15px 0;\">\n\n<b>TEIL 2: Die Stufen der Mitbestimmung</b><br>\nIst der Betriebsrat im Amt, hat er abgestufte Rechte. Nicht bei jedem Thema darf er gleich stark mitreden.<br><br>\n\n<b>Stufe 1: Informationsrecht (Unterrichtung)</b><br>\nDer Arbeitgeber muss den Betriebsrat rechtzeitig und umfassend informieren, entscheidet am Ende aber allein.<br>\n<i>Beispiel:</i> Planung von Neu- und Umbauten, Personalplanung, wirtschaftliche Lage.<br><br>\n\n<b>Stufe 2: Mitwirkungsrecht (Anhörung)</b><br>\nDer Betriebsrat muss vor einer Entscheidung angehört werden. Er kann Bedenken äußern oder widersprechen.<br>\n<i>Wichtigstes Beispiel:</i> <b>Kündigungen (§ 102 BetrVG)</b>. Eine Kündigung, ohne dass der Betriebsrat vorher angehört wurde, ist unwirksam! Widerspricht der Betriebsrat, muss der Arbeitgeber den Mitarbeiter unter Umständen bis zum Ende des Kündigungsschutzprozesses weiterbeschäftigen.<br><br>\n\n<b>Stufe 3: Mitbestimmungsrecht (Zustimmung)</b><br>\nDer Arbeitgeber benötigt die Zustimmung des Betriebsrats. Verweigert dieser die Zustimmung (aus gesetzlichen Gründen), darf die Maßnahme vorerst nicht durchgeführt werden.<br>\n<i>Beispiel:</i> <b>Personelle Einzelmaßnahmen (§ 99 BetrVG)</b> wie Einstellung, Versetzung oder Umgruppierung.<br><br>\n\n<b>Stufe 4: Erzwingbare Mitbestimmung (Das Veto-Recht)</b><br>\nDies ist das \"schärfste Schwert\" (§ 87 BetrVG). In sozialen Angelegenheiten kann der Arbeitgeber <b>nichts</b> ohne den Betriebsrat entscheiden. Wenn keine Einigung erzielt wird, entscheidet die Einigungsstelle (ein neutrales Schlichtungsgremium).<br>\n<i>Themen:</i> Beginn und Ende der Arbeitszeit, Pausenregelungen, Anordnung von Überstunden, Urlaubsrundsätze, technische Überwachungseinrichtungen (Kameras/KI).<br><br>\n<hr style=\"border:0; border-top:1px solid #555; margin: 15px 0;\">\n\n<b>TEIL 3: Die Betriebsvereinbarung (BV)</b><br>\nWenn sich Arbeitgeber und Betriebsrat in mitbestimmungspflichtigen Fragen einigen, schließen sie eine Betriebsvereinbarung ab.<br><br>\n\n<b>Was ist eine BV?</b><br>\nSie ist ein Vertrag zwischen Arbeitgeber und Betriebsrat, der für alle Arbeitnehmer des Betriebs wie ein Gesetz wirkt (\"unmittelbar und zwingend\").<br><br>\n\n<b>Formvorschriften:</b><br>\n1. <b>Schriftform:</b> Sie muss schriftlich niedergelegt und von beiden Seiten unterschrieben sein.<br>\n2. <b>Bekanntmachung:</b> Der Arbeitgeber muss die BV im Betrieb auslegen oder aushängen (schwarzes Brett / Intranet).<br><br>\n\n<b>Grenzen:</b><br>\nEine Betriebsvereinbarung darf keine Regelungen treffen, die üblicherweise in Tarifverträgen geregelt sind (z.B. Löhne, Arbeitszeiten), es sei denn, der Tarifvertrag lässt dies ausdrücklich zu (Öffnungsklausel). Dies nennt man \"Tarifvorrang\".",
+        "char": "alex",
+        "charName": "Alex Engagiert",
+        "options": [
+            {
+                "text": "🔙 Zurück zur Bibliothek",
+                "next": "library_main"
+            }
+        ]
+    },
+    "Wissen_vertiefen_9": {
+        "title": "Lerntypen und Lernstiele",
+        "text": "...<b>Lerntypen und Lernstile</b><br><br>\nJeder Mensch nimmt Informationen anders auf und verarbeitet sie unterschiedlich. Für Ausbilder und Führungskräfte ist es wichtig, Lernangebote so zu gestalten, dass sie möglichst viele Typen ansprechen.<br><br>\n\n<b>1. Die Wahrnehmungskanäle (nach Vester)</b><br>\nHier geht es darum, über welchen Sinn Informationen am besten aufgenommen werden:<br><br>\n👁️ <b>Der visuelle Typ (Sehen):</b><br>\nLernt durch Grafiken, Bilder, Videos und Skizzen. Er muss es \"vor Augen haben\".<br>\n<i>Methode:</i> Lehrvideos, Mindmaps, Diagramme.<br><br>\n\n👂 <b>Der auditive Typ (Hören):</b><br>\nLernt durch Zuhören und Gespräche. Er kann Vorträgen gut folgen.<br>\n<i>Methode:</i> Podcasts, Diskussionen, Lehrgespräche.<br><br>\n\n✋ <b>Der haptische / kinästhetische Typ (Fühlen/Tun):</b><br>\nLernt durch Ausprobieren und Anfassen. \"Learning by Doing\".<br>\n<i>Methode:</i> Simulationen, Werkstattarbeit, Modelle bauen.<br><br>\n\n💬 <b>Der kommunikative / intellektuelle Typ:</b><br>\nLernt durch Austausch, Lesen und kritisches Hinterfragen.<br>\n<i>Methode:</i> Gruppenarbeit, Fachliteratur, Textarbeit.<br><br>\n\n<hr style=\"border:0; border-top:1px solid #555; margin: 15px 0;\">\n\n<b>2. Der Lernzyklus (nach Kolb)</b><br>\nDavid Kolb unterscheidet nicht nach Sinnen, sondern wie Wissen <i>verarbeitet</i> wird. Lernen ist ein Kreislauf aus Erfahrung und Reflexion.<br><br>\n🔹 <b>Der Entdecker (Divergierer):</b> Mag konkrete Erfahrungen und beobachtet gerne. Er ist fantasievoll.<br>\n🔹 <b>Der Denker (Assimilierer):</b> Bildet theoretische Modelle. Er mag logische Ordnung und Fakten.<br>\n🔹 <b>Der Entscheider (Konvergierer):</b> Wendet Theorien praktisch an. Er will wissen: \"Funktioniert das?\"<br>\n🔹 <b>Der Macher (Akkommodierer):</b> Probiert intuitiv aus und geht Risiken ein.<br><br>\n\n<b>Fazit für die Praxis:</b><br>\nVerlassen Sie sich nicht auf einen Kanal. Nutzen Sie <b>Multicodierung</b>: Bieten Sie Stoff immer visuell UND auditiv UND praktisch an, um den Lernerfolg zu maximieren.",
+        "char": "sascha",
+        "charName": "Sascha AEVO",
+        "options": [
+            {
+                "text": "🔙 Zurück zur Bibliothek",
+                "next": "library_main"
+            }
+        ]
+    },
+    "Notizblatt_1": {
+        "title": "Wie verläuft ein Planungsprozess",
+        "text": "Wie gut, dass mir Dr. Klara Kompezenz noch einen Hinweiszettel gegeben hat: <br><br>\n\nPlanung ist die gedankliche Vorwegnahme zukünftigen Handelns. Ein professioneller Planungsprozess läuft in logischen Phasen ab:<br><br>\n\n<b>1. Ist-Analyse (Diagnose)</b><br>\nWo stehen wir gerade? Analyse der Ausgangslage, Stärken/Schwächen (SWOT) und Rahmenbedingungen.<br>\n<i>Frage: \"Was ist das Problem?\"</i><br><br>\n\n<b>2. Zielsetzung</b><br>\nDefinition des gewünschten Soll-Zustands. Ziele müssen SMART sein (Spezifisch, Messbar, Attraktiv, Realistisch, Terminiert).<br>\n<i>Frage: \"Wo wollen wir hin?\"</i><br><br>\n\n<b>3. Maßnahmenplanung (Alternativen)</b><br>\nEntwicklung verschiedener Wege zum Ziel. Brainstorming von Optionen und Strategien.<br>\n<i>Frage: \"Wie können wir das erreichen?\"</i><br><br>\n\n<b>4. Bewertung & Entscheidung</b><br>\nVergleich der Alternativen (Kosten-Nutzen-Analyse, Risikoabschätzung) und Auswahl der besten Option.<br>\n<i>Frage: \"Welcher Weg ist der beste?\"</i><br><br>\n\n<b>5. Umsetzung (Durchführung)</b><br>\nZuweisung von Aufgaben, Ressourcen und Verantwortlichkeiten. Der Plan wird Realität.<br>\n<i>Frage: \"Wer macht was bis wann?\"</i><br><br>\n\n<b>6. Kontrolle (Soll-Ist-Vergleich)</b><br>\nÜberprüfung, ob das Ziel erreicht wurde. Bei Abweichungen beginnt der Prozess von vorne (Regelkreis).<br>\n<i>Frage: \"Haben wir es geschafft?\"</i>\n\n<b>Checkliste: Planungsschritte</b><br><br>\nVergessen Sie keinen Schritt:<br><br>\n1. 🔍 <b>Analyse:</b> Ist-Zustand prüfen.<br>\n2. 🎯 <b>Ziel:</b> Soll-Zustand definieren (SMART).<br>\n3. 🛤️ <b>Planung:</b> Maßnahmen entwickeln.<br>\n4. ⚖️ <b>Entscheidung:</b> Den besten Weg wählen.<br>\n5. 🚀 <b>Umsetzung:</b> Tun!<br>\n6. 📊 <b>Kontrolle:</b> Ergebnis prüfen & ggf. korrigieren.<br><br>\n<i>Merke: Planung ersetzt den Zufall durch Irrtum – aber Irrtum ist korrigierbar!</i>",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "🔙 zurück ins Büro",
+                "next": "Bürozeit_1"
+            }
+        ]
+    },
+    "Notizblatt_2": {
+        "title": "Zielgruppenanalyse & Personas",
+        "text": "<b>Zielgruppenanalyse & Personas</b><br><br>\nWer alle erreichen will, erreicht niemanden. Eine präzise Zielgruppenanalyse ist das Fundament für Marketing und Recruiting.<br><br>\n\n<b>1. Klassische Segmentierung (Die \"Hard Facts\")</b><br>\nZuerst wird der Gesamtmarkt anhand von Daten eingegrenzt:<br>\n📊 <b>Demografisch:</b> Alter, Geschlecht, Wohnort, Familienstand.<br>\n💰 <b>Sozioökonomisch:</b> Bildung, Beruf, Einkommen.<br>\n🏢 <b>B2B-Besonderheiten:</b> Bei Firmenkunden zählen Branche, Unternehmensgröße, Standort und Umsatz.<br><br>\n\n<b>2. Psychografische Merkmale (Die \"Soft Facts\")</b><br>\nViel wichtiger ist oft, wie die Zielgruppe <i>tickt</i>:<br>\n🧠 <b>Werte & Einstellungen:</b> Umweltbewusstsein, Sicherheitsbedürfnis, Karrierestreben.<br>\n❤️ <b>Lifestyle:</b> Hobbys, Mediennutzung, Konsumverhalten.<br><br>\n\n<b>3. Die Methode: Buyer Personas</b><br>\nDaten sind abstrakt. Um Kommunikation greifbar zu machen, entwickelt man fiktive Ideal-Kunden (Personas).<br>\n<i>Beispiel für den Bildungscampus:</i><br>\n<b>\"Kevin, der Orientierungslose\" (16 Jahre):</b><br>\nWill \"irgendwas mit Händen\" machen, hasst lange Texte, ist auf TikTok, braucht Sicherheit und klare Ansagen.\n👉 <i>Strategie:</i> Kurze Videos, einfache Sprache, Eltern mit ansprechen.<br><br>\n\n<b>4. Customer Journey</b><br>\nWo bewegt sich die Zielgruppe? An welchem \"Touchpoint\" (Berührungspunkt) können wir sie abholen? (Social Media, Messe, Schule, Fachzeitschrift).",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "🔙 zurück ins Büro",
+                "next": "Bürozeit_1"
+            }
+        ]
     }
 };
 
+    // --- ENGINE ---
     // --- ENGINE ---
     function renderScene(sceneKey) {
         state.currentScene = sceneKey;
@@ -1517,20 +1888,20 @@
         const bgContainer = document.getElementById('char-bg');
         const nameBadge = document.getElementById('char-name');
 
-        if (IMAGES[scene.char]) {
-            imgEl.src = IMAGES[scene.char]; imgEl.style.display = 'block'; fallbackEl.style.display = 'none';
+        // LOGIK-ÄNDERUNG: Wir nutzen NUR noch die Emojis aus AVATARS
+        imgEl.style.display = 'none'; // Echtes Bild immer ausblenden
+        fallbackEl.style.display = 'block'; // Emoji immer anzeigen
+        
+        // Welches Emoji?
+        if (AVATARS[scene.char]) {
+            fallbackEl.innerHTML = AVATARS[scene.char];
+            // Schriftgröße für Emojis sicherstellen
+            fallbackEl.style.fontSize = "150px"; 
         } else {
-            imgEl.style.display = 'none'; fallbackEl.style.display = 'block';
-            if (scene.char === 'klara') {
-                fallbackEl.innerHTML = '👩🏾‍🏫';
-            } else {
-                let emoji = '👨‍💼';
-                if (scene.char === 'verwaltung' || scene.char === 'claudia' || scene.char === 'viola') emoji = '👩‍💼';
-                if (scene.char === 'horst' || scene.char === 'sebastian') emoji = '👷‍♂️';
-                fallbackEl.innerHTML = emoji;
-            }
+            fallbackEl.innerHTML = ''; 
         }
         
+        // Spezial-Farbe für Klara (Lila Hintergrund)
         if (scene.char === 'klara') {
             bgContainer.classList.add('klara-mode');
             nameBadge.classList.add('klara-mode');
@@ -1545,10 +1916,18 @@
 
         const actionsDiv = document.getElementById('actions');
         actionsDiv.innerHTML = "";
+        
+        // DASHBOARD-CHECK:
+        // Setzt das Design zurück oder aktiviert den Kachel-Modus
+        actionsDiv.className = 'actions-container'; // Reset
+        if (scene.layout === 'dashboard') {
+            actionsDiv.classList.add('dashboard-mode');
+        }
 
         const charExtraDiv = document.getElementById('char-extra');
         charExtraDiv.innerHTML = ""; 
         charExtraDiv.style.display = "none";
+        // Style Reset für Standard-Box
         charExtraDiv.style.background = "rgba(0,0,0,0.4)";
         charExtraDiv.style.border = "1px solid #555";
         charExtraDiv.style.padding = "20px";
@@ -1556,10 +1935,14 @@
 
         const nameInputGroup = document.getElementById('name-input-group');
 
+        // Sonderfall INTRO Szene
         if (sceneKey === 'intro') {
             nameInputGroup.style.display = 'block';
+            fallbackEl.innerHTML = '👨‍💼'; // Gebäude-Emoji für Intro
+            
             if (scene.leftContent) {
                 charExtraDiv.style.display = "block";
+                // Transparenter Style für Intro-Text links
                 charExtraDiv.style.background = "transparent";
                 charExtraDiv.style.border = "none";
                 charExtraDiv.style.padding = "0";
@@ -1574,8 +1957,13 @@
             }
         }
 
-        if ((state.time <= 0 || state.mood <= 0 || state.budget <= 0) && sceneKey !== 'game_over_fail') { renderScene('game_over_fail'); return; }
+        // Game Over Check
+        if ((state.time <= 0 || state.mood <= 0 || state.budget <= 0) && sceneKey !== 'game_over_fail') { 
+            renderScene('game_over_fail'); 
+            return; 
+        }
 
+        // Spezial-Szenen Trigger
         if (scene.special === 'ai_question') {
             openAiOverlay(scene.aiId, scene.next);
         } else if (scene.special === 'quiz') {
@@ -1585,7 +1973,7 @@
         } else if (scene.special === 'search') {
             openSearchOverlay(scene.next, scene.searchId);
         } else if (scene.special === 'calc_score') {
-            // Wait for user interaction
+            // Warten auf User Interaction (Zertifikat)
         } else if (scene.options && scene.options.length === 0 && sceneKey !== 'intro' && sceneKey !== 'giveup_4_fired') { 
             let btn = document.createElement('button');
             btn.className = 'choice-btn'; btn.innerHTML = "<strong>🔄 Neu starten</strong>";
@@ -2412,6 +2800,1427 @@
                 }
             ]
         ]
+    },
+    "franziska_search_puzzle_search_config": {
+        "words": [
+            "PRÜFUNG",
+            "QUALIFIKATIONSMATRIX",
+            "LERNPROZESS",
+            "SOLL-IST-VERGLEICH",
+            "3-STUFEN-MODELL",
+            "8-STUFEN-MODELL",
+            "PERSONALFÜHRUNG",
+            "FÜHRUNGSSTIL",
+            "PERSONALBEDARF",
+            "BETRIEBSRAT",
+            "FÜHRUNGSPRINZIP",
+            "REIFEGRADMODELL",
+            "MARKETINGMIX",
+            "LERNZIEL",
+            "TAXONOMIE",
+            "LERNTRANSFER",
+            "FACHKOMPETENZ",
+            "DIDAKTIK",
+            "METHODIK",
+            "MUTTERSCHUTZ"
+        ],
+        "gridSize": 20,
+        "grid": [
+            [
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "Q",
+                    "isSalad": true
+                },
+                {
+                    "char": "Q",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "P",
+                    "isSalad": false
+                },
+                {
+                    "char": "D",
+                    "isSalad": true
+                },
+                {
+                    "char": "O",
+                    "isSalad": true
+                },
+                {
+                    "char": "8",
+                    "isSalad": false
+                },
+                {
+                    "char": "3",
+                    "isSalad": false
+                },
+                {
+                    "char": "B",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                },
+                {
+                    "char": "N",
+                    "isSalad": true
+                },
+                {
+                    "char": "R",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "O",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "E",
+                    "isSalad": true
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "V",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "Q",
+                    "isSalad": true
+                },
+                {
+                    "char": "I",
+                    "isSalad": true
+                },
+                {
+                    "char": "-",
+                    "isSalad": false
+                },
+                {
+                    "char": "-",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "Ü",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": true
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "I",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": true
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "H",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "Z",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "D",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "Q",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": true
+                },
+                {
+                    "char": "C",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "-",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "U",
+                    "isSalad": false
+                },
+                {
+                    "char": "U",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "U",
+                    "isSalad": false
+                },
+                {
+                    "char": "U",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": false
+                }
+            ],
+            [
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "G",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": true
+                },
+                {
+                    "char": "D",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "X",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": true
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                }
+            ],
+            [
+                {
+                    "char": "V",
+                    "isSalad": true
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "K",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "B",
+                    "isSalad": false
+                },
+                {
+                    "char": "G",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "J",
+                    "isSalad": true
+                },
+                {
+                    "char": "Ü",
+                    "isSalad": false
+                }
+            ],
+            [
+                {
+                    "char": "T",
+                    "isSalad": true
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "G",
+                    "isSalad": true
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "K",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "D",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                }
+            ],
+            [
+                {
+                    "char": "S",
+                    "isSalad": true
+                },
+                {
+                    "char": "Z",
+                    "isSalad": false
+                },
+                {
+                    "char": "Z",
+                    "isSalad": false
+                },
+                {
+                    "char": "Q",
+                    "isSalad": true
+                },
+                {
+                    "char": "M",
+                    "isSalad": false
+                },
+                {
+                    "char": "B",
+                    "isSalad": false
+                },
+                {
+                    "char": "-",
+                    "isSalad": false
+                },
+                {
+                    "char": "D",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "C",
+                    "isSalad": true
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "-",
+                    "isSalad": false
+                },
+                {
+                    "char": "-",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "P",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": true
+                },
+                {
+                    "char": "U",
+                    "isSalad": false
+                }
+            ],
+            [
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "V",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": false
+                },
+                {
+                    "char": "Ü",
+                    "isSalad": false
+                },
+                {
+                    "char": "C",
+                    "isSalad": true
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": true
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                }
+            ],
+            [
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "D",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "C",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "D",
+                    "isSalad": false
+                },
+                {
+                    "char": "D",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "H",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "T",
+                    "isSalad": true
+                },
+                {
+                    "char": "T",
+                    "isSalad": true
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "S",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "G",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "U",
+                    "isSalad": false
+                },
+                {
+                    "char": "Z",
+                    "isSalad": true
+                },
+                {
+                    "char": "Y",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "Z",
+                    "isSalad": false
+                },
+                {
+                    "char": "U",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "R",
+                    "isSalad": true
+                },
+                {
+                    "char": "O",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "I",
+                    "isSalad": true
+                },
+                {
+                    "char": "L",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "U",
+                    "isSalad": true
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": true
+                },
+                {
+                    "char": "L",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "Z",
+                    "isSalad": false
+                },
+                {
+                    "char": "U",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "G",
+                    "isSalad": false
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": false
+                },
+                {
+                    "char": "Z",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "D",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "Q",
+                    "isSalad": false
+                },
+                {
+                    "char": "U",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "K",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "X",
+                    "isSalad": false
+                }
+            ],
+            [
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "D",
+                    "isSalad": true
+                },
+                {
+                    "char": "Q",
+                    "isSalad": true
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "Q",
+                    "isSalad": true
+                },
+                {
+                    "char": "V",
+                    "isSalad": true
+                },
+                {
+                    "char": "M",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "H",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "D",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "K",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": true
+                },
+                {
+                    "char": "N",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "O",
+                    "isSalad": true
+                },
+                {
+                    "char": "G",
+                    "isSalad": true
+                },
+                {
+                    "char": "S",
+                    "isSalad": true
+                },
+                {
+                    "char": "G",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "Ü",
+                    "isSalad": false
+                },
+                {
+                    "char": "H",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "U",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "G",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                }
+            ]
+        ]
     }
 };
 
@@ -2742,7 +4551,7 @@
     function openImpressum() { document.getElementById('overlay-impressum').classList.remove('hidden'); }
     function closeImpressum() { document.getElementById('overlay-impressum').classList.add('hidden'); }
     
-    // ZERTIFIKAT-LOGIK MIT ABSTUFUNGEN
+   // ZERTIFIKAT-LOGIK MIT ABSTUFUNGEN
     function showCertificate() { 
         const totalScore = state.budget + state.mood; 
         const playerNameInput = document.getElementById('player-name').value;
@@ -2772,6 +4581,75 @@
         document.getElementById('cert-grade-text').innerHTML = text; 
         document.getElementById('overlay-cert').classList.remove('hidden'); 
     }
+
+    // --- NEU: FUNKTION FÜR TEAM-SIDEBAR (Mit deinen neuen Emojis) ---
+    const TEAM_DETAILS = [
+        { emoji: '👨🏼‍💼', name: 'Dr. Peter Planer', role: 'Geschäftsführung' },
+        { emoji: '🤵🏾‍♀️', name: 'Dr. Klara Kompetenz', role: 'Personalleitung' },
+        { emoji: '👷🏻', name: 'Horst Hektik', role: 'Ausbildungsleiter PlanA' },
+        { emoji: '👨🏽‍⚖️', name: 'Sascha AEVO', role: 'Verantwortlicher Ausbilder' },
+        { emoji: '👩‍💼', name: 'Franziska Immerda', role: 'Verwaltung' },
+        { emoji: '👨🏻‍💻', name: 'Boris Gemini', role: 'IT-Abteilung' },
+        { emoji: '🙎🏻‍♂️', name: 'Alex Engagiert', role: 'Betriebsrat' },
+        { emoji: '🤷🏻‍♀️', name: 'Claudia Papierkram', role: 'Verwaltung/Assistenz' },
+        { emoji: '🙋🏻‍♀️', name: 'Viola Communikationis', role: 'Inklusion' },
+        { emoji: '🧑‍🦽', name: 'Erik Handycap', role: 'Sozialarbeit' },
+        { emoji: '👨🏻‍🔧', name: 'Sebastian Domini', role: 'Technik/Meister' }
+    ];
+
+   function toggleTeamSidebar() {
+        const sidebar = document.getElementById('team-sidebar');
+        const content = document.getElementById('team-sidebar-content');
+        
+        // Umschalten (Rein/Raus)
+        sidebar.classList.toggle('open');
+
+        // Nur beim ersten Öffnen befüllen (Performance)
+        if (sidebar.classList.contains('open') && content.innerHTML.trim() === "") {
+            let html = "";
+            TEAM_DETAILS.forEach(member => {
+                const emoji = AVATARS[member.id] || member.emoji || "❓"; // Fallback Logik
+                html += `
+                <div class="team-list-item">
+                    <div class="team-emoji">${emoji}</div>
+                    <div class="team-info">
+                        <span class="team-name-side">${member.name}</span>
+                        <span class="team-role-side">${member.role}</span>
+                    </div>
+                </div>`;
+            });
+            content.innerHTML = html;
+        }
+    }
+
+    // --- BÜRO LOGIK (Rückfahrt-Ticket) ---
+    let returnTicket = null;
+
+    function goToOffice() {
+        // Wir speichern die aktuelle Szene NUR, wenn wir nicht schon im Büro sind
+        // Damit der "Zurück"-Knopf nicht überschrieben wird, wenn man von Unterseiten zurückkommt
+        if (state.currentScene !== 'Bürozeit_1' && 
+            !state.currentScene.startsWith('office_') && 
+            !state.currentScene.startsWith('library_') && 
+            state.currentScene !== 'Wissen_vertiefen_1' && 
+            state.currentScene !== 'Boris-Gemini_befragen') {
+            returnTicket = state.currentScene;
+        }
+        renderScene('Bürozeit_1');
+    }
+
+    function returnFromOffice() {
+        if (returnTicket) {
+            renderScene(returnTicket);
+        } else {
+            renderScene('intro'); // Fallback
+        }
+    }
+    
+    // --- PLATZHALTER FUNKTIONEN (falls mal gebraucht, aber jetzt über Szenen gelöst) ---
+    function showNotes() { renderScene('office_notes'); }
+    function showEmails() { renderScene('office_emails'); }
+    function showStats() { renderScene('office_stats'); }
 
     renderScene('intro');
 </script>
