@@ -300,7 +300,18 @@
             justify-content: center;
             pointer-events: none; /* Keine Interaktion */
         }
-
+/* SORTIER-AUFGABE STYLES */
+        .sort-list { display: flex; flex-direction: column; gap: 8px; max-width: 600px; margin: 0 auto; }
+        .sort-item {
+            background: #34495e; padding: 15px; border-radius: 6px; border: 1px solid #555;
+            cursor: grab; transition: transform 0.2s, background 0.2s; display: flex; align-items: center; justify-content: space-between;
+            user-select: none;
+        }
+        .sort-item:hover { background: #3e5871; }
+        .sort-item.selected { border: 2px solid #f1c40f; background: #2c3e50; transform: scale(1.02); }
+        .sort-item.correct { border-color: #2ecc71; background: rgba(46, 204, 113, 0.2); }
+        .sort-item.wrong { border-color: #c0392b; background: rgba(192, 57, 43, 0.2); }
+        .sort-handle { color: #aaa; margin-right: 15px; font-size: 1.2rem; cursor: grab; }
         /* BUCHSTABENSALAT STYLES */
         .search-grid { 
             display: grid; 
@@ -583,7 +594,23 @@
         <button id="btn-search-success" class="choice-btn hidden" style="background: #2ecc71; margin-top:20px;" onclick="closeSearchOverlay()">Gefunden! Weiter.</button>
     </div>
 </div>
+<div id="overlay-sort" class="overlay hidden">
+    <div class="overlay-card">
+        <button class="debug-skip-btn" onclick="debugSkip()" title="Aufgabe überspringen (Debug)">⏭️</button>
+        <h2 style="color: #f39c12;">Ablauf sortieren</h2>
+        <p id="sort-intro" style="color: #aaa; margin-bottom: 20px;">Bringen Sie die Schritte in die richtige chronologische Reihenfolge.</p>
+        
+        <div id="sort-container" class="sort-list"></div>
+        
+        <div id="sort-feedback" style="margin-top:20px; font-weight:bold; min-height:24px;"></div>
 
+        <div style="display:flex; gap:15px; justify-content:center; margin-top:20px;">
+            <button class="choice-btn" style="background:#f39c12; color:#2c3e50; font-weight:bold;" onclick="checkSortTask()">Reihenfolge prüfen</button>
+            <button class="choice-btn" style="background:#c0392b;" onclick="giveUp()">🏳️ Ich gebe auf</button>
+        </div>
+        <button id="btn-sort-success" class="choice-btn hidden" style="background: #2ecc71; margin-top:20px;" onclick="closeSortOverlay()">Richtig! Weiter.</button>
+    </div>
+</div>
 <div id="overlay-impressum" class="overlay hidden">
     <div class="overlay-card" style="max-width: 800px;">
         <h2 style="color: var(--gold);">Impressum</h2>
@@ -836,7 +863,24 @@
 };
 
     let currentAiId = null;
-
+const sortTasks = {
+    "Sortierung_1_sort_config": {
+        "title": "Neue Szene",
+        "intro": "Text...",
+        "items": [
+            "Zielsetzung und Planung (Projektziel definieren)",
+            "Datensammlung (Ist-Zustand)",
+            "Bedarfsermittlung & Lückenanalyse (Soll-Zustand)",
+            "Priorisierung der Bedarfe:",
+            "Entwicklung von Lösungsoptionen",
+            "Dokumentation & Präsentation",
+            "Dokumentation & Präsentation",
+            "Implementierung & Evaluation"
+        ]
+    }
+}; // Platzhalter für Sortieraufgaben
+    let currentSortId = null;
+    let draggedItem = null; // Für Drag & Drop
     // --- QUIZ DATEN ---
     const quizzes = {
     "quiz_aptitude_test": {
@@ -1298,7 +1342,7 @@ const scenes = {
                 "next": "Wissen_vertiefen_2"
             },
             {
-                "text": "Das Manageriel Grid",
+                "text": "Das Managerial Grid",
                 "next": "Wissen_vertiefen_3"
             },
             {
@@ -1310,16 +1354,24 @@ const scenes = {
                 "next": "Wissen_vertiefen_5"
             },
             {
-                "text": "Gruppendynamik",
+                "text": "Lernzieltaxonomie nach Bloom",
                 "next": "Wissen_vertiefen_6"
             },
             {
-                "text": "Lernzieltaxonomie nach Bloom",
+                "text": "Gruppendynamik",
                 "next": "Wissen_vertiefen_7"
             },
             {
-                "text": "Lerntypen und Lernstile",
+                "text": "Betriebliche Mitbestimmung",
                 "next": "Wissen_vertiefen_8"
+            },
+            {
+                "text": "Lerntypen und Lernstile",
+                "next": "Wissen_vertiefen_9"
+            },
+            {
+                "text": "Strukturierung von Bedarfsanalysen",
+                "next": "Wissen_vertiefen_10"
             },
             {
                 "text": "🔙 Zurück zum Schreibtisch",
@@ -1329,13 +1381,17 @@ const scenes = {
     },
     "email_planer_vision": {
         "title": "Mail von Dr. Planer",
-        "text": "<b>Betreff: Visionen...</b><br><br>Liebe Kollegen,<br>ich hatte heute Nacht einen Traum. Bildungscampus meets Metaverse. Bitte denken Sie mal drüber nach.<br><br>LG Peter",
+        "text": "<b>Betreff: Bedarfsanalyse...</b><br><br>Liebe Kollegen,<br>Sie wissen, ich bin manchmal ein bisschen durcheinander. Ich wollte eine Bedarfsanalyse für neue Geschäftsfelder erstellen, ich  weiß aber den genauen Ablauf nicht mehr und bitte Sie dabei um Ihre Hilfe!\n\nEs wäre sehr freundlich von Ihnen!\n\nMit freundlichen Grüßen,\nDr. Peter Planer",
         "char": "chef",
-        "charName": "E-Mail",
+        "charName": "Dr. Peter Planer",
         "options": [
             {
                 "text": "Zurück zum Posteingang",
                 "next": "office_emails"
+            },
+            {
+                "text": "Hilfe anbieten",
+                "next": "Sortierung_1"
             }
         ]
     },
@@ -2422,6 +2478,18 @@ const scenes = {
             }
         ]
     },
+    "Wissen_vertiefen_10": {
+        "title": "Strukturierung von Bedarfsanalysen",
+        "text": "...Eine strukturierte Bedarfsanalyse identifiziert Lücken zwischen dem Ist- und Soll-Zustand, um gezielte Lösungen zu entwickeln. Sie umfasst typischerweise die Definition von Zielen, das Sammeln und Analysieren von Daten sowie die Ableitung von Handlungsmaßnahmen.<br><br>\n<b>Die zentralen Schritte im Überblick:</b><br><br>\n<b>1. Zielsetzung und Planung:</b> Festlegen, was analysiert wird und welche Ziele erreicht werden sollen.<br>\n<b>2. Datensammlung (Ist-Zustand):</b> Informationen durch Umfragen, Interviews oder Beobachtungen einholen.<br>\n<b>3. Datenanalyse:</b> Auswertung, um Muster und den tatsächlichen Bedarf zu identifizieren.<br>\n<b>4. Bedarfsermittlung (Soll-Zustand):</b> Abgleich des Ist-Zustands mit dem Soll-Zustand (Gap-Analyse).<br>\n<b>5. Priorisierung:</b> Festlegen, welche Bedürfnisse am dringendsten sind.<br>\n<b>6. Lösungsentwicklung:</b> Erarbeitung von Maßnahmen zur Deckung des Bedarfs.<br>\n<b>7. Dokumentation:</b> Zusammenfassung und Präsentation der Ergebnisse.<br>\n<b>8. Evaluation:</b> Umsetzung und Überprüfung der Zielerreichung.",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "🔙 Zurück zur Bibliothek",
+                "next": "library_main"
+            }
+        ]
+    },
     "office_notes": {
         "title": "Notizblock",
         "text": "<b>Wie gut, dass ich mir Notizen gamacht habe</b>",
@@ -2472,6 +2540,13 @@ const scenes = {
         "special": "search",
         "next": "office_emails",
         "searchId": "Buchstabensalat_Boris_search_config"
+    },
+    "Sortierung_1": {
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "special": "sort",
+        "sortId": "Sortierung_1_sort_config",
+        "next": "office_emails"
     }
 };
 
@@ -2569,8 +2644,10 @@ const scenes = {
         } else if (scene.special === 'crossword') {
             openCrosswordOverlay(scene.next, scene.cwId);
         } else if (scene.special === 'search') {
-            openSearchOverlay(scene.next, scene.searchId);
-        } else if (scene.special === 'calc_score') {
+openSearchOverlay(scene.next, scene.searchId);
+        } else if (scene.special === 'sort') {
+    openSortOverlay(scene.next, scene.sortId);
+} else if (scene.special === 'calc_score') {
             // Warten auf User Interaction (Zertifikat)
         } else if (scene.options && scene.options.length === 0 && sceneKey !== 'intro' && sceneKey !== 'giveup_4_fired') { 
             let btn = document.createElement('button');
@@ -2630,6 +2707,7 @@ const scenes = {
         document.getElementById('overlay-quiz').classList.add('hidden');
         document.getElementById('overlay-crossword').classList.add('hidden');
         document.getElementById('overlay-search').classList.add('hidden');
+document.getElementById('overlay-sort').classList.add('hidden');
         
         state.giveUpCount = (state.giveUpCount || 0) + 1;
         
@@ -2661,6 +2739,7 @@ const scenes = {
         document.getElementById('overlay-quiz').classList.add('hidden');
         document.getElementById('overlay-crossword').classList.add('hidden');
         document.getElementById('overlay-search').classList.add('hidden');
+document.getElementById('overlay-sort').classList.add('hidden');
         if(nextSceneStored) renderScene(nextSceneStored);
         else renderScene('intro'); 
     }
@@ -2672,7 +2751,7 @@ const scenes = {
         state.mood = 100;
         updateKPIs();
         // 2. Prüfen, ob ein Overlay offen ist
-        const overlays = ['overlay-ai', 'overlay-quiz', 'overlay-crossword', 'overlay-search', 'overlay-cert'];
+       const overlays = ['overlay-ai', 'overlay-quiz', 'overlay-crossword', 'overlay-search', 'overlay-cert', 'overlay-sort'];
         let overlayOpen = false;
         overlays.forEach(id => {
             if (!document.getElementById(id).classList.contains('hidden')) {
@@ -5881,7 +5960,125 @@ const scenes = {
         document.getElementById('overlay-search').classList.add('hidden');
         renderScene(nextSceneStored);
     }
+// --- SORTIER-AUFGABE LOGIK ---
+    
+    function openSortOverlay(next, sortId) {
+        nextSceneStored = next;
+        currentSortId = sortId;
+        const task = sortTasks[sortId];
+        
+        if(!task) { alert("Fehler: Sortier-Daten nicht gefunden!"); return; }
 
+        document.getElementById('sort-intro').innerHTML = task.intro || "Bringen Sie die Elemente in die richtige Reihenfolge (Klicken zum Tauschen oder Ziehen).";
+        
+        // Items kopieren und mischen
+        let items = [...task.items];
+        // Fisher-Yates Shuffle (damit es nicht schon gelöst ist)
+        for (let i = items.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [items[i], items[j]] = [items[j], items[i]];
+        }
+
+        const container = document.getElementById('sort-container');
+        container.innerHTML = "";
+
+        items.forEach((text, index) => {
+            const div = document.createElement('div');
+            div.className = 'sort-item';
+            div.draggable = true;
+            div.innerHTML = `<span class="sort-handle">☰</span> <span class="sort-text">${text}</span>`;
+            
+            // Event Listener für Drag & Drop und Klick-Swap
+            div.addEventListener('dragstart', handleDragStart);
+            div.addEventListener('dragover', handleDragOver);
+            div.addEventListener('drop', handleDrop);
+            div.addEventListener('click', handleItemClick); // Klick-Support
+            
+            container.appendChild(div);
+        });
+
+        document.getElementById('sort-feedback').innerText = "";
+        document.getElementById('btn-sort-success').classList.add('hidden');
+        document.getElementById('overlay-sort').classList.remove('hidden');
+    }
+
+    // Variablen für Klick-Swap Logik
+    let selectedSortItem = null;
+
+    function handleItemClick(e) {
+        // Wenn schon gelöst, nichts mehr machen
+        if(!document.getElementById('btn-sort-success').classList.contains('hidden')) return;
+
+        let clicked = this;
+        
+        if (selectedSortItem === null) {
+            // Erstes Item auswählen
+            selectedSortItem = clicked;
+            clicked.classList.add('selected');
+        } else if (selectedSortItem === clicked) {
+            // Deselektieren
+            clicked.classList.remove('selected');
+            selectedSortItem = null;
+        } else {
+            // Tauschen
+            swapElements(selectedSortItem, clicked);
+            selectedSortItem.classList.remove('selected');
+            selectedSortItem = null;
+        }
+    }
+
+    // Drag & Drop Helfer
+    function handleDragStart(e) { draggedItem = this; e.dataTransfer.effectAllowed = 'move'; this.style.opacity = '0.4'; }
+    function handleDragOver(e) { if (e.preventDefault) e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
+    function handleDrop(e) {
+        if (e.stopPropagation) e.stopPropagation();
+        this.style.opacity = '1'; draggedItem.style.opacity = '1';
+        if (draggedItem !== this) { swapElements(draggedItem, this); }
+        return false;
+    }
+
+    function swapElements(el1, el2) {
+        const parent = el1.parentNode;
+        const temp = document.createElement('div'); // Platzhalter
+        parent.insertBefore(temp, el2);
+        parent.insertBefore(el2, el1);
+        parent.insertBefore(el1, temp);
+        parent.removeChild(temp);
+    }
+
+    function checkSortTask() {
+        const currentItems = document.querySelectorAll('#sort-container .sort-text');
+        const correctItems = sortTasks[currentSortId].items;
+        let isCorrect = true;
+
+        currentItems.forEach((item, index) => {
+            const div = item.parentNode; // Das .sort-item div
+            div.classList.remove('correct', 'wrong');
+            
+            if (item.innerText.trim() === correctItems[index].trim()) {
+                div.classList.add('correct');
+            } else {
+                div.classList.add('wrong');
+                isCorrect = false;
+            }
+        });
+
+        const fb = document.getElementById('sort-feedback');
+        if (isCorrect) {
+            fb.innerText = "Perfekt! Die Reihenfolge stimmt.";
+            fb.style.color = "#2ecc71";
+            document.getElementById('btn-sort-success').classList.remove('hidden');
+            state.time += 5; state.budget += 5; updateKPIs();
+        } else {
+            fb.innerText = "Das stimmt noch nicht ganz. Rot markierte sind an der falschen Position.";
+            fb.style.color = "#e74c3c";
+        }
+    }
+
+    function closeSortOverlay() {
+        document.getElementById('overlay-sort').classList.add('hidden');
+        renderScene(nextSceneStored);
+    }
     // --- KI & QUIZ LOGIK ---
     let nextSceneStored = '';
     
