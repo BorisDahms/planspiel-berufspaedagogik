@@ -839,7 +839,6 @@
 
     // --- QUIZ DATEN ---
     const quizzes = {
-    // HIER IST DER VERSCHOBENE EIGNUNGSTEST:
     "quiz_aptitude_test": {
         "title": "Eignungstest: Logik & Wissen",
         "intro": "<b>Franziska Immerda:</b> 'Hier sind die Fragen für den Bewerber. Können Sie die Lösungen bitte kurz verifizieren? Ich bin mir bei Frage 2 unsicher.'",
@@ -848,30 +847,56 @@
             {
                 "q": "Logik: Welches Wort passt nicht in die Reihe?",
                 "options": [
-                    { "text": "Hammer", "val": false },
-                    { "text": "Säge", "val": false },
-                    { "text": "Kaufvertrag", "val": true }
+                    {
+                        "text": "Hammer",
+                        "val": false
+                    },
+                    {
+                        "text": "Säge",
+                        "val": false
+                    },
+                    {
+                        "text": "Kaufvertrag",
+                        "val": true
+                    }
                 ]
             },
             {
                 "q": "Mathe: Ein Azubi verdient 800€. Er bekommt 5% Erhöhung. Wieviel erhält er?",
                 "options": [
-                    { "text": "840€", "val": true },
-                    { "text": "850€", "val": false },
-                    { "text": "805€", "val": false }
+                    {
+                        "text": "840€",
+                        "val": true
+                    },
+                    {
+                        "text": "850€",
+                        "val": false
+                    },
+                    {
+                        "text": "805€",
+                        "val": false
+                    }
                 ]
             },
             {
                 "q": "Allgemeinwissen: Wer wählt den Betriebsrat?",
                 "options": [
-                    { "text": "Die Geschäftsführung", "val": false },
-                    { "text": "Die Arbeitnehmer", "val": true },
-                    { "text": "Die Gewerkschaft", "val": false }
+                    {
+                        "text": "Die Geschäftsführung",
+                        "val": false
+                    },
+                    {
+                        "text": "Die Arbeitnehmer",
+                        "val": true
+                    },
+                    {
+                        "text": "Die Gewerkschaft",
+                        "val": false
+                    }
                 ]
             }
         ]
     },
-    // --- HIER BEGINNEN DIE ALTEN QUIZZE ---
     "jarbschg_zeit": {
         "title": "<span style='color:white;'>Aufgabe:</span> JArbSchG - Arbeitszeit & Aufsicht",
         "intro": "<b>Franziska Immerda (Verwaltung):</b> 'Der Vorfall mit Kevin an der Kreissäge hat hohe Wellen geschlagen. Die Berufsgenossenschaft prüft jetzt genau. Beweisen Sie Ihre Rechtssicherheit in Bezug auf Arbeitszeit und gefährliche Arbeiten.'",
@@ -880,15 +905,27 @@
             {
                 "q": "Darf Kevin (16) alleine an die Kreissäge?",
                 "options": [
-                    { "text": "Ja, wenn es eilt", "val": false },
-                    { "text": "Nein, verboten", "val": true }
+                    {
+                        "text": "Ja, wenn es eilt",
+                        "val": false
+                    },
+                    {
+                        "text": "Nein, verboten",
+                        "val": true
+                    }
                 ]
             },
             {
                 "q": "Max. Wochenarbeitszeit Jugendlicher?",
                 "options": [
-                    { "text": "40 Std", "val": true },
-                    { "text": "48 Std", "val": false }
+                    {
+                        "text": "40 Std",
+                        "val": true
+                    },
+                    {
+                        "text": "48 Std",
+                        "val": false
+                    }
                 ]
             }
         ]
@@ -901,22 +938,40 @@
             {
                 "q": "Was ist Job Enrichment?",
                 "options": [
-                    { "text": "Mehr Aufgaben gleiches Niveau", "val": false },
-                    { "text": "Höheres Anforderungsniveau", "val": true }
+                    {
+                        "text": "Mehr Aufgaben gleiches Niveau",
+                        "val": false
+                    },
+                    {
+                        "text": "Höheres Anforderungsniveau",
+                        "val": true
+                    }
                 ]
             },
             {
                 "q": "Ziel von Coaching?",
                 "options": [
-                    { "text": "Hilfe zur Selbsthilfe", "val": true },
-                    { "text": "Fachberatung", "val": false }
+                    {
+                        "text": "Hilfe zur Selbsthilfe",
+                        "val": true
+                    },
+                    {
+                        "text": "Fachberatung",
+                        "val": false
+                    }
                 ]
             },
             {
                 "q": "Was ist Job Rotation?",
                 "options": [
-                    { "text": "Geplanter Wechsel", "val": true },
-                    { "text": "Kündigung", "val": false }
+                    {
+                        "text": "Geplanter Wechsel",
+                        "val": true
+                    },
+                    {
+                        "text": "Kündigung",
+                        "val": false
+                    }
                 ]
             }
         ]
@@ -929,36 +984,66 @@
             {
                 "q": "Was ist ein zentrales Ziel der Personalentwicklung (PE)?",
                 "options": [
-                    { "text": "Gewinnmaximierung der einzelnen Mitarbeiter.", "val": false },
-                    { "text": "Mitarbeiter auf künftige Entwicklungen (z.B. technologischen Wandel) vorzubereiten.", "val": true }
+                    {
+                        "text": "Gewinnmaximierung der einzelnen Mitarbeiter.",
+                        "val": false
+                    },
+                    {
+                        "text": "Mitarbeiter auf künftige Entwicklungen (z.B. technologischen Wandel) vorzubereiten.",
+                        "val": true
+                    }
                 ]
             },
             {
                 "q": "Was wird in einer Qualifikationsmatrix gegenübergestellt?",
                 "options": [
-                    { "text": "Ist-Qualifikationen vs. Soll-Anforderungen.", "val": true },
-                    { "text": "Gehaltswünsche vs. Budget.", "val": false }
+                    {
+                        "text": "Ist-Qualifikationen vs. Soll-Anforderungen.",
+                        "val": true
+                    },
+                    {
+                        "text": "Gehaltswünsche vs. Budget.",
+                        "val": false
+                    }
                 ]
             },
             {
                 "q": "Was kennzeichnet eine betriebliche Laufbahnplanung?",
                 "options": [
-                    { "text": "Sie beschreibt nur den Lebenslauf vor der Einstellung.", "val": false },
-                    { "text": "Sie bündelt Entwicklungs- und Aufstiegsmöglichkeiten zur Mitarbeiterbindung.", "val": true }
+                    {
+                        "text": "Sie beschreibt nur den Lebenslauf vor der Einstellung.",
+                        "val": false
+                    },
+                    {
+                        "text": "Sie bündelt Entwicklungs- und Aufstiegsmöglichkeiten zur Mitarbeiterbindung.",
+                        "val": true
+                    }
                 ]
             },
             {
                 "q": "Welche Phasen umfasst eine professionelle Mitarbeiterbeurteilung?",
                 "options": [
-                    { "text": "Beobachtung, Bewertung und Besprechung.", "val": true },
-                    { "text": "Nur die spontane Bewertung aus dem Bauch heraus.", "val": false }
+                    {
+                        "text": "Beobachtung, Bewertung und Besprechung.",
+                        "val": true
+                    },
+                    {
+                        "text": "Nur die spontane Bewertung aus dem Bauch heraus.",
+                        "val": false
+                    }
                 ]
             },
             {
                 "q": "Was ist das primäre Ziel eines Coachings?",
                 "options": [
-                    { "text": "Fachliche Anweisungen geben.", "val": false },
-                    { "text": "Hilfe zur Selbsthilfe leisten.", "val": true }
+                    {
+                        "text": "Fachliche Anweisungen geben.",
+                        "val": false
+                    },
+                    {
+                        "text": "Hilfe zur Selbsthilfe leisten.",
+                        "val": true
+                    }
                 ]
             }
         ]
@@ -971,23 +1056,44 @@
             {
                 "q": "Welche Gesprächsform ist 'anlassbezogen'?",
                 "options": [
-                    { "text": "Jahresgespräch", "val": false },
-                    { "text": "Rückkehrgespräch", "val": true },
-                    { "text": "Zielvereinbarungsgespräch", "val": false }
+                    {
+                        "text": "Jahresgespräch",
+                        "val": false
+                    },
+                    {
+                        "text": "Rückkehrgespräch",
+                        "val": true
+                    },
+                    {
+                        "text": "Zielvereinbarungsgespräch",
+                        "val": false
+                    }
                 ]
             },
             {
                 "q": "Was ist das Ziel eines Kritikgesprächs?",
                 "options": [
-                    { "text": "Mitarbeiter bestrafen", "val": false },
-                    { "text": "Ursachen erkennen & Verhalten ändern", "val": true }
+                    {
+                        "text": "Mitarbeiter bestrafen",
+                        "val": false
+                    },
+                    {
+                        "text": "Ursachen erkennen & Verhalten ändern",
+                        "val": true
+                    }
                 ]
             },
             {
                 "q": "Was kennzeichnet 'Aktives Zuhören'?",
                 "options": [
-                    { "text": "Sofortige Ratschläge geben", "val": false },
-                    { "text": "Paraphrasieren & Gefühle spiegeln", "val": true }
+                    {
+                        "text": "Sofortige Ratschläge geben",
+                        "val": false
+                    },
+                    {
+                        "text": "Paraphrasieren & Gefühle spiegeln",
+                        "val": true
+                    }
                 ]
             }
         ]
@@ -1000,22 +1106,40 @@
             {
                 "q": "Wer ist für die Lösung im Coaching verantwortlich?",
                 "options": [
-                    { "text": "Der Coach", "val": false },
-                    { "text": "Der Coachee (Klient)", "val": true }
+                    {
+                        "text": "Der Coach",
+                        "val": false
+                    },
+                    {
+                        "text": "Der Coachee (Klient)",
+                        "val": true
+                    }
                 ]
             },
             {
                 "q": "Was gehört zur 'Klärungsphase' im Coaching?",
                 "options": [
-                    { "text": "Vertragsabschluss", "val": false },
-                    { "text": "Ist-Soll-Analyse & Einbindung Beteiligter", "val": true }
+                    {
+                        "text": "Vertragsabschluss",
+                        "val": false
+                    },
+                    {
+                        "text": "Ist-Soll-Analyse & Einbindung Beteiligter",
+                        "val": true
+                    }
                 ]
             },
             {
                 "q": "Was ist 'Job Rotation'?",
                 "options": [
-                    { "text": "Systematischer Arbeitsplatzwechsel", "val": true },
-                    { "text": "Erweiterung des Aufgabenfeldes", "val": false }
+                    {
+                        "text": "Systematischer Arbeitsplatzwechsel",
+                        "val": true
+                    },
+                    {
+                        "text": "Erweiterung des Aufgabenfeldes",
+                        "val": false
+                    }
                 ]
             }
         ]
@@ -1203,36 +1327,59 @@ const scenes = {
             }
         ]
     },
-    
-    /* --- E-MAIL DUMMY SCENES (NEU EINGEFÜGT DAMIT DIE BUTTONS FUNKTIONIEREN) --- */
-    "email_planer_vision": { 
-        "title": "Mail von Dr. Planer", 
+    "email_planer_vision": {
+        "title": "Mail von Dr. Planer",
         "text": "<b>Betreff: Visionen...</b><br><br>Liebe Kollegen,<br>ich hatte heute Nacht einen Traum. Bildungscampus meets Metaverse. Bitte denken Sie mal drüber nach.<br><br>LG Peter",
-        "char": "chef", 
+        "char": "chef",
         "charName": "E-Mail",
-        "options": [{ "text": "Zurück zum Posteingang", "next": "office_emails" }] 
+        "options": [
+            {
+                "text": "Zurück zum Posteingang",
+                "next": "office_emails"
+            }
+        ]
     },
-    "email_horst_saw": { 
-        "title": "Mail von Horst", 
+    "email_horst_saw": {
+        "title": "Mail von Horst",
         "text": "<b>Betreff: KREISSÄGE!!!</b><br><br>WO BLEIBT DER AZUBI??? ICH BRAUCHE LEUTE!!!<br><br>Gruß Horst",
-        "char": "horst", 
+        "char": "horst",
         "charName": "E-Mail",
-        "options": [{ "text": "Zurück zum Posteingang", "next": "office_emails" }] 
+        "options": [
+            {
+                "text": "Zurück zum Posteingang",
+                "next": "office_emails"
+            }
+        ]
     },
-    "email_boris_joke": { 
-        "title": "Mail von Boris", 
-        "text": "<b>Betreff: Witz des Tages</b><br><br>Treffen sich zwei Server. Sagt der eine: 'Mir ist so heiß.' Sagt der andere: 'Mach doch mal ein Fenster auf!' 😂<br><br>LG Boris",
-        "char": "boris", 
-        "charName": "E-Mail",
-        "options": [{ "text": "Zurück zum Posteingang", "next": "office_emails" }] 
+    "email_boris_joke": {
+        "title": "Mail von Boris",
+        "text": "<b>Betreff: Witz des Tages</b><br><br>Treffen sich zwei Server. Sagt der eine: 'Mir ist so heiß.' Sagt der andere: 'Mach doch mal ein Fenster auf!' 😂<br><br>\n\nSag mal, kannst Du mir helfen? <br>\nIch habe meine KI um Hilfe gebeten, und nun spuckt sie nur Wirrwarr aus...\n<br><br>LG Boris Gemini",
+        "char": "Boris",
+        "charName": "Boris Gemini (KI)",
+        "options": [
+            {
+                "text": "Zurück zum Posteingang",
+                "next": "office_emails"
+            },
+            {
+                "text": "Hilfe anbieten",
+                "next": "Buchstabensalat_Boris"
+            }
+        ]
     },
-
+    "szene_2908": {
+        "title": "Eingeschobene Szene",
+        "text": "...",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": []
+    },
     "office_applicants": {
         "title": "Bewerberpool (4 Mappen)",
         "text": "<b>Franziska Immerda:</b> 'Chef, hier sind die aktuellen Initiativbewerbungen. Wen wollen Sie sich genauer ansehen?'",
         "char": "verwaltung",
         "charName": "Franziska Immerda",
-        "layout": "dashboard", 
+        "layout": "dashboard",
         "options": [
             {
                 "text": "👤 <b>Max Mustermann</b><br><small>Tischlergeselle (22 J.)</small>",
@@ -1262,7 +1409,7 @@ const scenes = {
         "text": "Sie haben neue Nachrichten. Bitte wählen Sie eine E-Mail aus, um sie zu lesen.",
         "char": "verwaltung",
         "charName": "Franziska Immerda",
-        "layout": "dashboard", 
+        "layout": "dashboard",
         "options": [
             {
                 "text": "📧 <b>Dr. Planer</b><br><small>Betreff: Visionen...</small>",
@@ -1300,245 +1447,444 @@ const scenes = {
             }
         ]
     },
-    
-    /* --- BEWERBER LOGIK (NEU & INDIVIDUELL) --- */
-    
-    /* 1. MAX (Tischler) */
     "applicant_max": {
         "title": "Akte: Max Mustermann",
         "text": "<b>Position:</b> Tischler (Geselle)<br><b>Alter:</b> 22<br><br><b>Dokumente:</b><br>Das Anschreiben strotzt vor Rechtschreibfehlern. Er schreibt: <i>\"Ich hab Bock auf Holz, nicht auf Papierkram.\"</i><br><br><b>Zeugnis:</b><br>Mathe: 5<br>Deutsch: 4<br>Praxis/Werken: 1 (Auszeichnung für bestes Gesellenstück)<br><br><b>Horst Hektiks Notiz:</b> \"Der Junge hat goldene Hände, aber im Berichtsheft nur Chaos. Wollen wir das riskieren?\"",
         "char": "verwaltung",
         "charName": "Bewerbungsmappe",
         "options": [
-            { "text": "🟢 Einladen (Pfad Max)", "next": "interview_start_max" },
-            { "text": "🔴 Absage diktieren", "next": "applicant_action_reject" },
-            { "text": "🔙 Zurück zur Übersicht", "next": "office_applicants" }
+            {
+                "text": "🟢 Einladen (Pfad Max)",
+                "next": "interview_start_max"
+            },
+            {
+                "text": "🔴 Absage diktieren",
+                "next": "applicant_action_reject"
+            },
+            {
+                "text": "🔙 Zurück zur Übersicht",
+                "next": "office_applicants"
+            }
         ]
     },
     "interview_start_max": {
         "title": "Bewerber: Max",
         "text": "<b>Franziska Immerda:</b> 'Max ist da. Er wirkt etwas nervös und hat sein Cappy noch auf. Wollen wir erst den Test machen?'",
-        "char": "verwaltung", "charName": "Franziska Immerda",
+        "char": "verwaltung",
+        "charName": "Franziska Immerda",
         "options": [
-            { "text": "📝 Erst Eignungstest", "next": "quiz_run_max" },
-            { "text": "🗣️ Direkt reinholen", "next": "interview_talk_max" }
+            {
+                "text": "📝 Erst Eignungstest",
+                "next": "quiz_run_max"
+            },
+            {
+                "text": "🗣️ Direkt reinholen",
+                "next": "interview_talk_max"
+            }
         ]
     },
     "quiz_run_max": {
-        "special": "quiz", "quizId": "quiz_aptitude_test", "next": "interview_result_max"
+        "special": "quiz",
+        "quizId": "quiz_aptitude_test",
+        "next": "interview_result_max"
     },
     "interview_result_max": {
         "title": "Testergebnis: Max",
         "text": "<b>Franziska Immerda:</b> 'Naja... Mathe ging so (grad noch bestanden), aber die Logik-Fragen hat er super gelöst. Scheint ein heller Kopf zu sein, wenn er will.'",
-        "char": "verwaltung", "charName": "Franziska Immerda",
-        "options": [ { "text": "Gespräch beginnen", "next": "interview_talk_max" } ]
+        "char": "verwaltung",
+        "charName": "Franziska Immerda",
+        "options": [
+            {
+                "text": "Gespräch beginnen",
+                "next": "interview_talk_max"
+            }
+        ]
     },
     "interview_talk_max": {
         "title": "Interview: Max",
         "text": "Max setzt sich. Er wirkt hemdsärmelig.<br><b>Max:</b> 'Moin Chef. Also Horst meinte, ihr braucht wen, der anpackt?'",
-        "char": "klara", "charName": "Max Mustermann",
+        "char": "klara",
+        "charName": "Max Mustermann",
         "options": [
-            { "text": "Warum wir?", "next": "interview_max_why" },
-            { "text": "Stärken/Schwächen?", "next": "interview_max_strengths" }
+            {
+                "text": "Warum wir?",
+                "next": "interview_max_why"
+            },
+            {
+                "text": "Stärken/Schwächen?",
+                "next": "interview_max_strengths"
+            }
         ]
     },
     "interview_max_why": {
         "title": "Motivation",
         "text": "<b>Max:</b> 'Ganz ehrlich? Kurzer Arbeitsweg. Und ich will mit Holz arbeiten, nicht am Fließband stehen.'",
-        "char": "klara", "charName": "Max Mustermann",
-        "options": [ { "text": "Entscheidung treffen", "next": "interview_decision_max" } ]
+        "char": "klara",
+        "charName": "Max Mustermann",
+        "options": [
+            {
+                "text": "Entscheidung treffen",
+                "next": "interview_decision_max"
+            }
+        ]
     },
     "interview_max_strengths": {
         "title": "Stärken",
         "text": "<b>Max:</b> 'Ich kann alles bauen. Aber fragen Sie mich nicht nach Berichtsheften. Schreiben ist nicht meins.'",
-        "char": "klara", "charName": "Max Mustermann",
-        "options": [ { "text": "Entscheidung treffen", "next": "interview_decision_max" } ]
+        "char": "klara",
+        "charName": "Max Mustermann",
+        "options": [
+            {
+                "text": "Entscheidung treffen",
+                "next": "interview_decision_max"
+            }
+        ]
     },
     "interview_decision_max": {
         "title": "Entscheidung: Max",
         "text": "Fachlich top, schriftlich flop. Horst braucht ihn dringend.<br>Wie entscheiden Sie?",
-        "char": "chef", "charName": "Dr. Peter Planer",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
         "options": [
-            { "text": "🤝 Einstellen (Horst freut sich)", "next": "hire_max" },
-            { "text": "👎 Absagen (Zu riskant)", "next": "reject_max" }
+            {
+                "text": "🤝 Einstellen (Horst freut sich)",
+                "next": "hire_max"
+            },
+            {
+                "text": "👎 Absagen (Zu riskant)",
+                "next": "reject_max"
+            }
         ]
     },
     "hire_max": {
         "title": "Eingestellt",
         "text": "<b>Horst Hektik:</b> 'Endlich! Der Junge wird die Werkstatt rocken. Danke Chef!'",
-        "char": "horst", "moodChange": 10, "costBudget": 10,
-        "options": [{ "text": "Zurück ins Büro", "next": "Bürozeit_1" }]
+        "char": "horst",
+        "moodChange": 10,
+        "costBudget": 10,
+        "options": [
+            {
+                "text": "Zurück ins Büro",
+                "next": "Bürozeit_1"
+            }
+        ]
     },
     "reject_max": {
         "title": "Abgelehnt",
         "text": "Max zuckt mit den Schultern und geht. Horst ist sauer, aber Franziska ist erleichtert (weniger Papierkram).",
-        "char": "verwaltung", "moodChange": -5,
-        "options": [{ "text": "Zurück ins Büro", "next": "Bürozeit_1" }]
+        "char": "verwaltung",
+        "moodChange": -5,
+        "options": [
+            {
+                "text": "Zurück ins Büro",
+                "next": "Bürozeit_1"
+            }
+        ]
     },
-
-    /* 2. LISA (Büro) */
     "applicant_lisa": {
         "title": "Akte: Lisa Lustig",
         "text": "<b>Position:</b> Büromanagement<br><b>Alter:</b> 35<br><br><b>Dokumente:</b><br>Perfekte Formatierung. Lückenloser Lebenslauf. 10 Jahre Erfahrung in der Verwaltung.<br><br><b>Besonderheit:</b><br>Sie schreibt fett gedruckt: <i>\"Aufgrund meiner Kinderbetreuung ist eine Arbeitszeit ausschließlich von 08:00 bis 12:00 Uhr möglich. Keine Ausnahmen.\"</i><br><br><b>Franziskas Notiz:</b> \"Fachlich ein Traum, ich müsste sie nicht einlernen. Aber wer besetzt das Telefon am Nachmittag?\"",
-        "char": "verwaltung", "charName": "Bewerbungsmappe",
+        "char": "verwaltung",
+        "charName": "Bewerbungsmappe",
         "options": [
-            { "text": "🟢 Einladen (Pfad Lisa)", "next": "interview_start_lisa" },
-            { "text": "🔴 Absage diktieren", "next": "applicant_action_reject" },
-            { "text": "🔙 Zurück zur Übersicht", "next": "office_applicants" }
+            {
+                "text": "🟢 Einladen (Pfad Lisa)",
+                "next": "interview_start_lisa"
+            },
+            {
+                "text": "🔴 Absage diktieren",
+                "next": "applicant_action_reject"
+            },
+            {
+                "text": "🔙 Zurück zur Übersicht",
+                "next": "office_applicants"
+            }
         ]
     },
     "interview_start_lisa": {
         "title": "Bewerberin: Lisa",
         "text": "<b>Franziska Immerda:</b> 'Frau Lustig ist da. Sehr pünktlich, sehr ordentlich. Sollen wir auch mit ihr den Test machen?'",
-        "char": "verwaltung", "charName": "Franziska Immerda",
+        "char": "verwaltung",
+        "charName": "Franziska Immerda",
         "options": [
-            { "text": "📝 Erst Eignungstest", "next": "quiz_run_lisa" },
-            { "text": "🗣️ Direkt reinholen", "next": "interview_talk_lisa" }
+            {
+                "text": "📝 Erst Eignungstest",
+                "next": "quiz_run_lisa"
+            },
+            {
+                "text": "🗣️ Direkt reinholen",
+                "next": "interview_talk_lisa"
+            }
         ]
     },
     "quiz_run_lisa": {
-        "special": "quiz", "quizId": "quiz_aptitude_test", "next": "interview_result_lisa"
+        "special": "quiz",
+        "quizId": "quiz_aptitude_test",
+        "next": "interview_result_lisa"
     },
     "interview_result_lisa": {
         "title": "Testergebnis: Lisa",
         "text": "<b>Franziska Immerda:</b> 'Wow. 100% Fehlerfrei. In Rekordzeit. Die Frau ist fit.'",
-        "char": "verwaltung", "charName": "Franziska Immerda",
-        "options": [ { "text": "Gespräch beginnen", "next": "interview_talk_lisa" } ]
+        "char": "verwaltung",
+        "charName": "Franziska Immerda",
+        "options": [
+            {
+                "text": "Gespräch beginnen",
+                "next": "interview_talk_lisa"
+            }
+        ]
     },
     "interview_talk_lisa": {
         "title": "Interview: Lisa",
         "text": "Lisa Lustig sitzt sehr aufrecht da. Sie hat ihren eigenen Notizblock dabei.<br><b>Lisa:</b> 'Guten Tag. Danke für die Einladung. Ich habe mir schon einige Fragen zur Büro-Organisation notiert.'",
-        "char": "klara", "charName": "Lisa Lustig",
+        "char": "klara",
+        "charName": "Lisa Lustig",
         "options": [
-            { "text": "Warum wollen Sie zu uns?", "next": "interview_lisa_why" },
-            { "text": "Das Zeit-Problem (8-12 Uhr)", "next": "interview_lisa_time" }
+            {
+                "text": "Warum wollen Sie zu uns?",
+                "next": "interview_lisa_why"
+            },
+            {
+                "text": "Das Zeit-Problem (8-12 Uhr)",
+                "next": "interview_lisa_time"
+            }
         ]
     },
     "interview_lisa_why": {
         "title": "Motivation",
         "text": "<b>Lisa:</b> 'Ich suche Struktur. Ihre Verwaltung wirkt... verbesserungswürdig. Da kann ich helfen. Ich mag Effizienz.'",
-        "char": "klara", "charName": "Lisa Lustig",
-        "options": [ { "text": "Entscheidung treffen", "next": "interview_decision_lisa" } ]
+        "char": "klara",
+        "charName": "Lisa Lustig",
+        "options": [
+            {
+                "text": "Entscheidung treffen",
+                "next": "interview_decision_lisa"
+            }
+        ]
     },
     "interview_lisa_time": {
         "title": "Arbeitszeit",
         "text": "<b>Lisa:</b> 'Wie gesagt: 12:00 Uhr muss ich los, Kita-Abholung. Daran ist nicht zu rütteln. Aber in den 4 Stunden schaffe ich mehr als andere in 8.'",
-        "char": "klara", "charName": "Lisa Lustig",
-        "options": [ { "text": "Entscheidung treffen", "next": "interview_decision_lisa" } ]
+        "char": "klara",
+        "charName": "Lisa Lustig",
+        "options": [
+            {
+                "text": "Entscheidung treffen",
+                "next": "interview_decision_lisa"
+            }
+        ]
     },
     "interview_decision_lisa": {
         "title": "Entscheidung: Lisa",
         "text": "Sie ist extrem kompetent, aber unflexibel. Franziska bräuchte nachmittags Hilfe.<br>Wie entscheiden Sie?",
-        "char": "chef", "charName": "Dr. Peter Planer",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
         "options": [
-            { "text": "🤝 Einstellen (Effizienz-Boost)", "next": "hire_lisa" },
-            { "text": "👎 Absagen (Wir brauchen Vollzeit)", "next": "reject_lisa" }
+            {
+                "text": "🤝 Einstellen (Effizienz-Boost)",
+                "next": "hire_lisa"
+            },
+            {
+                "text": "👎 Absagen (Wir brauchen Vollzeit)",
+                "next": "reject_lisa"
+            }
         ]
     },
     "hire_lisa": {
         "title": "Eingestellt",
         "text": "<b>Franziska Immerda:</b> 'Gut, wir versuchen es. Dann muss ich nachmittags eben alleine ans Telefon. Aber vormittags wird sie mir den Rücken freihalten.'",
-        "char": "verwaltung", "moodChange": 5, "costBudget": 10,
-        "options": [{ "text": "Zurück ins Büro", "next": "Bürozeit_1" }]
+        "char": "verwaltung",
+        "moodChange": 5,
+        "costBudget": 10,
+        "options": [
+            {
+                "text": "Zurück ins Büro",
+                "next": "Bürozeit_1"
+            }
+        ]
     },
     "reject_lisa": {
         "title": "Abgelehnt",
         "text": "Lisa packt ihre Sachen. 'Schade. Sie verpassen Effizienz.'<br>Franziska wirkt etwas enttäuscht, versteht aber das Zeitproblem.",
-        "char": "verwaltung", "moodChange": 0,
-        "options": [{ "text": "Zurück ins Büro", "next": "Bürozeit_1" }]
+        "char": "verwaltung",
+        "moodChange": 0,
+        "options": [
+            {
+                "text": "Zurück ins Büro",
+                "next": "Bürozeit_1"
+            }
+        ]
     },
-
-    /* 3. KEVIN (Chaos) */
     "applicant_kevin": {
         "title": "Akte: Kevin Chaos",
         "text": "<b>Position:</b> ? (Initiativ)<br><b>Alter:</b> 19<br><br><b>Dokumente:</b><br>Ein zerknittertes Blatt Papier. Bewerbungsfoto ist ein Selfie im Spiegel (mit Blitz).<br>Betreff: <i>\"Suche Job, kann alles.\"</i><br><br><b>Anlage:</b><br>Ein überraschendes Zertifikat: <b>\"High-Level Python Programming Bootcamp - Score: 98% (Expert)\"</b>.<br><br><b>Boris Gemini (IT) ruft aus dem Hintergrund:</b> \"Chef, lass mich den mal ansehen! Der Code auf seiner GitHub-Seite ist genial!\"",
-        "char": "boris", "charName": "Boris Gemini",
+        "char": "boris",
+        "charName": "Boris Gemini",
         "options": [
-            { "text": "🟢 Boris vertrauen & Einladen", "next": "interview_start_kevin" },
-            { "text": "🔴 Sofort absagen (Unprofessionell)", "next": "applicant_action_reject" },
-            { "text": "🔙 Zurück zur Übersicht", "next": "office_applicants" }
+            {
+                "text": "🟢 Boris vertrauen & Einladen",
+                "next": "interview_start_kevin"
+            },
+            {
+                "text": "🔴 Sofort absagen (Unprofessionell)",
+                "next": "applicant_action_reject"
+            },
+            {
+                "text": "🔙 Zurück zur Übersicht",
+                "next": "office_applicants"
+            }
         ]
     },
     "interview_start_kevin": {
         "title": "Kevin ist da",
         "text": "Kevin kommt in kurzen Hosen und Flipflops rein. Franziska ringt nach Luft.<br><b>Kevin:</b> 'Yo. Boris meinte, ihr braucht Skillz?'",
-        "char": "verwaltung", "charName": "Franziska Immerda",
-        "options": [ { "text": "Das Gespräch wagen", "next": "interview_talk_kevin" } ]
+        "char": "verwaltung",
+        "charName": "Franziska Immerda",
+        "options": [
+            {
+                "text": "Das Gespräch wagen",
+                "next": "interview_talk_kevin"
+            }
+        ]
     },
     "interview_talk_kevin": {
         "title": "Interview: Kevin",
         "text": "<b>Kevin:</b> 'Also, ich automatisier euch den ganzen Papierkram weg. Skripte schreiben, Datenbanken optimieren. Easy. Aber ich komm nicht vor 10 Uhr, bin kein Morgenmensch.'",
-        "char": "klara", "charName": "Kevin Chaos",
-        "options": [ { "text": "Entscheidung treffen", "next": "interview_decision_kevin" } ]
+        "char": "klara",
+        "charName": "Kevin Chaos",
+        "options": [
+            {
+                "text": "Entscheidung treffen",
+                "next": "interview_decision_kevin"
+            }
+        ]
     },
     "interview_decision_kevin": {
         "title": "Entscheidung: Kevin",
         "text": "Genie oder Wahnsinn? Boris will ihn, Franziska hasst ihn jetzt schon.<br>Wie entscheiden Sie?",
-        "char": "chef", "charName": "Dr. Peter Planer",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
         "options": [
-            { "text": "🤝 Einstellen (Innovation wagen)", "next": "hire_kevin" },
-            { "text": "👎 Absagen (Kultureller Mismatch)", "next": "reject_kevin" }
+            {
+                "text": "🤝 Einstellen (Innovation wagen)",
+                "next": "hire_kevin"
+            },
+            {
+                "text": "👎 Absagen (Kultureller Mismatch)",
+                "next": "reject_kevin"
+            }
         ]
     },
     "hire_kevin": {
         "title": "Eingestellt",
         "text": "<b>Boris Gemini:</b> 'Yes! Endlich Verstärkung!'<br><b>Franziska:</b> 'Ich werde seine Flipflops verbrennen.'",
-        "char": "boris", "moodChange": 5, "costBudget": 10,
-        "options": [{ "text": "Zurück ins Büro", "next": "Bürozeit_1" }]
+        "char": "boris",
+        "moodChange": 5,
+        "costBudget": 10,
+        "options": [
+            {
+                "text": "Zurück ins Büro",
+                "next": "Bürozeit_1"
+            }
+        ]
     },
     "reject_kevin": {
         "title": "Abgelehnt",
         "text": "<b>Boris Gemini:</b> 'Schade. Wir verpassen die Zukunft.'<br>Kevin zuckt nur und geht zocken.",
-        "char": "boris", "moodChange": -5,
-        "options": [{ "text": "Zurück ins Büro", "next": "Bürozeit_1" }]
+        "char": "boris",
+        "moodChange": -5,
+        "options": [
+            {
+                "text": "Zurück ins Büro",
+                "next": "Bürozeit_1"
+            }
+        ]
     },
-
-    /* 4. RENATE (Profi) */
     "applicant_renate": {
         "title": "Akte: Renate 'Erfahrung'",
         "text": "<b>Position:</b> Personalfachkauffrau<br><b>Alter:</b> 59<br><br><b>Dokumente:</b><br>35 Jahre Führungserfahrung. Top Zeugnisse. Sie kennt jeden in Leipzig.<br><br><b>Haken:</b><br>Gehaltsvorstellung: <b>4.800€</b> (Unser Budget für die Stelle: max. 3.200€).<br>Satz im Anschreiben: <i>\"Ich suche eine ruhige Station, um meine letzten 4 Jahre bis zur Rente entspannt ausklingen zu lassen.\"</i>",
-        "char": "verwaltung", "charName": "Bewerbungsmappe",
+        "char": "verwaltung",
+        "charName": "Bewerbungsmappe",
         "options": [
-            { "text": "🟢 Einladen (Vielleicht verhandelbar?)", "next": "interview_start_renate" },
-            { "text": "🔴 Absagen (Zu teuer)", "next": "applicant_action_reject" },
-            { "text": "🔙 Zurück zur Übersicht", "next": "office_applicants" }
+            {
+                "text": "🟢 Einladen (Vielleicht verhandelbar?)",
+                "next": "interview_start_renate"
+            },
+            {
+                "text": "🔴 Absagen (Zu teuer)",
+                "next": "applicant_action_reject"
+            },
+            {
+                "text": "🔙 Zurück zur Übersicht",
+                "next": "office_applicants"
+            }
         ]
     },
     "interview_start_renate": {
         "title": "Renate ist da",
         "text": "Renate mustert das Büro kritisch. 'Der Kaffee im Wartebereich war lauwarm. Das ging bei Siemens früher besser.'",
-        "char": "verwaltung", "charName": "Franziska Immerda",
-        "options": [ { "text": "Gespräch beginnen", "next": "interview_talk_renate" } ]
+        "char": "verwaltung",
+        "charName": "Franziska Immerda",
+        "options": [
+            {
+                "text": "Gespräch beginnen",
+                "next": "interview_talk_renate"
+            }
+        ]
     },
     "interview_talk_renate": {
         "title": "Interview: Renate",
         "text": "<b>Renate:</b> 'Machen wir es kurz. Ich kenne den Laden hier, ich kenne die Prozesse. Ich brauche keine Einarbeitung. Aber ich will 4.500€ und keine Überstunden. Nehmen oder lassen.'",
-        "char": "klara", "charName": "Renate",
-        "options": [ { "text": "Entscheidung treffen", "next": "interview_decision_renate" } ]
+        "char": "klara",
+        "charName": "Renate",
+        "options": [
+            {
+                "text": "Entscheidung treffen",
+                "next": "interview_decision_renate"
+            }
+        ]
     },
     "interview_decision_renate": {
         "title": "Entscheidung: Renate",
         "text": "Teuer, etwas arrogant, aber fachlich eine Bank. Sofortige Entlastung garantiert.<br>Wie entscheiden Sie?",
-        "char": "chef", "charName": "Dr. Peter Planer",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
         "options": [
-            { "text": "🤝 Einstellen (Qualität kostet)", "next": "hire_renate" },
-            { "text": "👎 Absagen (Sprengt das Budget)", "next": "reject_renate" }
+            {
+                "text": "🤝 Einstellen (Qualität kostet)",
+                "next": "hire_renate"
+            },
+            {
+                "text": "👎 Absagen (Sprengt das Budget)",
+                "next": "reject_renate"
+            }
         ]
     },
     "hire_renate": {
         "title": "Eingestellt",
         "text": "<b>Renate:</b> 'Gut. Mein Büro ist das Eckzimmer, oder? Ich fange Montag an.'<br><i>(Das Budget leidet stark, aber die Arbeit wird erledigt.)</i>",
-        "char": "chef", "moodChange": 5, "costBudget": 30,
-        "options": [{ "text": "Zurück ins Büro", "next": "Bürozeit_1" }]
+        "char": "chef",
+        "moodChange": 5,
+        "costBudget": 30,
+        "options": [
+            {
+                "text": "Zurück ins Büro",
+                "next": "Bürozeit_1"
+            }
+        ]
     },
     "reject_renate": {
         "title": "Abgelehnt",
         "text": "<b>Renate:</b> 'Ihr Verlust. Wer billig kauft, kauft zweimal.' Sie rauscht ab.",
-        "char": "chef", "moodChange": 0,
-        "options": [{ "text": "Zurück ins Büro", "next": "Bürozeit_1" }]
+        "char": "chef",
+        "moodChange": 0,
+        "options": [
+            {
+                "text": "Zurück ins Büro",
+                "next": "Bürozeit_1"
+            }
+        ]
     },
-
-
     "applicant_action_reject": {
         "title": "Abgelehnt",
         "text": "<b>Franziska Immerda:</b> 'Alles klar, Standardabsage geht heute noch raus. Ich lege die Akte ins Archiv.'",
@@ -1968,9 +2314,9 @@ const scenes = {
             }
         ]
     },
-    "Wissen_vertiefen_2": {
-        "title": "Das 3-Phasen-Modell nach Kurt Lewin",
-        "text": "<b>Das 3-Phasen-Modell nach Kurt Lewin</b><br><br>\nKurt Lewin beschreibt soziale Systeme (wie Unternehmen) als ein \"Kräftefeld\". Um Wandel zu erzeugen, reicht es nicht, einfach neue Regeln aufzustellen. Der Prozess gleicht dem Aggregatzustand von Wasser:<br><br>\n\n<b>Phase 1: Unfreezing (Auftauen)</b><br>\nDer aktuelle Zustand (\"Status Quo\") ist fest gefroren. Um ihn zu formen, muss er aufgetaut werden.<br>\n<i>Aufgabe der Führung:</i> Bereiten Sie die Betroffenen vor. Bauen Sie Widerstände ab, indem Sie die Notwendigkeit des Wandels erklären. Die \"treibenden Kräfte\" müssen stärker werden als die \"beharrenden Kräfte\".<br><br>\n\n<b>Phase 2: Moving / Changing (Verändern)</b><br>\nDer Zustand ist nun flüssig und formbar. Hier passiert die eigentliche Veränderung (neue Software, neue Prozesse, Umstrukturierung).<br>\n<i>Aufgabe der Führung:</i> Schulen und trainieren Sie die Mitarbeiter. Probieren Sie Neues aus (\"Trial & Error\"). Führungskräfte müssen als Vorbilder vorangehen.<br><br>\n\n<b>Phase 3: Refreezing (Einfrieren/Stabilisieren)</b><br>\nDas Wasser wird in der neuen Form wieder eingefroren. Ohne diesen Schritt kehren Mitarbeiter schnell in alte Muster zurück.<br>\n<i>Aufgabe der Führung:</i> Feiern Sie Erfolge. Integrieren Sie das Neue in den Alltag (z.B. durch angepasste Arbeitsanweisungen oder Belohnungssysteme). Machen Sie den Wandel zur neuen Gewohnheit.",
+    "Wissen_vertiefen_1": {
+        "title": "8-Stufenmodell nach Kotter",
+        "text": "<b>Das 8-Stufen-Modell nach John P. Kotter</b><br><br>\nChange Management scheitert oft, weil Schritte übersprungen werden. Kotter beschreibt einen Prozess, um Veränderungen nachhaltig zu gestalten:<br><br>\n\n<b>Phase 1: Das Klima für den Wandel schaffen</b><br>\n1. <b>Gefühl der Dringlichkeit erzeugen:</b> Machen Sie Mitarbeitenden und Führungskräften klar, warum <i>jetzt</i> gehandelt werden muss (Marktdruck, Krisen, Chancen).<br>\n2. <b>Führungskoalition aufbauen:</b> Bilden Sie ein Team mit genug Macht und Einfluss, um den Wandel voranzutreiben.<br>\n3. <b>Vision und Strategie entwickeln:</b> Eine klare Vision motiviert mehr als dicke Handbücher. Wohin geht die Reise?<br><br>\n\n<b>Phase 2: Die Organisation befähigen und einbinden</b><br>\n4. <b>Die Vision kommunizieren:</b> Nutzen Sie jeden Kanal. Vorleben ist die beste Kommunikation.<br>\n5. <b>Hindernisse aus dem Weg räumen:</b> Ändern Sie Strukturen, die die Vision untergraben. Befähigen Sie Mitarbeiter zum Handeln (Empowerment).<br>\n6. <b>Kurzfristige Erfolge (Quick Wins) erzielen:</b> Planen Sie sichtbare Erfolge, um Kritiker zu überzeugen und Motivation zu tanken.<br><br>\n\n<b>Phase 3: Den Wandel umsetzen und erhalten</b><br>\n7. <b>Veränderung weiter antreiben:</b> Geben Sie sich nicht zu früh zufrieden. Nutzen Sie die Glaubwürdigkeit der ersten Erfolge für größere Projekte.<br>\n8. <b>Veränderungen in der Kultur verankern:</b> Der Wandel ist erst abgeschlossen, wenn er \"die Art, wie wir hier arbeiten\" geworden ist.",
         "char": "chef",
         "charName": "Dr. Peter Planer",
         "options": [
@@ -1980,9 +2326,9 @@ const scenes = {
             }
         ]
     },
-    "Wissen_vertiefen_1": {
-        "title": "8-Stufenmodell nach Kotter",
-        "text": "<b>Das 8-Stufen-Modell nach John P. Kotter</b><br><br>\nChange Management scheitert oft, weil Schritte übersprungen werden. Kotter beschreibt einen Prozess, um Veränderungen nachhaltig zu gestalten:<br><br>\n\n<b>Phase 1: Das Klima für den Wandel schaffen</b><br>\n1. <b>Gefühl der Dringlichkeit erzeugen:</b> Machen Sie Mitarbeitenden und Führungskräften klar, warum <i>jetzt</i> gehandelt werden muss (Marktdruck, Krisen, Chancen).<br>\n2. <b>Führungskoalition aufbauen:</b> Bilden Sie ein Team mit genug Macht und Einfluss, um den Wandel voranzutreiben.<br>\n3. <b>Vision und Strategie entwickeln:</b> Eine klare Vision motiviert mehr als dicke Handbücher. Wohin geht die Reise?<br><br>\n\n<b>Phase 2: Die Organisation befähigen und einbinden</b><br>\n4. <b>Die Vision kommunizieren:</b> Nutzen Sie jeden Kanal. Vorleben ist die beste Kommunikation.<br>\n5. <b>Hindernisse aus dem Weg räumen:</b> Ändern Sie Strukturen, die die Vision untergraben. Befähigen Sie Mitarbeiter zum Handeln (Empowerment).<br>\n6. <b>Kurzfristige Erfolge (Quick Wins) erzielen:</b> Planen Sie sichtbare Erfolge, um Kritiker zu überzeugen und Motivation zu tanken.<br><br>\n\n<b>Phase 3: Den Wandel umsetzen und erhalten</b><br>\n7. <b>Veränderung weiter antreiben:</b> Geben Sie sich nicht zu früh zufrieden. Nutzen Sie die Glaubwürdigkeit der ersten Erfolge für größere Projekte.<br>\n8. <b>Veränderungen in der Kultur verankern:</b> Der Wandel ist erst abgeschlossen, wenn er \"die Art, wie wir hier arbeiten\" geworden ist.",
+    "Wissen_vertiefen_2": {
+        "title": "Das 3-Phasen-Modell nach Kurt Lewin",
+        "text": "<b>Das 3-Phasen-Modell nach Kurt Lewin</b><br><br>\nKurt Lewin beschreibt soziale Systeme (wie Unternehmen) als ein \"Kräftefeld\". Um Wandel zu erzeugen, reicht es nicht, einfach neue Regeln aufzustellen. Der Prozess gleicht dem Aggregatzustand von Wasser:<br><br>\n\n<b>Phase 1: Unfreezing (Auftauen)</b><br>\nDer aktuelle Zustand (\"Status Quo\") ist fest gefroren. Um ihn zu formen, muss er aufgetaut werden.<br>\n<i>Aufgabe der Führung:</i> Bereiten Sie die Betroffenen vor. Bauen Sie Widerstände ab, indem Sie die Notwendigkeit des Wandels erklären. Die \"treibenden Kräfte\" müssen stärker werden als die \"beharrenden Kräfte\".<br><br>\n\n<b>Phase 2: Moving / Changing (Verändern)</b><br>\nDer Zustand ist nun flüssig und formbar. Hier passiert die eigentliche Veränderung (neue Software, neue Prozesse, Umstrukturierung).<br>\n<i>Aufgabe der Führung:</i> Schulen und trainieren Sie die Mitarbeiter. Probieren Sie Neues aus (\"Trial & Error\"). Führungskräfte müssen als Vorbilder vorangehen.<br><br>\n\n<b>Phase 3: Refreezing (Einfrieren/Stabilisieren)</b><br>\nDas Wasser wird in der neuen Form wieder eingefroren. Ohne diesen Schritt kehren Mitarbeiter schnell in alte Muster zurück.<br>\n<i>Aufgabe der Führung:</i> Feiern Sie Erfolge. Integrieren Sie das Neue in den Alltag (z.B. durch angepasste Arbeitsanweisungen oder Belohnungssysteme). Machen Sie den Wandel zur neuen Gewohnheit.",
         "char": "chef",
         "charName": "Dr. Peter Planer",
         "options": [
@@ -2001,26 +2347,6 @@ const scenes = {
             {
                 "text": "🔙 Zurück zur Bibliothek",
                 "next": "library_main"
-            }
-        ]
-    },
-    "office_notes": {
-        "title": "Notizblock",
-        "text": "<b>Wie gut, dass ich mir Notizen gamacht habe</b>",
-        "char": "chef",
-        "charName": "Dr. Peter Planer",
-        "options": [
-            {
-                "text": "🔙 Zurück zum Schreibtisch",
-                "next": "Bürozeit_1"
-            },
-            {
-                "text": "Wie verläuft ein Planungsprozess",
-                "next": "Notizblatt_1"
-            },
-            {
-                "text": "Zielgruppenanalyse",
-                "next": "Notizblatt_2"
             }
         ]
     },
@@ -2096,6 +2422,26 @@ const scenes = {
             }
         ]
     },
+    "office_notes": {
+        "title": "Notizblock",
+        "text": "<b>Wie gut, dass ich mir Notizen gamacht habe</b>",
+        "char": "chef",
+        "charName": "Dr. Peter Planer",
+        "options": [
+            {
+                "text": "🔙 Zurück zum Schreibtisch",
+                "next": "Bürozeit_1"
+            },
+            {
+                "text": "Wie verläuft ein Planungsprozess",
+                "next": "Notizblatt_1"
+            },
+            {
+                "text": "Zielgruppenanalyse",
+                "next": "Notizblatt_2"
+            }
+        ]
+    },
     "Notizblatt_1": {
         "title": "Wie verläuft ein Planungsprozess",
         "text": "Wie gut, dass mir Dr. Klara Kompezenz noch einen Hinweiszettel gegeben hat: <br><br>\n\nPlanung ist die gedankliche Vorwegnahme zukünftigen Handelns. Ein professioneller Planungsprozess läuft in logischen Phasen ab:<br><br>\n\n<b>1. Ist-Analyse (Diagnose)</b><br>\nWo stehen wir gerade? Analyse der Ausgangslage, Stärken/Schwächen (SWOT) und Rahmenbedingungen.<br>\n<i>Frage: \"Was ist das Problem?\"</i><br><br>\n\n<b>2. Zielsetzung</b><br>\nDefinition des gewünschten Soll-Zustands. Ziele müssen SMART sein (Spezifisch, Messbar, Attraktiv, Realistisch, Terminiert).<br>\n<i>Frage: \"Wo wollen wir hin?\"</i><br><br>\n\n<b>3. Maßnahmenplanung (Alternativen)</b><br>\nEntwicklung verschiedener Wege zum Ziel. Brainstorming von Optionen und Strategien.<br>\n<i>Frage: \"Wie können wir das erreichen?\"</i><br><br>\n\n<b>4. Bewertung & Entscheidung</b><br>\nVergleich der Alternativen (Kosten-Nutzen-Analyse, Risikoabschätzung) und Auswahl der besten Option.<br>\n<i>Frage: \"Welcher Weg ist der beste?\"</i><br><br>\n\n<b>5. Umsetzung (Durchführung)</b><br>\nZuweisung von Aufgaben, Ressourcen und Verantwortlichkeiten. Der Plan wird Realität.<br>\n<i>Frage: \"Wer macht was bis wann?\"</i><br><br>\n\n<b>6. Kontrolle (Soll-Ist-Vergleich)</b><br>\nÜberprüfung, ob das Ziel erreicht wurde. Bei Abweichungen beginnt der Prozess von vorne (Regelkreis).<br>\n<i>Frage: \"Haben wir es geschafft?\"</i>\n\n<b>Checkliste: Planungsschritte</b><br><br>\nVergessen Sie keinen Schritt:<br><br>\n1. 🔍 <b>Analyse:</b> Ist-Zustand prüfen.<br>\n2. 🎯 <b>Ziel:</b> Soll-Zustand definieren (SMART).<br>\n3. 🛤️ <b>Planung:</b> Maßnahmen entwickeln.<br>\n4. ⚖️ <b>Entscheidung:</b> Den besten Weg wählen.<br>\n5. 🚀 <b>Umsetzung:</b> Tun!<br>\n6. 📊 <b>Kontrolle:</b> Ergebnis prüfen & ggf. korrigieren.<br><br>\n<i>Merke: Planung ersetzt den Zufall durch Irrtum – aber Irrtum ist korrigierbar!</i>",
@@ -2120,12 +2466,12 @@ const scenes = {
             }
         ]
     },
-    "Buchstabensalat": {
-        "char": "claudia",
-        "charName": "Claudia Papierkram",
+    "Buchstabensalat_Boris": {
+        "char": "Boris",
+        "charName": "Boris Gemini (KI)",
         "special": "search",
-        "next": "",
-        "searchId": "Buchstabensalat_search_config"
+        "next": "office_emails",
+        "searchId": "Buchstabensalat_Boris_search_config"
     }
 };
 
@@ -2508,7 +2854,8 @@ const scenes = {
                 "dir": "v"
             }
         ]
-    }};
+    }
+};
 
     let currentCwId = null;
 
@@ -4472,7 +4819,955 @@ const scenes = {
                 }
             ]
         ]
-    }};
+    },
+    "Buchstabensalat_Boris_search_config": {
+        "words": [
+            "COMPUTER",
+            "LERNEN",
+            "GEMINI",
+            "HILFE",
+            "GAMIFICATION",
+            "DIGITALISIERUNG",
+            "SOFTWARE",
+            "OPENAI",
+            "SOFTWARE"
+        ],
+        "gridSize": 15,
+        "grid": [
+            [
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "V",
+                    "isSalad": true
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "V",
+                    "isSalad": true
+                },
+                {
+                    "char": "J",
+                    "isSalad": true
+                },
+                {
+                    "char": "G",
+                    "isSalad": true
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "Y",
+                    "isSalad": true
+                },
+                {
+                    "char": "D",
+                    "isSalad": true
+                },
+                {
+                    "char": "C",
+                    "isSalad": true
+                },
+                {
+                    "char": "D",
+                    "isSalad": true
+                },
+                {
+                    "char": "T",
+                    "isSalad": true
+                },
+                {
+                    "char": "L",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "R",
+                    "isSalad": true
+                },
+                {
+                    "char": "Y",
+                    "isSalad": true
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "C",
+                    "isSalad": true
+                },
+                {
+                    "char": "Q",
+                    "isSalad": true
+                },
+                {
+                    "char": "J",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "J",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "S",
+                    "isSalad": true
+                },
+                {
+                    "char": "C",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": true
+                },
+                {
+                    "char": "Y",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "Z",
+                    "isSalad": true
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "O",
+                    "isSalad": true
+                },
+                {
+                    "char": "I",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "N",
+                    "isSalad": true
+                },
+                {
+                    "char": "C",
+                    "isSalad": true
+                },
+                {
+                    "char": "U",
+                    "isSalad": true
+                },
+                {
+                    "char": "J",
+                    "isSalad": true
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                },
+                {
+                    "char": "J",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "I",
+                    "isSalad": true
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "W",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "Y",
+                    "isSalad": true
+                },
+                {
+                    "char": "Z",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": true
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": true
+                },
+                {
+                    "char": "Y",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "D",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "G",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "S",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "U",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "G",
+                    "isSalad": false
+                }
+            ],
+            [
+                {
+                    "char": "N",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "G",
+                    "isSalad": true
+                },
+                {
+                    "char": "Z",
+                    "isSalad": true
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "W",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "V",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "Z",
+                    "isSalad": true
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": true
+                },
+                {
+                    "char": "D",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "G",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "Q",
+                    "isSalad": true
+                },
+                {
+                    "char": "L",
+                    "isSalad": true
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "Z",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": true
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "V",
+                    "isSalad": true
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "C",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "N",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "G",
+                    "isSalad": true
+                },
+                {
+                    "char": "D",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": false
+                },
+                {
+                    "char": "V",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": true
+                },
+                {
+                    "char": "R",
+                    "isSalad": false
+                },
+                {
+                    "char": "Q",
+                    "isSalad": true
+                },
+                {
+                    "char": "C",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "S",
+                    "isSalad": true
+                },
+                {
+                    "char": "V",
+                    "isSalad": true
+                },
+                {
+                    "char": "M",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "J",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                },
+                {
+                    "char": "Y",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "G",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "D",
+                    "isSalad": true
+                },
+                {
+                    "char": "C",
+                    "isSalad": true
+                },
+                {
+                    "char": "T",
+                    "isSalad": true
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "G",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "M",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "C",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "T",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "O",
+                    "isSalad": false
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "V",
+                    "isSalad": true
+                },
+                {
+                    "char": "V",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "N",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "N",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": true
+                },
+                {
+                    "char": "C",
+                    "isSalad": true
+                },
+                {
+                    "char": "T",
+                    "isSalad": true
+                },
+                {
+                    "char": "O",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": true
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "A",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "P",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": true
+                },
+                {
+                    "char": "N",
+                    "isSalad": true
+                },
+                {
+                    "char": "R",
+                    "isSalad": true
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "H",
+                    "isSalad": false
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": false
+                },
+                {
+                    "char": "F",
+                    "isSalad": false
+                },
+                {
+                    "char": "E",
+                    "isSalad": false
+                },
+                {
+                    "char": "A",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "I",
+                    "isSalad": false
+                },
+                {
+                    "char": "L",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "I",
+                    "isSalad": true
+                },
+                {
+                    "char": "D",
+                    "isSalad": true
+                },
+                {
+                    "char": "U",
+                    "isSalad": true
+                },
+                {
+                    "char": "E",
+                    "isSalad": true
+                },
+                {
+                    "char": "Z",
+                    "isSalad": true
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "Y",
+                    "isSalad": true
+                },
+                {
+                    "char": "Y",
+                    "isSalad": true
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                },
+                {
+                    "char": "W",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "Z",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                }
+            ],
+            [
+                {
+                    "char": "C",
+                    "isSalad": true
+                },
+                {
+                    "char": "Y",
+                    "isSalad": true
+                },
+                {
+                    "char": "K",
+                    "isSalad": true
+                },
+                {
+                    "char": "R",
+                    "isSalad": true
+                },
+                {
+                    "char": "F",
+                    "isSalad": true
+                },
+                {
+                    "char": "M",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                },
+                {
+                    "char": "D",
+                    "isSalad": true
+                },
+                {
+                    "char": "I",
+                    "isSalad": true
+                },
+                {
+                    "char": "S",
+                    "isSalad": true
+                },
+                {
+                    "char": "S",
+                    "isSalad": true
+                },
+                {
+                    "char": "B",
+                    "isSalad": true
+                },
+                {
+                    "char": "T",
+                    "isSalad": true
+                },
+                {
+                    "char": "X",
+                    "isSalad": true
+                },
+                {
+                    "char": "H",
+                    "isSalad": true
+                }
+            ]
+        ],
+        "btnText": "Weiter"
+    }
+};
 
     let currentSearchId = null;
 
