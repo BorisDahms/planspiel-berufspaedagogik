@@ -6177,7 +6177,8 @@ document.getElementById('overlay-sort').classList.add('hidden');
         document.getElementById('overlay-ai').classList.remove('hidden');
     }
 
-    async function analyzeAIAnswer() {
+   
+async function analyzeAIAnswer() {
         const userText = document.getElementById('ai-input').value; 
         const scenario = aiScenarios[currentAiId]; 
         
@@ -6188,24 +6189,24 @@ document.getElementById('overlay-sort').classList.add('hidden');
         document.getElementById('ai-score-fill').style.width = "0%";
 
         try {
-            const apiUrl = "/api/chat"; // Vercel API
+            // FIX: Absolute URL für externe Erreichbarkeit
+            const apiUrl = "https://ki-lernaufgaben.vercel.app/api/chat"; 
+            
             const response = await fetch(apiUrl, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     messages: [
-                        // System Prompt wird mit Grading Prompt angereichert
                         { role: "system", content: scenario.gradingPrompt },
                         { role: "user", content: userText } 
                     ] 
                 })
             });
 
-            if (!response.ok) throw new Error("Verbindungsfehler");
+            if (!response.ok) throw new Error("Verbindungsfehler: " + response.status);
             const data = await response.text(); 
             
             let score = 0;
-            // Der KI wurde gesagt, sie soll PUNKTE: 100 schreiben
             const scoreMatch = data.match(/PUNKTE:\s*(\d+)/i);
             if (scoreMatch && scoreMatch[1]) score = parseInt(scoreMatch[1]); else score = 50; 
 
@@ -6215,11 +6216,16 @@ document.getElementById('overlay-sort').classList.add('hidden');
         } catch (error) {
             console.error(error);
             document.getElementById('ai-feedback-text').innerHTML = 
-                `<span style="color:#e74c3c"><b>Fehler bei der KI-Verbindung:</b><br>${error.message}<br><br>
+                `<span style="color:#e74c3c"><b>Fehler bei der KI-Verbindung:</b><br>Konnte Server nicht erreichen.<br>(${error.message})<br><br>
                 Die lokale Bewertung wird als Fallback genutzt.</span><hr>` + 
                 analyzeAIAnswerLocal(true); 
         }
     }
+
+
+
+
+
 
     function analyzeAIAnswerLocal(returnTextOnly = false) {
         const userText = document.getElementById('ai-input').value.toLowerCase();
