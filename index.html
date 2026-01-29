@@ -756,159 +756,78 @@
     
 
  // --- KI-KONFIGURATION (DQR 7 NIVEAU) ---
-    const aiScenarios = {
-    "hb4_digital": {
-        "title": "<span style='color:white;'>Aufgabe:</span> Digitale Transformation der Ausbildung",
-        "intro": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Verehrter Kollege, wir stehen vor einer paradigmatischen Wende. Unser Bildungspartner, die PlanA GmbH expandiert in den <b>Sanitär-, Heizungs- und Klimatechnik (SHK)</b> Bereich. Ich benötige Ihre Expertise: Welche Anforderungen stellen wir an <b>Lernaufgaben für die Azubis der PlanA Gmbh</b>, um der digitalen Transformation in der Ausbildung gerecht zu werden? Bitte differenzieren Sie nach fachlichen Kompetenzen und methodischen Ansätzen.'",
-        "keywords": [
-            "Lehr- und Lernmedien",
-            "selbststeuerung",
-            "fachlich",
-            "kooperationstools",
-            "prozessorientierung",
-            "lerntechniken",
-            "berufliche Handlungsfähigkeit",
-            "Assistenzsysteme"
-        ],
-        "thresholds": {
-            "30": "Zu oberflächlich für DQR 7.",
-            "70": "Gute Ansätze, bitte präziser.",
-            "100": "Exzellente strategische Ableitung!"
+    
+
+const aiScenarios = {
+        "hb4_digital": {
+            "title": "<span style='color:white;'>Aufgabe:</span> Digitale Transformation der Ausbildung",
+            "intro": "<b>Dr. Klara Kompetenz:</b> 'Welche Anforderungen stellen wir an Lernaufgaben, um der digitalen Transformation gerecht zu werden? Differenzieren Sie nach fachlichen und methodischen Ansätzen.'",
+            "keywords": ["medien", "selbst", "app", "tablet", "digital", "kooperation", "prozess", "handlung", "assistenz", "daten"],
+            "thresholds": { "30": "Zu wenig.", "70": "Gute Ansätze.", "100": "Exzellent!" },
+            "solutionHint": "Tablets/Apps nutzen (Fachlich), Selbststeuerung/Recherche fördern (Methodisch).",
+            "gradingPrompt": "Du bist Dr. Klara Kompetenz. Bewerte WOHLWOLLEND (DQR 7). \n\nKriterien:\n1. Nennung digitaler Tools (Apps, Tablets, VR, Software).\n2. Nennung neuer Lernformen (Selbstgesteuert, Recherche, Prozessorientiert).\n\nWICHTIG: Sei gnädig! Wenn der Sinn stimmt (z.B. 'Tablet' statt 'Mobile Device'), gib Punkte. Es geht um das Verständnis, nicht um Fachbegriffe. Eine verständliche, logische Erklärung reicht für 80-100 Punkte."
         },
-        "solutionHint": "Fokus: Lehr- und Lernmedien, Selbststeuerung, Methodenkompetenz, Softskills.",
-        "gradingPrompt": "Du bist Dr. Klara Kompetenz. Bewerte akademisch aber wertschätzend und motivierend (DQR 7). Erwarte Begriffe wie 'Lehr- und Lernmedien', 'Selbststeuerung'."
-    },
-    "hb1_sozial": {
-        "title": "<span style='color:white;'>Aufgabe:</span> Lernprozesse & Sozialkompetenz",
-        "intro": "<b>Dr. Klara Kompetenz (Personalleitung):</b> 'Ein bedauerlicher Vorfall. Ein Azubi vergreift sich im Ton. Herr Hektik plädiert für Kündigung. Das ist mir zu... unpädagogisch. Entwickeln Sie bitte eine Intervention zur Förderung der <b>Sozialkompetenz</b>. Ich erwarte ein fundiertes Konzept, keine bloße Strafe.'",
-        "keywords": [
-            "feedback",
-            "reflexion",
-            "verhaltenskodex",
-            "perspektivwechsel",
-            "kommunikationstraining",
-            "ursachenanalyse"
-        ],
-        "thresholds": {
-            "30": "Das ist keine pädagogische Intervention.",
-            "70": "Solider Ansatz.",
-            "100": "Hervorragend differenziert!"
+        "hb1_sozial": {
+            "title": "<span style='color:white;'>Aufgabe:</span> Lernprozesse & Sozialkompetenz",
+            "intro": "<b>Dr. Klara Kompetenz:</b> 'Ein Azubi hat sich im Ton vergriffen. Entwickeln Sie eine Intervention zur Förderung der Sozialkompetenz (keine bloße Strafe!).'",
+            "keywords": ["feedback", "reflexion", "gespräch", "perspektivwechsel", "training", "ursache", "entschuldigung", "werte"],
+            "thresholds": { "30": "Das ist nur eine Strafe.", "70": "Solider Ansatz.", "100": "Hervorragend pädagogisch!" },
+            "solutionHint": "Feedback-Gespräch, Reflexion der Wirkung, gemeinsamer Verhaltenskodex.",
+            "gradingPrompt": "Du bist Dr. Klara Kompetenz. Bewerte WOHLWOLLEND. \n\nKriterien:\n- Findet ein Gespräch statt?\n- Geht es um Einsicht/Reflexion statt nur Strafe?\n\nWICHTIG: Akzeptiere jede pädagogisch sinnvolle Lösung (Gespräch, Entschuldigung, Training). Sei großzügig bei der Punktevergabe, wenn der User eine erzieherische Absicht zeigt."
         },
-        "solutionHint": "Fokus: Feedback-Gespräch, Reflexion der Sprachwirkung, gemeinsamer Verhaltenskodex.",
-        "gradingPrompt": "Bewerte als Dr. Klara Kompetenz. Sei wertschätzend, aber fordere pädagogische Tiefe."
-    },
-    "hb2_recruit": {
-        "title": "<span style='color:white;'>Aufgabe:</span> Planungsprozesse (Ausland)",
-        "intro": "<b>Dr. Peter Planer (Geschäftsführung):</b> 'Ich sehe... Horizonte! Wir brauchen Fachkräfte. Aus dem Ausland! Aber wie? Planen Sie das Marketing und das Interview. Denken Sie an... alles!'<br><b>Alex Engagiert (Betriebsrat):</b> 'Und vergessen Sie mir den Betriebsrat nicht!'",
-        "keywords": [
-            "anerkennung",
-            "betriebsrat",
-            "kultur",
-            "dolmetscher",
-            "onboarding",
-            "qualifikationsbedarf"
-        ],
-        "thresholds": {
-            "30": "Wichtige Stakeholder vergessen.",
-            "70": "Strukturiert.",
-            "100": "Strategisch umfassend!"
+        "hb2_recruit": {
+            "title": "<span style='color:white;'>Aufgabe:</span> Planungsprozesse (Ausland)",
+            "intro": "<b>Dr. Peter Planer:</b> 'Wir brauchen Fachkräfte aus dem Ausland! Planen Sie das Marketing und das Interview.'",
+            "keywords": ["anerkennung", "betriebsrat", "kultur", "sprache", "onboarding", "wohnung", "visum", "integration"],
+            "thresholds": { "30": "Wichtige Aspekte fehlen.", "70": "Gut strukturiert.", "100": "Strategisch umfassend!" },
+            "solutionHint": "Betriebsrat (§99), Anerkennung, Sprache/Kultur, Integration (Wohnung/Behörden).",
+            "gradingPrompt": "Bewerte WOHLWOLLEND strategisch. \n\nKriterien:\n- Werden rechtliche/formale Hürden genannt (Visum, Anerkennung, Betriebsrat)?\n- Wird an Integration gedacht (Sprache, Kultur, Onboarding)?\n\nWICHTIG: Wenn der User erkennt, dass es mehr ist als nur 'einstellen', gib hohe Punkte."
         },
-        "solutionHint": "Fokus: §99 BetrVG, Anerkennung Abschlüsse, Kulturelle Sensibilität, Dolmetscher.",
-        "gradingPrompt": "Bewerte strategisch. Prüfe, ob Betriebsrat und kulturelle Aspekte genannt sind."
-    },
-    "hb3_genz": {
-        "title": "<span style='color:white;'>Aufgabe:</span> Management & Bindung (Gen Z)",
-        "intro": "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH):</b> 'Die Jungen hauen alle ab. Wollen Sabbatical. Pff. Mach was.'<br><b>Sascha AEVO (Verantwortlicher Ausbilder):</b> 'Wir müssen ihre Werte verstehen, Horst. Erstellen Sie ein Konzept für strategische Maßnahmen zur Mitarbeiterbindung.'",
-        "keywords": [
-            "sinnstiftung",
-            "flexibilität",
-            "cafeteria-prinzip",
-            "werte",
-            "work-life-balance",
-            "karrierepfade"
-        ],
-        "thresholds": {
-            "30": "Zu monetär gedacht.",
-            "70": "Gute Ansätze.",
-            "100": "Exzellentes Verständnis der Zielgruppe!"
+        "hb3_genz": {
+            "title": "<span style='color:white;'>Aufgabe:</span> Management & Bindung (Gen Z)",
+            "intro": "<b>Sascha AEVO:</b> 'Wir müssen die Werte der Gen Z verstehen. Erstellen Sie ein Konzept zur Mitarbeiterbindung.'",
+            "keywords": ["sinn", "flexibel", "homeoffice", "werte", "balance", "klima", "freizeit", "entwicklung"],
+            "thresholds": { "30": "Zu altmodisch.", "70": "Gute Ansätze.", "100": "Perfektes Zielgruppenverständnis!" },
+            "solutionHint": "Work-Life-Balance, Sinnhaftigkeit, Flexibilität, flache Hierarchien.",
+            "gradingPrompt": "Bewerte WOHLWOLLEND. \n\nKriterien:\n- Werden moderne Werte genannt (Flexibilität, Sinn, Balance)?\n\nWICHTIG: Akzeptiere Begriffe wie 'Homeoffice', 'weniger Stress', 'gutes Klima'. Sei nicht streng bei Fachbegriffen wie 'Employer Branding'."
         },
-        "solutionHint": "Fokus: Cafeteria-Modell, Sinnstiftung, Flexibilisierung der Arbeit.",
-        "gradingPrompt": "Bewerte modern und lebensweltorientiert."
-    },
-    "hb5_transfer": {
-        "title": "<span style='color:white;'>Aufgabe:</span> Weiterbildung (Transfergesellschaft)",
-        "intro": "<b>Erik Handycap (Sozialarbeit):</b> 'In Anbetracht der bedauerlichen Insolvenz eines Teilbereichs, und unter Berücksichtigung der sozialen Verantwortung, die wir zweifelsohne tragen, ist es unabdingbar, eine Transfergesellschaft zu gründen, deren primäres Ziel es sein muss...' <br><i>(Er redet noch 5 Minuten weiter)</i><br><b>Viola Communikationis (Inklusion):</b> 'Erik. Meint. Wir. Müssen. 50. Leute. Retten. Wir brauchen eine <b>Bildungsbedarfsanalyse</b>.'",
-        "keywords": [
-            "anforderungsprofil",
-            "soll-ist-vergleich",
-            "einzelgespräche",
-            "kompetenzprofil",
-            "empathie",
-            "arbeitsmarktanalyse"
-        ],
-        "thresholds": {
-            "30": "Zu wenig Struktur.",
-            "70": "Guter Leitfaden.",
-            "100": "Hervorragend strukturiert und empathisch!"
+        "hb5_transfer": {
+            "title": "<span style='color:white;'>Aufgabe:</span> Weiterbildung (Transfergesellschaft)",
+            "intro": "<b>Viola Communikationis:</b> 'Wir müssen 50 Leute retten. Wir brauchen eine Bildungsbedarfsanalyse.'",
+            "keywords": ["profiling", "interview", "ist", "soll", "markt", "kompetenz", "gespräch", "perspektive"],
+            "thresholds": { "30": "Zu wenig Struktur.", "70": "Guter Leitfaden.", "100": "Hervorragend strukturiert!" },
+            "solutionHint": "Profiling der Mitarbeiter, Einzelgespräche, Abgleich mit Arbeitsmarkt-Chancen.",
+            "gradingPrompt": "Bewerte WOHLWOLLEND. \n\nKriterien:\n- Wird mit den Menschen gesprochen (Interviews/Profiling)?\n- Wird geschaut, was der Markt braucht?\n\nWICHTIG: Gib Punkte für Menschlichkeit und Struktur."
         },
-        "solutionHint": "Fokus: Profiling, Einzelgespräche, Abgleich mit Arbeitsmarktchancen.",
-        "gradingPrompt": "Achte auf Struktur und Empathie im Prozess."
-    },
-    "hb6_karriere": {
-        "title": "<span style='color:white;'>Aufgabe:</span> Personalentwicklung (Karrierewege)",
-        "intro": "<b>D, Klara Kompetenz (Personalleitung):</b> 'ich habe mal mit Boris Gemini von der IT gesprochen. Wir unsere Daten analysieren lassen. Unsere Effizienz leidet unter Motivationstiefs. Die Leute sehen keinen Aufstieg. Wir brauchen systematische <b>Laufbahnmodelle</b>. Die KI sagt: Das erhöht die Mitarbeiterbindung bestimmt um 40%.'",
-        "keywords": [
-            "fachlaufbahn",
-            "führungslaufbahn",
-            "projektlaufbahn",
-            "durchlässigkeit",
-            "anforderungsprofile",
-            "transparenz"
-        ],
-        "thresholds": {
-            "30": "Nur Führungslaufbahn bedacht?",
-            "70": "Gute Systematik.",
-            "100": "Exzellente Differenzierung (Fach/Führung/Projekt)!"
+        "hb6_karriere": {
+            "title": "<span style='color:white;'>Aufgabe:</span> Personalentwicklung (Karrierewege)",
+            "intro": "<b>Dr. Klara Kompetenz:</b> 'Entwickeln Sie systematische Laufbahnmodelle, um die Motivation zu steigern.'",
+            "keywords": ["fachlaufbahn", "führung", "projekt", "aufstieg", "experte", "wechsel", "transparenz"],
+            "thresholds": { "30": "Nur Führung genannt?", "70": "Gute Systematik.", "100": "Exzellente Differenzierung!" },
+            "solutionHint": "Unterscheidung: Fachlaufbahn (Experte), Führungslaufbahn, Projektlaufbahn.",
+            "gradingPrompt": "Bewerte WOHLWOLLEND. \n\nKriterien:\n- Erkennt der User, dass es nicht nur 'Chef werden' gibt?\n- Werden Alternativen genannt (Experte, Projektleiter)?\n\nWICHTIG: Wenn mindestens zwei Wege (Führung + Fach) erkennbar sind, gib >80 Punkte."
         },
-        "solutionHint": "Fokus: Fachlaufbahn vs. Führungslaufbahn vs. Projektlaufbahn.",
-        "gradingPrompt": "Bewerte die Systematik der Laufbahnmodelle."
-    },
-    "sebastian_eval_feedback": {
-        "title": "<span style='color:white;'>Frage:</span> Evaluation vs. Feedback",
-        "intro": "<b>Sebastian Domini (Technik):</b> 'Chef, ich hab hier zwei Azubis. Der eine will Feedback, der andere fragt nach der Evaluation seiner Leistung. Für mich ist das alles dasselbe: Ich sag denen, was sie falsch gemacht haben. Oder gibt es da theoretisch einen Unterschied, den ich als Meister kennen sollte?'",
-        "keywords": [
-            "prozess",
-            "ergebnis",
-            "formativ",
-            "summativ",
-            "individuell",
-            "systematisch",
-            "entwicklung",
-            "beurteilung"
-        ],
-        "thresholds": {
-            "30": "Zu ungenau.",
-            "70": "Gute Unterscheidung.",
-            "100": "Perfekte pädagogische Differenzierung!"
+        "sebastian_eval_feedback": {
+            "title": "<span style='color:white;'>Frage:</span> Evaluation vs. Feedback",
+            "intro": "<b>Sebastian Domini:</b> 'Feedback vs. Evaluation. Wo liegt der Unterschied?'",
+            "keywords": ["prozess", "ergebnis", "formativ", "summativ", "individuell", "note", "zeugnis", "entwicklung"],
+            "thresholds": { "30": "Zu ungenau.", "70": "Gute Unterscheidung.", "100": "Perfekt differenziert!" },
+            "solutionHint": "Feedback = Prozess/Lernen (formativ). Evaluation = Ergebnis/Bewertung (summativ).",
+            "gradingPrompt": "Bewerte WOHLWOLLEND als Sebastian (Meister). \n\nKriterien:\n- Feedback = Hilfe beim Lernen/Besserwerden.\n- Evaluation = Benotung/Endabrechnung.\n\nWICHTIG: Akzeptiere einfache Erklärungen wie 'Feedback ist für den Weg, Evaluation für das Ziel'. Fachbegriffe wie 'formativ' sind Bonus, aber keine Pflicht."
         },
-        "solutionHint": "Feedback ist prozessorientiert/formativ/individuell (Lernbegleitung). Evaluation ist ergebnisorientiert/summativ/systematisch (Bewertung/Erfolgskontrolle).",
-        "gradingPrompt": "Du bist Sebastian Domini, ein pragmatischer Meister. Bewerte die Erklärung. Erwarte Begriffe wie 'Prozess vs. Ergebnis' oder 'formativ vs. summativ'."
-    },
-    "Boris-Gemini_befragen_config": {
-        "title": "<span style='color:white;'>Chat:</span> Fragen Sie Boris Gemini",
-        "intro": "<b>Boris Gemini (IT/KI):</b> 'Hallo! Ich bin Ihre Schnittstelle zur KI. Ich kann Ihnen zwar keine Entscheidungen abnehmen, aber ich kann Begriffe erklären, Ideen generieren oder Emails vorformulieren. Was kann ich für Sie tun?'",
-        "solutionHint": "Stellen Sie eine offene Frage.",
-        "keywords": [
-            "?"
-        ],
-        "thresholds": {
-            "30": "Ich habe Sie nicht verstanden.",
-            "70": "Verstanden.",
-            "100": "Hier ist meine Antwort:"
-        },
-        "gradingPrompt": "Du bist Boris Gemini, ein freundlicher und hilfsbereiter KI-Experte in einem Planspiel. Der User stellt dir eine Frage oder gibt dir eine Aufgabe. ANTWORTE direkt und hilfreich auf diese Frage. WICHTIG: Schreibe am ganz am Ende deiner Antwort in eine neue Zeile: 'PUNKTE: 100'. Damit zeigst du dem System, dass die Anfrage erfolgreich bearbeitet wurde."
-    }
-};
+        "Boris-Gemini_befragen_config": {
+            "title": "<span style='color:white;'>Chat:</span> Fragen Sie Boris Gemini",
+            "intro": "<b>Boris Gemini:</b> 'Ich bin Ihre KI-Schnittstelle. Was kann ich für Sie tun?'",
+            "keywords": ["?"],
+            "solutionHint": "Stellen Sie eine offene Frage.",
+            "thresholds": { "30": "...", "70": "...", "100": "..." },
+            "gradingPrompt": "Du bist Boris Gemini, ein hilfreicher KI-Assistent. Antworte auf die Frage des Users. Sei kurz und prägnant. Schreibe AM ENDE deiner Antwort immer 'PUNKTE: 100', damit das Spiel weitergeht."
+        }
+    };
+
+
+
+
 
     let currentAiId = null;
 const sortTasks = {
