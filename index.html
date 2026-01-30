@@ -945,6 +945,30 @@ const aiScenarios = {
             "100": "..."
         },
         "gradingPrompt": "Du bist Boris Gemini, ein hilfreicher KI-Assistent. Antworte auf die Frage des Users. Sei kurz und prägnant. Schreibe AM ENDE deiner Antwort immer 'PUNKTE: 100', damit das Spiel weitergeht."
+    },
+    "Konzept_Mitarbeiterbeurteilung_ai_config": {
+        "title": "Konzept zur Mitarbeiterbeurteilung",
+        "intro": "Bitte erstellen Sie für Horst Hektik ein schlüssiges Konzept zur Mitarbeiterbeurteilung.\nIhr Konzept wird an Horst Hektik weitergeleitet.\nSie kehren dann in den Posteingang zurück.",
+        "solutionHint": "",
+        "gradingPrompt": "Bitte bewerte freundlich und gib in Deiner Antwort Hinweise zur richtigen Herangehensweise bei der Konzepterstellung für die Beurteilung von Mitarbeitenden",
+        "keywords": [],
+        "thresholds": {
+            "30": "Zu wenig.",
+            "70": "Gut.",
+            "100": "Perfekt."
+        }
+    },
+    "ai_sebastian_ai_config": {
+        "title": "",
+        "intro": "",
+        "solutionHint": "Feedback = Prozess/Lernen (formativ). Evaluation = Ergebnis/Bewertung (summativ).",
+        "gradingPrompt": "Bewerte WOHLWOLLEND. \n\nKriterien:\n- Feedback = Hilfe beim Lernen/Besserwerden.\n- Evaluation = Benotung/Endabrechnung.\n\nWICHTIG: Akzeptiere einfache Erklärungen wie 'Feedback ist für den Weg, Evaluation für das Ziel'. Fachbegriffe wie 'formativ' sind Bonus, aber keine Pflicht.",
+        "keywords": [],
+        "thresholds": {
+            "30": "Zu wenig.",
+            "70": "Gut.",
+            "100": "Perfekt."
+        }
     }
 };
 
@@ -1762,6 +1786,12 @@ const scenes = {
                 "costBudget": 0
             },
             {
+                "text": "📧 <b>Horst Hektik</b><br><small>Betreff: Konzepterstellung",
+                "next": "Horst_Hektik_Konzept_Mitarbeiterbeurteilung",
+                "costTime": 0,
+                "costBudget": 0
+            },
+            {
                 "text": "🚪 Posteingang schließen",
                 "next": "Bürozeit_1",
                 "costTime": 0,
@@ -2486,8 +2516,11 @@ const scenes = {
         ]
     },
     "ai_sebastian": {
+        "title": "",
+        "text": "",
+        "char": "",
         "special": "ai_question",
-        "aiId": "sebastian_eval_feedback",
+        "aiId": "ai_sebastian_ai_config",
         "next": "sebastian_thanks"
     },
     "sebastian_thanks": {
@@ -2885,6 +2918,39 @@ const scenes = {
         "char": "alex",
         "special": "quiz",
         "quizId": "Quiz_Ausbildungssituation_quiz_config",
+        "next": "office_emails"
+    },
+    "Horst_Hektik_Konzept_Mitarbeiterbeurteilung": {
+        "title": "<b>E-Mail von Horst Hektik</b>Betreff: Konzept zur Mitarbeiterbeurteilung",
+        "text": "<br>Ich bitte Sie um Hilfe.<br><br>\nIch soll in Zukunft Mitarbeiter beurteilen und ich habe das noch nie gemacht!<br>\nWorauf muss ich den dabei achten???<br><br>\nKönnen Sie mir dafür ein Konzept erstellen nach dem ich mich richten kann?<br>\nUnd ich brauche das möglichst schnell!! Also eigentlich gestern!<br><br>\nGrüße vom Bau...<br>\nHorst Hektik\n\n",
+        "char": "horst",
+        "options": [
+            {
+                "text": "<b>E-Mail von Horst Hektik</b>Betreff: Konzept zur Mitarbeiterbeurteilung",
+                "next": "office_emails",
+                "costTime": 0,
+                "costBudget": 0
+            },
+            {
+                "text": "Hilfe anbieten",
+                "next": "Konzept_Mitarbeiterbeurteilung",
+                "costTime": 0,
+                "costBudget": 0
+            },
+            {
+                "text": "",
+                "next": "",
+                "costTime": 0,
+                "costBudget": 0
+            }
+        ]
+    },
+    "Konzept_Mitarbeiterbeurteilung": {
+        "title": "Konzept zur Mitarbeiterbeurteilung",
+        "text": "Bitte erstellen Sie für Horst Hektik ein schlüssiges Konzept zur Mitarbeiterbeurteilung.\nIhr Konzept wird an Horst Hektik weitergeleitet.\nSie kehren dann in den Posteingang zurück.",
+        "char": "klara",
+        "special": "ai_question",
+        "aiId": "Konzept_Mitarbeiterbeurteilung_ai_config",
         "next": "office_emails"
     }
 };
