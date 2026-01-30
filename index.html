@@ -1277,6 +1277,176 @@ const sortTasks = {
                 ]
             }
         ]
+    },
+    "Ausbildungsvideo_quiz_config": {
+        "title": "Video der Ausbildungssituation Kabel abisolieren",
+        "intro": "<b>Was ist Ihnen in dem Video aufgefallen?</b><br><br>\nBitte beantworten Sie die folgenden Fragen.<br>\nBei richtiger Lösung gelangen Sie zurück in den Posteingang, Alex Engagiert wird über Ihre Entscheidung automatisch informiert.<br><br>",
+        "law": "Ausbildereignungsprüfung ",
+        "questions": [
+            {
+                "q": "Welche Werkzeuge stehen für das Abisolieren von Kabeln zur Verfügung?",
+                "options": [
+                    {
+                        "text": "Scharfes Messer",
+                        "val": true
+                    },
+                    {
+                        "text": "Abisolierzange und Isofix",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Welches Werkzeug sollte nicht benutzt werden?",
+                "options": [
+                    {
+                        "text": "Scharfes Messer",
+                        "val": true
+                    },
+                    {
+                        "text": "Abisolierzange und Isofix",
+                        "val": false
+                    }
+                ]
+            },
+            {
+                "q": "Welche Gefahren bestehen bei der Arbeit mit dem scharfen Messer",
+                "options": [
+                    {
+                        "text": "Hohe Verletzungsgefahr",
+                        "val": true
+                    },
+                    {
+                        "text": "keine",
+                        "val": false
+                    }
+                ]
+            },
+            {
+                "q": "Was passiert wenn der \"Azubi\" sich während der Prüfung verletzt?",
+                "options": [
+                    {
+                        "text": "Es wird ein Pflaster drauf gemacht",
+                        "val": false
+                    },
+                    {
+                        "text": "Die Prüfung wird abgebrochen",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Wie würden Sie entscheiden? Hat der Ausbilder diese Prüfung bestanden",
+                "options": [
+                    {
+                        "text": "Ja, der Rest war doch nicht verkehrt...",
+                        "val": false
+                    },
+                    {
+                        "text": "Nein, er hat eklatant gegen Sichereitsbestimmungen verstoßen",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Welche Entscheidung treffen Sie?",
+                "options": [
+                    {
+                        "text": "sofortige Entlassung",
+                        "val": false
+                    },
+                    {
+                        "text": "Einladung zu einem Personalgespräch",
+                        "val": true
+                    }
+                ]
+            }
+        ]
+    },
+    "Quiz_Ausbildungssituation_quiz_config": {
+        "title": "Entscheidung zur Beschwerde von Alex Engagiert",
+        "intro": "Bitte beantworten Sie die nachfolgenden Fragen.<br><br>\nBei der richtigen Lösung werden Sie zum Posteingang zurückgeleitet und\nAlex Engagiert wir über Ihre Entscheidung automatisch informiert.",
+        "law": "Ausbildereignungsprüfung ",
+        "questions": [
+            {
+                "q": "Welche Werkzeuge stehen für das Abisolieren von Kabeln zur Verfügung?",
+                "options": [
+                    {
+                        "text": "Scharfes Messer",
+                        "val": true
+                    },
+                    {
+                        "text": "Abisolierzange und Isofix",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Welches Werkzeug sollte nicht benutzt werden?",
+                "options": [
+                    {
+                        "text": "Scharfes Messer",
+                        "val": true
+                    },
+                    {
+                        "text": "Abisolierzange und Isofix",
+                        "val": false
+                    }
+                ]
+            },
+            {
+                "q": "Welche Gefahren bestehen bei der Arbeit mit dem scharfen Messer",
+                "options": [
+                    {
+                        "text": "Hohe Verletzungsgefahr",
+                        "val": true
+                    },
+                    {
+                        "text": "keine",
+                        "val": false
+                    }
+                ]
+            },
+            {
+                "q": "Was passiert wenn der \"Azubi\" sich während der Prüfung verletzt?",
+                "options": [
+                    {
+                        "text": "Es wird ein Pflaster drauf gemacht",
+                        "val": false
+                    },
+                    {
+                        "text": "Die Prüfung wird abgebrochen",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Wie würden Sie entscheiden? Hat der Ausbilder diese Prüfung bestanden",
+                "options": [
+                    {
+                        "text": "Ja, der Rest war doch nicht verkehrt...",
+                        "val": false
+                    },
+                    {
+                        "text": "Nein, er hat eklatant gegen Sichereitsbestimmungen verstoßen",
+                        "val": true
+                    }
+                ]
+            },
+            {
+                "q": "Welche Entscheidung treffen Sie?",
+                "options": [
+                    {
+                        "text": "sofortige Entlassung",
+                        "val": false
+                    },
+                    {
+                        "text": "Einladung zu einem Personalgespräch",
+                        "val": true
+                    }
+                ]
+            }
+        ]
     }
 };
 
@@ -2688,12 +2858,34 @@ const scenes = {
         "video": "https://www.youtube.com/watch?v=hjwGafJrum4",
         "options": [
             {
+                "text": "Entscheidung treffen",
+                "next": "Quiz_Ausbildungssituation",
+                "costTime": 0,
+                "costBudget": 0
+            },
+            {
                 "text": "Zurück zum Posteingang",
                 "next": "office_emails",
                 "costTime": 0,
                 "costBudget": 0
             }
         ]
+    },
+    "Ausbildungsvideo": {
+        "title": "Video der Ausbildungssituation Kabel abisolieren",
+        "text": "<b>Was ist Ihnen in dem Video aufgefallen?</b><br><br>\nBitte beantworten Sie die folgenden Fragen.<br>\nBei richtiger Lösung gelangen Sie zurück in den Posteingang, Alex Engagiert wird über Ihre Entscheidung automatisch informiert.<br><br>",
+        "char": "alex",
+        "special": "quiz",
+        "quizId": "Ausbildungsvideo_quiz_config",
+        "next": "office_emails"
+    },
+    "Quiz_Ausbildungssituation": {
+        "title": "Entscheidung zur Beschwerde von Alex Engagiert",
+        "text": "Bitte beantworten Sie die nachfolgenden Fragen.<br><br>\nBei der richtigen Lösung werden Sie zum Posteingang zurückgeleitet und\nAlex Engagiert wir über Ihre Entscheidung automatisch informiert.",
+        "char": "alex",
+        "special": "quiz",
+        "quizId": "Quiz_Ausbildungssituation_quiz_config",
+        "next": "office_emails"
     }
 };
 
