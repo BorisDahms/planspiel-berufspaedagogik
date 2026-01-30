@@ -171,7 +171,21 @@
             position: relative; overflow: hidden; box-shadow: 0 4px 0 #000; width: 100%;
         }
         button.choice-btn:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 0 #000; }
-        
+        /* --- NEU: Style für erledigte Aufgaben/Mails --- */
+        .choice-btn.read {
+            opacity: 0.7;
+            border-color: #2ecc71;
+            background: #2c3e50;
+            position: relative;
+        }
+        .choice-btn.read::after {
+            content: '✅';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.2rem;
+        }
+
         /* DYNAMISCHES DASHBOARD (Admin-Tool freundlich) */
         /* Wenn der Container im Dashboard-Modus ist: 3 Spalten */
         .actions-container.dashboard-mode {
@@ -521,6 +535,14 @@
         <div class="name-input-group" id="name-input-group">
             <label class="name-label">Bitte geben Sie für Ihre Arbeit einen Namen an:</label>
             <input type="text" id="player-name" class="name-input" placeholder="Ihr Name...">
+
+<div style="margin-top: 15px;">
+    <label class="name-label">Tagespasswort eingeben:</label>
+    <input type="password" id="tagespasswort" class="name-input" placeholder="Passwort...">
+    <div id="pw-error" style="color: #e84545; font-size: 0.9rem; margin-top: 5px; display: none; font-weight:bold;">
+        ⛔ Falsches Passwort!
+    </div>
+</div>
         </div>
 
         <div id="char-bg" class="char-img-container">
@@ -721,35 +743,38 @@
 
 <script>
     // Charaktere / Bilder (jetzt als Emojis)
-    const AVATARS = {        'chef': '👨🏼‍💼',          // Dr. Peter Planer
-        'horst': '👷🏻',         // Horst Hektik (Bauhelm)
-        'verwaltung': '👩‍💼',    // Franziska Immerda
-        'sascha': '👨🏽‍⚖️',       // Sascha AEVO
-        'klara': '🤵🏾‍♀️',        // Dr. Klara Kompetenz (Dunkler Hautton)
-        'alex': '🙎🏻‍♂️',          // Alex Engagiert (Betriebsrat/Sprachrohr)
-        'Boris': '👨🏻‍💻',         // Boris Gemini (IT, Brille/Nerd)
-        'claudia': '🤷🏻‍♀️',       // Claudia Papierkram (Archiv)
-        'viola': '🙋🏻‍♀️',         // Viola Communikationis (Gebärden/Offenheit)
-        'erik': '🧑‍🦽',         // Erik Handycap (Rollstuhlfahrer)
-        'sebastian': '👨🏻‍🔧'      // Sebastian Domini (Zahnrad/Technik)
-    };
+    const AVATARS = {
+    "chef": "👨🏼‍💼",
+    "horst": "👷🏻",
+    "verwaltung": "👩‍💼",
+    "sascha": "👨🏽‍⚖️",
+    "klara": "🤵🏾‍♀️",
+    "alex": "🙎🏻‍♂️",
+    "Boris": "👨🏻‍💻",
+    "claudia": "🤷🏻‍♀️",
+    "viola": "🙋🏻‍♀️",
+    "erik": "🧑‍🦽",
+    "sebastian": "👨🏻‍🔧",
+    "hausmeister": "👨‍🌾"
+};
 
     // Charaktere mit spezifischem Duktus-Hinweis für den User
     const CHAR_DESCRIPTIONS = {
-        'chef': "<b>Dr. Peter Planer (Geschäftsführung)</b><br>Ein Visionär, manchmal ein bisschen unkonzentriert.<br><i>\"Ich sehe Horizonte... aber wo ist meine Brille?\"</i>",
-        'horst': "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH)</b><br>Praktiker vom Bau. Hat einen sehr speziellen Humor.<br><i>\"Was ist schwerer? 1 kg Stahl oder 1 kg Federn?\"</i>",
-        'verwaltung': "<b>Franziska Immerda (Verwaltung)</b><br>Zuvorkommend, hilfsbereit, aber bestimmt. Behält das Große und Ganze im Blick.<br><i>\"Ordnung muss sein.\"</i>",
-        'sascha': "<b>Sascha AEVO (Verantwortlicher Ausbilder)</b><br>Pflichtbewusst, modern und wertschätzend. Offen für Neuerungen.<br><i>\"Lass uns das gemeinsam angehen.\"</i>",
-        'klara': "<b>Dr. Klara Kompetenz (Personalleitung)</b><br>Höflich, wertschätzend und motivierend. Übt Kritik nur an der Sache.<br><i>\"Wir finden eine pädagogische Lösung.\"</i>",
-        'alex': "<b>Alex Engagiert (Betriebsrat)</b><br>Achtet auf Bedürfnisse der Mitarbeitenden. Wird bei Verstößen sehr deutlich.<br><i>\"Haben wir an die Kollegen gedacht?\"</i>", 
-        'Boris': "<b>Boris Gemini (IT-Abteilung)</b><br>Ist begeistert von der Arbeit mit künstlicher Intelligenz und mischt sich oft ungefragt in andere Gespräche ein<br><i>\"Warum machen wir das nicht mit KI???\"</i>",
-        'claudia': "<b>Claudia Papierkram (Verwaltung/KI)</b><br>Effizient, freundlich und pedantisch. Liebt KI und Rätsel.<br><i>\"Effizienz durch Struktur.\"</i>",
-        'viola': "<b>Viola Communikationis (Inklusion)</b><br>Fachpraktikerausbilderin. Spricht langsam und deutlich.<br><i>\"Wir müssen barrierefrei denken.\"</i>",
-        'erik': "<b>Erik Handycap (Sozialarbeit)</b><br>Bildet gerne lange, ausschweifende Schachtelsätze.<br><i>\"In Anbetracht der Umstände, die...\"</i>",
-        'sebastian': "<b>Sebastian Domini (Technik)</b><br>Industriemeister Metall/Mechatronik. Kommt aus der Produktion.<br><i>\"Das muss technisch funktionieren.\"</i>"
-    };
+    "chef": "<b>Dr. Peter Planer (Geschäftsführung)</b><br>Ein Visionär, manchmal ein bisschen unkonzentriert.<br><i>\"Ich sehe Horizonte... aber wo ist meine Brille?\"</i>",
+    "horst": "<b>Horst Hektik (Ausbildungsleiter PlanA GmbH)</b><br>Praktiker vom Bau. Hat einen sehr speziellen Humor. Erzählt gerne Chuck Norris Witze:<br><i>\"Chuck Norris trägt keine Uhr. Er entscheidet, wie spät es ist. ICH BIN CHUCK NORRIS!!!\"</i>",
+    "verwaltung": "<b>Franziska Immerda (Verwaltung)</b><br>Zuvorkommend, hilfsbereit, aber bestimmt. Behält das Große und Ganze im Blick.<br><i>\"Ordnung muss sein.\"</i>",
+    "sascha": "<b>Sascha AEVO (Verantwortlicher Ausbilder)</b><br>Pflichtbewusst, modern und wertschätzend. Offen für Neuerungen.<br><i>\"Lass uns das gemeinsam angehen.\"</i>",
+    "klara": "<b>Dr. Klara Kompetenz (Personalleitung)</b><br>Höflich, wertschätzend und motivierend. Übt Kritik nur an der Sache.<br><i>\"Wir finden eine pädagogische Lösung.\"</i>",
+    "alex": "<b>Alex Engagiert (Betriebsrat)</b><br>Achtet auf Bedürfnisse der Mitarbeitenden. Wird bei Verstößen sehr deutlich.<br><i>\"Haben wir an die Kollegen gedacht?\"</i>",
+    "Boris": "<b>Boris Gemini (IT-Abteilung)</b><br>Ist begeistert von der Arbeit mit künstlicher Intelligenz und mischt sich oft ungefragt in andere Gespräche ein<br><i>\"Warum machen wir das nicht mit KI???\"</i>",
+    "claudia": "<b>Claudia Papierkram (Verwaltung/KI)</b><br>Effizient, freundlich und pedantisch. Liebt KI und Rätsel.<br><i>\"Effizienz durch Struktur.\"</i>",
+    "viola": "<b>Viola Communikationis (Inklusion)</b><br>Fachpraktikerausbilderin. Spricht langsam und deutlich.<br><i>\"Wir müssen barrierefrei denken.\"</i>",
+    "erik": "<b>Erik Handycap (Sozialarbeit)</b><br>Bildet gerne lange, ausschweifende Schachtelsätze.<br><i>\"In Anbetracht der Umstände, die...\"</i>",
+    "sebastian": "<b>Sebastian Domini (Technik)</b><br>Industriemeister Metall/Mechatronik. Kommt aus der Produktion.<br><i>\"Das muss technisch funktionieren.\"</i>",
+    "hausmeister": "<b>Hausmeister Olaf Ordentlich</b><br>\nOlaf Ordentlich ist fleissig, leise und unauffällig.<br><br>\nWas nur wenige wissen:<br> \nEr ist hochgebildet\nund eine Goldgrube für verschiedenste Informationen."
+};
 
-    let state = { time: 150, budget: 100, mood: 100, currentScene: 'intro', giveUpCount: 0 };
+    let state = { time: 150, budget: 100, mood: 100, currentScene: 'intro', giveUpCount: 0, visited: [] };
     let historyStack = [];
     let resumeSceneAfterIntervention = ''; 
 
@@ -759,71 +784,169 @@
     
 
 const aiScenarios = {
-        "hb4_digital": {
-            "title": "<span style='color:white;'>Aufgabe:</span> Digitale Transformation der Ausbildung",
-            "intro": "<b>Dr. Klara Kompetenz:</b> 'Welche Anforderungen stellen wir an Lernaufgaben, um der digitalen Transformation gerecht zu werden? Differenzieren Sie nach fachlichen und methodischen Ansätzen.'",
-            "keywords": ["medien", "selbst", "app", "tablet", "digital", "kooperation", "prozess", "handlung", "assistenz", "daten"],
-            "thresholds": { "30": "Zu wenig.", "70": "Gute Ansätze.", "100": "Exzellent!" },
-            "solutionHint": "Tablets/Apps nutzen (Fachlich), Selbststeuerung/Recherche fördern (Methodisch).",
-            "gradingPrompt": "Du bist Dr. Klara Kompetenz. Bewerte WOHLWOLLEND (DQR 7). \n\nKriterien:\n1. Nennung digitaler Tools (Apps, Tablets, VR, Software).\n2. Nennung neuer Lernformen (Selbstgesteuert, Recherche, Prozessorientiert).\n\nWICHTIG: Sei gnädig! Wenn der Sinn stimmt (z.B. 'Tablet' statt 'Mobile Device'), gib Punkte. Es geht um das Verständnis, nicht um Fachbegriffe. Eine verständliche, logische Erklärung reicht für 80-100 Punkte."
+    "hb4_digital": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Digitale Transformation der Ausbildung",
+        "intro": "<b>Dr. Klara Kompetenz:</b> 'Welche Anforderungen stellen wir an Lernaufgaben, um der digitalen Transformation gerecht zu werden? Differenzieren Sie nach fachlichen und methodischen Ansätzen.'",
+        "keywords": [
+            "medien",
+            "selbst",
+            "app",
+            "tablet",
+            "digital",
+            "kooperation",
+            "prozess",
+            "handlung",
+            "assistenz",
+            "daten"
+        ],
+        "thresholds": {
+            "30": "Zu wenig.",
+            "70": "Gute Ansätze.",
+            "100": "Exzellent!"
         },
-        "hb1_sozial": {
-            "title": "<span style='color:white;'>Aufgabe:</span> Lernprozesse & Sozialkompetenz",
-            "intro": "<b>Dr. Klara Kompetenz:</b> 'Ein Azubi hat sich im Ton vergriffen. Entwickeln Sie eine Intervention zur Förderung der Sozialkompetenz (keine bloße Strafe!).'",
-            "keywords": ["feedback", "reflexion", "gespräch", "perspektivwechsel", "training", "ursache", "entschuldigung", "werte"],
-            "thresholds": { "30": "Das ist nur eine Strafe.", "70": "Solider Ansatz.", "100": "Hervorragend pädagogisch!" },
-            "solutionHint": "Feedback-Gespräch, Reflexion der Wirkung, gemeinsamer Verhaltenskodex.",
-            "gradingPrompt": "Du bist Dr. Klara Kompetenz. Bewerte WOHLWOLLEND. \n\nKriterien:\n- Findet ein Gespräch statt?\n- Geht es um Einsicht/Reflexion statt nur Strafe?\n\nWICHTIG: Akzeptiere jede pädagogisch sinnvolle Lösung (Gespräch, Entschuldigung, Training). Sei großzügig bei der Punktevergabe, wenn der User eine erzieherische Absicht zeigt."
+        "solutionHint": "Tablets/Apps nutzen (Fachlich), Selbststeuerung/Recherche fördern (Methodisch).",
+        "gradingPrompt": "Du bist Dr. Klara Kompetenz. Bewerte WOHLWOLLEND (DQR 7). \n\nKriterien:\n1. Nennung digitaler Tools (Apps, Tablets, VR, Software).\n2. Nennung neuer Lernformen (Selbstgesteuert, Recherche, Prozessorientiert).\n\nWICHTIG: Sei gnädig! Wenn der Sinn stimmt (z.B. 'Tablet' statt 'Mobile Device'), gib Punkte. Es geht um das Verständnis, nicht um Fachbegriffe. Eine verständliche, logische Erklärung reicht für 80-100 Punkte."
+    },
+    "hb1_sozial": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Lernprozesse & Sozialkompetenz",
+        "intro": "<b>Dr. Klara Kompetenz:</b> 'Ein Azubi hat sich im Ton vergriffen. Entwickeln Sie eine Intervention zur Förderung der Sozialkompetenz (keine bloße Strafe!).'",
+        "keywords": [
+            "feedback",
+            "reflexion",
+            "gespräch",
+            "perspektivwechsel",
+            "training",
+            "ursache",
+            "entschuldigung",
+            "werte"
+        ],
+        "thresholds": {
+            "30": "Das ist nur eine Strafe.",
+            "70": "Solider Ansatz.",
+            "100": "Hervorragend pädagogisch!"
         },
-        "hb2_recruit": {
-            "title": "<span style='color:white;'>Aufgabe:</span> Planungsprozesse (Ausland)",
-            "intro": "<b>Dr. Peter Planer:</b> 'Wir brauchen Fachkräfte aus dem Ausland! Planen Sie das Marketing und das Interview.'",
-            "keywords": ["anerkennung", "betriebsrat", "kultur", "sprache", "onboarding", "wohnung", "visum", "integration"],
-            "thresholds": { "30": "Wichtige Aspekte fehlen.", "70": "Gut strukturiert.", "100": "Strategisch umfassend!" },
-            "solutionHint": "Betriebsrat (§99), Anerkennung, Sprache/Kultur, Integration (Wohnung/Behörden).",
-            "gradingPrompt": "Bewerte WOHLWOLLEND strategisch. \n\nKriterien:\n- Werden rechtliche/formale Hürden genannt (Visum, Anerkennung, Betriebsrat)?\n- Wird an Integration gedacht (Sprache, Kultur, Onboarding)?\n\nWICHTIG: Wenn der User erkennt, dass es mehr ist als nur 'einstellen', gib hohe Punkte."
+        "solutionHint": "Feedback-Gespräch, Reflexion der Wirkung, gemeinsamer Verhaltenskodex.",
+        "gradingPrompt": "Du bist Dr. Klara Kompetenz. Bewerte WOHLWOLLEND. \n\nKriterien:\n- Findet ein Gespräch statt?\n- Geht es um Einsicht/Reflexion statt nur Strafe?\n\nWICHTIG: Akzeptiere jede pädagogisch sinnvolle Lösung (Gespräch, Entschuldigung, Training). Sei großzügig bei der Punktevergabe, wenn der User eine erzieherische Absicht zeigt."
+    },
+    "hb2_recruit": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Planungsprozesse (Ausland)",
+        "intro": "<b>Dr. Peter Planer:</b> 'Wir brauchen Fachkräfte aus dem Ausland! Planen Sie das Marketing und das Interview.'",
+        "keywords": [
+            "anerkennung",
+            "betriebsrat",
+            "kultur",
+            "sprache",
+            "onboarding",
+            "wohnung",
+            "visum",
+            "integration"
+        ],
+        "thresholds": {
+            "30": "Wichtige Aspekte fehlen.",
+            "70": "Gut strukturiert.",
+            "100": "Strategisch umfassend!"
         },
-        "hb3_genz": {
-            "title": "<span style='color:white;'>Aufgabe:</span> Management & Bindung (Gen Z)",
-            "intro": "<b>Sascha AEVO:</b> 'Wir müssen die Werte der Gen Z verstehen. Erstellen Sie ein Konzept zur Mitarbeiterbindung.'",
-            "keywords": ["sinn", "flexibel", "homeoffice", "werte", "balance", "klima", "freizeit", "entwicklung"],
-            "thresholds": { "30": "Zu altmodisch.", "70": "Gute Ansätze.", "100": "Perfektes Zielgruppenverständnis!" },
-            "solutionHint": "Work-Life-Balance, Sinnhaftigkeit, Flexibilität, flache Hierarchien.",
-            "gradingPrompt": "Bewerte WOHLWOLLEND. \n\nKriterien:\n- Werden moderne Werte genannt (Flexibilität, Sinn, Balance)?\n\nWICHTIG: Akzeptiere Begriffe wie 'Homeoffice', 'weniger Stress', 'gutes Klima'. Sei nicht streng bei Fachbegriffen wie 'Employer Branding'."
+        "solutionHint": "Betriebsrat (§99), Anerkennung, Sprache/Kultur, Integration (Wohnung/Behörden).",
+        "gradingPrompt": "Bewerte WOHLWOLLEND strategisch. \n\nKriterien:\n- Werden rechtliche/formale Hürden genannt (Visum, Anerkennung, Betriebsrat)?\n- Wird an Integration gedacht (Sprache, Kultur, Onboarding)?\n\nWICHTIG: Wenn der User erkennt, dass es mehr ist als nur 'einstellen', gib hohe Punkte."
+    },
+    "hb3_genz": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Management & Bindung (Gen Z)",
+        "intro": "<b>Sascha AEVO:</b> 'Wir müssen die Werte der Gen Z verstehen. Erstellen Sie ein Konzept zur Mitarbeiterbindung.'",
+        "keywords": [
+            "sinn",
+            "flexibel",
+            "homeoffice",
+            "werte",
+            "balance",
+            "klima",
+            "freizeit",
+            "entwicklung"
+        ],
+        "thresholds": {
+            "30": "Zu altmodisch.",
+            "70": "Gute Ansätze.",
+            "100": "Perfektes Zielgruppenverständnis!"
         },
-        "hb5_transfer": {
-            "title": "<span style='color:white;'>Aufgabe:</span> Weiterbildung (Transfergesellschaft)",
-            "intro": "<b>Viola Communikationis:</b> 'Wir müssen 50 Leute retten. Wir brauchen eine Bildungsbedarfsanalyse.'",
-            "keywords": ["profiling", "interview", "ist", "soll", "markt", "kompetenz", "gespräch", "perspektive"],
-            "thresholds": { "30": "Zu wenig Struktur.", "70": "Guter Leitfaden.", "100": "Hervorragend strukturiert!" },
-            "solutionHint": "Profiling der Mitarbeiter, Einzelgespräche, Abgleich mit Arbeitsmarkt-Chancen.",
-            "gradingPrompt": "Bewerte WOHLWOLLEND. \n\nKriterien:\n- Wird mit den Menschen gesprochen (Interviews/Profiling)?\n- Wird geschaut, was der Markt braucht?\n\nWICHTIG: Gib Punkte für Menschlichkeit und Struktur."
+        "solutionHint": "Work-Life-Balance, Sinnhaftigkeit, Flexibilität, flache Hierarchien.",
+        "gradingPrompt": "Bewerte WOHLWOLLEND. \n\nKriterien:\n- Werden moderne Werte genannt (Flexibilität, Sinn, Balance)?\n\nWICHTIG: Akzeptiere Begriffe wie 'Homeoffice', 'weniger Stress', 'gutes Klima'. Sei nicht streng bei Fachbegriffen wie 'Employer Branding'."
+    },
+    "hb5_transfer": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Weiterbildung (Transfergesellschaft)",
+        "intro": "<b>Viola Communikationis:</b> 'Wir müssen 50 Leute retten. Wir brauchen eine Bildungsbedarfsanalyse.'",
+        "keywords": [
+            "profiling",
+            "interview",
+            "ist",
+            "soll",
+            "markt",
+            "kompetenz",
+            "gespräch",
+            "perspektive"
+        ],
+        "thresholds": {
+            "30": "Zu wenig Struktur.",
+            "70": "Guter Leitfaden.",
+            "100": "Hervorragend strukturiert!"
         },
-        "hb6_karriere": {
-            "title": "<span style='color:white;'>Aufgabe:</span> Personalentwicklung (Karrierewege)",
-            "intro": "<b>Dr. Klara Kompetenz:</b> 'Entwickeln Sie systematische Laufbahnmodelle, um die Motivation zu steigern.'",
-            "keywords": ["fachlaufbahn", "führung", "projekt", "aufstieg", "experte", "wechsel", "transparenz"],
-            "thresholds": { "30": "Nur Führung genannt?", "70": "Gute Systematik.", "100": "Exzellente Differenzierung!" },
-            "solutionHint": "Unterscheidung: Fachlaufbahn (Experte), Führungslaufbahn, Projektlaufbahn.",
-            "gradingPrompt": "Bewerte WOHLWOLLEND. \n\nKriterien:\n- Erkennt der User, dass es nicht nur 'Chef werden' gibt?\n- Werden Alternativen genannt (Experte, Projektleiter)?\n\nWICHTIG: Wenn mindestens zwei Wege (Führung + Fach) erkennbar sind, gib >80 Punkte."
+        "solutionHint": "Profiling der Mitarbeiter, Einzelgespräche, Abgleich mit Arbeitsmarkt-Chancen.",
+        "gradingPrompt": "Bewerte WOHLWOLLEND. \n\nKriterien:\n- Wird mit den Menschen gesprochen (Interviews/Profiling)?\n- Wird geschaut, was der Markt braucht?\n\nWICHTIG: Gib Punkte für Menschlichkeit und Struktur."
+    },
+    "hb6_karriere": {
+        "title": "<span style='color:white;'>Aufgabe:</span> Personalentwicklung (Karrierewege)",
+        "intro": "<b>Dr. Klara Kompetenz:</b> 'Entwickeln Sie systematische Laufbahnmodelle, um die Motivation zu steigern.'",
+        "keywords": [
+            "fachlaufbahn",
+            "führung",
+            "projekt",
+            "aufstieg",
+            "experte",
+            "wechsel",
+            "transparenz"
+        ],
+        "thresholds": {
+            "30": "Nur Führung genannt?",
+            "70": "Gute Systematik.",
+            "100": "Exzellente Differenzierung!"
         },
-        "sebastian_eval_feedback": {
-            "title": "<span style='color:white;'>Frage:</span> Evaluation vs. Feedback",
-            "intro": "<b>Sebastian Domini:</b> 'Feedback vs. Evaluation. Wo liegt der Unterschied?'",
-            "keywords": ["prozess", "ergebnis", "formativ", "summativ", "individuell", "note", "zeugnis", "entwicklung"],
-            "thresholds": { "30": "Zu ungenau.", "70": "Gute Unterscheidung.", "100": "Perfekt differenziert!" },
-            "solutionHint": "Feedback = Prozess/Lernen (formativ). Evaluation = Ergebnis/Bewertung (summativ).",
-            "gradingPrompt": "Bewerte WOHLWOLLEND als Sebastian (Meister). \n\nKriterien:\n- Feedback = Hilfe beim Lernen/Besserwerden.\n- Evaluation = Benotung/Endabrechnung.\n\nWICHTIG: Akzeptiere einfache Erklärungen wie 'Feedback ist für den Weg, Evaluation für das Ziel'. Fachbegriffe wie 'formativ' sind Bonus, aber keine Pflicht."
+        "solutionHint": "Unterscheidung: Fachlaufbahn (Experte), Führungslaufbahn, Projektlaufbahn.",
+        "gradingPrompt": "Bewerte WOHLWOLLEND. \n\nKriterien:\n- Erkennt der User, dass es nicht nur 'Chef werden' gibt?\n- Werden Alternativen genannt (Experte, Projektleiter)?\n\nWICHTIG: Wenn mindestens zwei Wege (Führung + Fach) erkennbar sind, gib >80 Punkte."
+    },
+    "sebastian_eval_feedback": {
+        "title": "<span style='color:white;'>Frage:</span> Evaluation vs. Feedback",
+        "intro": "<b>Sebastian Domini:</b> 'Feedback vs. Evaluation. Wo liegt der Unterschied?'",
+        "keywords": [
+            "prozess",
+            "ergebnis",
+            "formativ",
+            "summativ",
+            "individuell",
+            "note",
+            "zeugnis",
+            "entwicklung"
+        ],
+        "thresholds": {
+            "30": "Zu ungenau.",
+            "70": "Gute Unterscheidung.",
+            "100": "Perfekt differenziert!"
         },
-        "Boris-Gemini_befragen_config": {
-            "title": "<span style='color:white;'>Chat:</span> Fragen Sie Boris Gemini",
-            "intro": "<b>Boris Gemini:</b> 'Ich bin Ihre KI-Schnittstelle. Was kann ich für Sie tun?'",
-            "keywords": ["?"],
-            "solutionHint": "Stellen Sie eine offene Frage.",
-            "thresholds": { "30": "...", "70": "...", "100": "..." },
-            "gradingPrompt": "Du bist Boris Gemini, ein hilfreicher KI-Assistent. Antworte auf die Frage des Users. Sei kurz und prägnant. Schreibe AM ENDE deiner Antwort immer 'PUNKTE: 100', damit das Spiel weitergeht."
-        }
-    };
+        "solutionHint": "Feedback = Prozess/Lernen (formativ). Evaluation = Ergebnis/Bewertung (summativ).",
+        "gradingPrompt": "Bewerte WOHLWOLLEND als Sebastian (Meister). \n\nKriterien:\n- Feedback = Hilfe beim Lernen/Besserwerden.\n- Evaluation = Benotung/Endabrechnung.\n\nWICHTIG: Akzeptiere einfache Erklärungen wie 'Feedback ist für den Weg, Evaluation für das Ziel'. Fachbegriffe wie 'formativ' sind Bonus, aber keine Pflicht."
+    },
+    "Boris-Gemini_befragen_config": {
+        "title": "<span style='color:white;'>Chat:</span> Fragen Sie Boris Gemini",
+        "intro": "<b>Boris Gemini:</b> 'Ich bin Ihre KI-Schnittstelle. Was kann ich für Sie tun?'",
+        "keywords": [
+            "?"
+        ],
+        "solutionHint": "Stellen Sie eine offene Frage.",
+        "thresholds": {
+            "30": "...",
+            "70": "...",
+            "100": "..."
+        },
+        "gradingPrompt": "Du bist Boris Gemini, ein hilfreicher KI-Assistent. Antworte auf die Frage des Users. Sei kurz und prägnant. Schreibe AM ENDE deiner Antwort immer 'PUNKTE: 100', damit das Spiel weitergeht."
+    }
+};
 
 
 
@@ -1177,8 +1300,8 @@ const scenes = {
     },
     "intro": {
         "title": "",
-        "text": "\n                <div class=\"intro-title\">Willkommen<br>im Bildungscampus Leipzig</div>\n                \n                <p style=\"text-align: justify;\">Wir sind ein neu gegründetes Bildungsunternehmen in Leipzig und bieten vorrangig\nPräsenz- und Onlineschulungen in den Bereichen Aus- und Weiterbildungspädagogik, Berufspädagogik, Ausbildereignung, Personalwirtschaft und Büromanagement an.</p>\n<p style=\"text-align: justify;\">\nSeit kurzer Zeit bilden wir in einem Ausbildungsverbund mit der PlanA GmbH im handwerklichen Bereich auch Tischler aus. Ein Teil dieser Ausbildung findet in einer Produktionslinie der PlanA GmbH statt. Es existiert auch eine eigene Lehrwerkstatt.</p>\n\n \n\n                <p style=\"text-align: justify;\">Wir beschäftigen zur Zeit 11 Mitarbeitende sowie mehrere freiberufliche Dozent*innen</p>\n\n                <div class=\"team-grid\">\n                    <div class=\"team-role\">Geschäftsführung:</div><div class=\"team-name\">Dr. Peter Planer 👨🏼‍💼</div>\n                    <div class=\"team-role\">Personalleitung:</div><div class=\"team-name\">Dr. Klara Kompetenz 🤵🏾‍♀️</div>\n                    <div class=\"team-role\">Ausbildungleiter PlanA GmbH:</div><div class=\"team-name\">Horst Hektik 👷🏻</div>\n                    <div class=\"team-role\">Verantwortlicher Ausbilder:</div><div class=\"team-name\">Sascha AEVO 👨🏽‍⚖️</div>\n                    <div class=\"team-role\">Verwaltung:</div><div class=\"team-name\">Franziska Immerda 👩‍💼</div>\n                    <div class=\"team-role\">IT-Abteilung:</div><div class=\"team-name\">Boris Gemini 👨🏻‍💻</div>\n                    <div class=\"team-role\">Betriebsrat:</div><div class=\"team-name\">Alex Engagiert 🙎🏻‍♂️</div>\n                    <div class=\"team-role\">weitere Mitarbeitende:</div><div class=\"team-name\">Claudia Papierkram 🤷🏻‍♀️, Viola Communikationis 🙋🏻‍♀️,<br> Erik Handycap 🧑‍🦽 und Sebastian Domini 👨🏻‍🔧</div>\n                </div>\n            ",
-        "leftContent": "\n                <div class=\"role-box-left\">\n                    <span class=\"role-title\">IHRE MISSION</span>\n                    <div class=\"role-description\">\n                        Sie sind als Gepr. Berufspädagog*in die neue <b>\"Hauptabteilungsleitung Bildung\" mit Personalbefugnissen</b>.<br>\nIn diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen lösen. \n                    </div>\n                    <button class=\"start-btn-green\" onclick=\"startGame()\">Rolle annehmen & starten </button>\n                </div>\n            ",
+        "text": "\n                <div class=\"intro-title\">Willkommen<br>im Bildungscampus Leipzig</div>\n                \n                <p style=\"text-align: justify;\">Wir sind ein neu gegründetes Bildungsunternehmen in Leipzig und bieten vorrangig\nPräsenz- und Onlineschulungen in den Bereichen Aus- und Weiterbildungspädagogik, Berufspädagogik, Ausbildereignung, Personalwirtschaft und Büromanagement an.</p>\n<p style=\"text-align: justify;\">\nSeit kurzer Zeit bilden wir in einem Ausbildungsverbund mit der PlanA GmbH im handwerklichen Bereich auch Tischler aus. Ein Teil dieser Ausbildung findet in einer Produktionslinie der PlanA GmbH statt. Es existiert auch eine eigene Lehrwerkstatt.</p>\n\n \n\n                <p style=\"text-align: justify;\">Wir beschäftigen zur Zeit 11 Mitarbeitende sowie mehrere freiberufliche Dozent*innen</p>\n\n                <div class=\"team-grid\">\n                    <div class=\"team-role\">Geschäftsführung:</div><div class=\"team-name\">Dr. Peter Planer 👨🏼‍💼</div>\n                    <div class=\"team-role\">Personalleitung:</div><div class=\"team-name\">Dr. Klara Kompetenz 🤵🏾‍♀️</div>\n                    <div class=\"team-role\">Ausbildungleiter PlanA GmbH:</div><div class=\"team-name\">Horst Hektik 👷🏻</div>\n                    <div class=\"team-role\">Verantwortlicher Ausbilder:</div><div class=\"team-name\">Sascha AEVO 👨🏽‍⚖️</div>\n                    <div class=\"team-role\">Verwaltung:</div><div class=\"team-name\">Franziska Immerda 👩‍💼</div>\n                    <div class=\"team-role\">IT-Abteilung:</div><div class=\"team-name\">Boris Gemini 👨🏻‍💻</div>\n                    <div class=\"team-role\">Betriebsrat:</div><div class=\"team-name\">Alex Engagiert 🙎🏻‍♂️</div>\n                    <div class=\"team-role\">weitere Mitarbeitende:</div><div class=\"team-name\">Olaf Ordentlich 👨‍🌾, Claudia Papierkram 🤷🏻‍♀️, Viola Communikationis 🙋🏻‍♀️,<br> Erik Handycap 👨‍🏫 und Sebastian Domini 👨🏻‍🔧</div>\n                </div>\n            ",
+        "leftContent": "\n                <div class=\"role-box-left\">\n                    <span class=\"role-title\">IHRE MISSION</span>\n                    <div class=\"role-description\">\n                        Sie sind als Gepr. Berufspädagog*in die neue <b>\"Hauptabteilungsleitung Bildung\" mit Personalbefugnissen</b>.<br>\nIn diesem Planspiel müssen Sie unter Zeitdruck verschiedene Problemstellungen lösen. \n                    </div>\n                    <button class=\"start-btn-green\" onclick=\"checkUndStarten()\">Rolle annehmen & starten </button>\n                </div>\n            ",
         "char": "chef",
         "charName": "Dr. Peter Planer",
         "options": []
@@ -1437,29 +1560,42 @@ const scenes = {
         "title": "Posteingang (4 ungelesen)",
         "text": "Sie haben neue Nachrichten. Bitte wählen Sie eine E-Mail aus, um sie zu lesen.",
         "char": "verwaltung",
-        "charName": "Franziska Immerda",
-        "layout": "dashboard",
         "options": [
             {
                 "text": "📧 <b>Dr. Planer</b><br><small>Betreff: Visionen...</small>",
-                "next": "email_planer_vision"
+                "next": "email_planer_vision",
+                "costTime": 0,
+                "costBudget": 0
             },
             {
                 "text": "📧 <b>Horst Hektik</b><br><small>Betreff: KREISSÄGE!!!</small>",
-                "next": "email_horst_saw"
+                "next": "email_horst_saw",
+                "costTime": 0,
+                "costBudget": 0
             },
             {
                 "text": "📧 <b>Franziska I.</b><br><small>Betreff: Ablage (Dringend!)</small>",
-                "next": "franziska_search_intro"
+                "next": "franziska_search_intro",
+                "costTime": 0,
+                "costBudget": 0
             },
             {
                 "text": "📧 <b>Boris Gemini</b><br><small>Betreff: Witz des Tages</small>",
-                "next": "email_boris_joke"
+                "next": "email_boris_joke",
+                "costTime": 0,
+                "costBudget": 0
+            },
+            {
+                "text": "📧 <b>Alex Engagiert</b><br><small>Betreff: Katastrophale Ausbildungsmethoden!",
+                "next": "email_Alex_Engagiert",
+                "costTime": 0,
+                "costBudget": 0
             },
             {
                 "text": "🚪 Posteingang schließen",
                 "next": "Bürozeit_1",
-                "specialClass": "exit-btn"
+                "costTime": 0,
+                "costBudget": 0
             }
         ]
     },
@@ -2544,13 +2680,30 @@ const scenes = {
         "special": "sort",
         "sortId": "Sortierung_1_sort_config",
         "next": "office_emails"
+    },
+    "email_Alex_Engagiert": {
+        "title": "Mail von Alex Engagiert",
+        "text": "Sehen Sie sich mal an, was der Ausbilder hier veranstaltet!\nDas kann doch nicht war sein!!!\nIch verlange dass hier sofort eingeschritten wird!!!\n\n",
+        "char": "alex",
+        "options": [
+            {
+                "text": "Zurück zum Posteingang",
+                "next": "office_emails",
+                "costTime": 0,
+                "costBudget": 0
+            }
+        ]
     }
 };
 
     // --- ENGINE ---
     // --- ENGINE ---
     function renderScene(sceneKey) {
-        state.currentScene = sceneKey;
+    // --- NEU: Besuch speichern ---
+    if(!state.visited) state.visited = []; 
+    if(!state.visited.includes(sceneKey)) state.visited.push(sceneKey);
+
+    state.currentScene = sceneKey;
         const scene = scenes[sceneKey];
         
         const imgEl = document.getElementById('char-image');
@@ -2646,15 +2799,44 @@ openSearchOverlay(scene.next, scene.searchId);
     openSortOverlay(scene.next, scene.sortId);
 } else if (scene.special === 'calc_score') {
             // Warten auf User Interaction (Zertifikat)
-        } else if (scene.options && scene.options.length === 0 && sceneKey !== 'intro' && sceneKey !== 'giveup_4_fired') { 
-            let btn = document.createElement('button');
-            btn.className = 'choice-btn'; btn.innerHTML = "<strong>🔄 Neu starten</strong>";
-            btn.onclick = () => safeReload(); actionsDiv.appendChild(btn);
-        } else {
+       } else if (scene.options && scene.options.length === 0 && sceneKey !== 'intro' && sceneKey !== 'giveup_4_fired') {
+        let btn = document.createElement('button');
+        
+        // HIER WURDE DER FEHLERHAFTE TEIL ENTFERNT
+
+        btn.className = 'choice-btn'; 
+        btn.innerHTML = "<strong>🔄 Neu starten</strong>";
+        btn.onclick = () => safeReload(); 
+        actionsDiv.appendChild(btn); 
+       } else {
+
+            // --- NEU: Video-Button Logik ---
+            if (scene.video) {
+                let vidBtn = document.createElement('button');
+                vidBtn.className = 'choice-btn';
+                // Roter Style für Video damit er auffällt
+                vidBtn.style.background = "linear-gradient(180deg, #c0392b 0%, #96281b 100%)";
+                vidBtn.style.borderColor = "#e74c3c";
+                
+                // Hier mit Backticks (`) - das ist fehlertoleranter:
+                vidBtn.innerHTML = `<strong>▶️ Video ansehen</strong> <span style='font-size:0.8rem; opacity:0.8;'>(Neues Fenster)</span>`;
+                
+                vidBtn.onclick = () => window.open(scene.video, '_blank');
+                actionsDiv.appendChild(vidBtn);
+            }
+            // -------------------------------
+
             scene.options.forEach(opt => {
-                let btn = document.createElement('button');
-                btn.className = 'choice-btn';
-                if(opt.specialClass) btn.classList.add(opt.specialClass);
+            let btn = document.createElement('button');
+            btn.className = 'choice-btn';
+
+            // --- CHECKMARK LOGIK START ---
+            if(state.visited && state.visited.includes(opt.next)) {
+                btn.classList.add('read');
+            }
+            // --- CHECKMARK LOGIK ENDE ---
+
+            if(opt.specialClass) btn.classList.add(opt.specialClass);
 
                 let costs = [];
                 if(opt.costTime) costs.push(`⏳ -${opt.costTime}`);
@@ -2668,6 +2850,32 @@ openSearchOverlay(scene.next, scene.searchId);
             });
         }
         updateKPIs(); updateUndoBtn();
+    }
+
+   // --- NEU: Passwort-Check Funktion ---
+    function checkUndStarten() {
+        const pwField = document.getElementById("tagespasswort");
+        const errorMsg = document.getElementById("pw-error");
+        
+        // HIER DAS PASSWORT FESTLEGEN:
+        const echtesPasswort = "Leipzig2026"; 
+
+        if (pwField.value === echtesPasswort) {
+            // Richtig -> Fehler ausblenden & Starten
+            errorMsg.style.display = "none";
+            startGame(); 
+        } else {
+            // Falsch -> Fehler anzeigen & Rot markieren
+            errorMsg.style.display = "block";
+            pwField.style.border = "2px solid #e84545";
+            // Kleiner Wackeleffekt (optional)
+            pwField.animate([
+                { transform: 'translateX(0)' },
+                { transform: 'translateX(-10px)' },
+                { transform: 'translateX(10px)' },
+                { transform: 'translateX(0)' }
+            ], { duration: 300 });
+        }
     }
 
     function startGame() { makeDecision({next:'start'}); }
@@ -6336,8 +6544,9 @@ async function analyzeAIAnswer() {
         { emoji: '👨🏻‍💻', name: 'Boris Gemini', role: 'IT-Abteilung' },
         { emoji: '🙎🏻‍♂️', name: 'Alex Engagiert', role: 'Betriebsrat' },
         { emoji: '🤷🏻‍♀️', name: 'Claudia Papierkram', role: 'Verwaltung/Assistenz' },
+        { emoji: '👨‍🌾', name: 'Olaf Ordentlich', role: 'Hausmeister' },
         { emoji: '🙋🏻‍♀️', name: 'Viola Communikationis', role: 'Inklusion' },
-        { emoji: '🧑‍🦽', name: 'Erik Handycap', role: 'Sozialarbeit' },
+        { emoji: '👨‍🏫', name: 'Erik Handycap', role: 'Sozialarbeit' },
         { emoji: '👨🏻‍🔧', name: 'Sebastian Domini', role: 'Technik/Meister' }
     ];
 
