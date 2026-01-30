@@ -949,9 +949,15 @@ const aiScenarios = {
     "Konzept_Mitarbeiterbeurteilung_ai_config": {
         "title": "Konzept zur Mitarbeiterbeurteilung",
         "intro": "Bitte erstellen Sie für Horst Hektik ein schlüssiges Konzept zur Mitarbeiterbeurteilung.\nIhr Konzept wird an Horst Hektik weitergeleitet.\nSie kehren dann in den Posteingang zurück.",
-        "solutionHint": "",
-        "gradingPrompt": "Bitte bewerte freundlich und gib in Deiner Antwort Hinweise zur richtigen Herangehensweise bei der Konzepterstellung für die Beurteilung von Mitarbeitenden",
-        "keywords": [],
+        "solutionHint": "Ein schlüssiges Konzept zur Mitarbeiterbeurteilung auf Masterniveau sollte folgende Elemente enthalten:  1. Ziele: Leistungssteigerung, Personalentwicklung und Motivation (nicht nur Kontrolle). 2. Kriterien & Dimensionen: Unterscheidung in Fachkompetenz, Sozialkompetenz und Methodenkompetenz. Verwendung messbarer KPIs. 3. Prozess:     - Vorbereitung (Selbsteinschätzung vs. Fremdeinschätzung).    - Durchführung (Strukturierter Gesprächsleitfaden).    - Nachbereitung (Schriftliche Dokumentation, Zielvereinbarungen). 4. Rechtssicherheit: Beachtung des AGG (Allgemeines Gleichbehandlungsgesetz), Vermeidung diskriminierender Formulierungen, Einbindung des Betriebsrates (falls vorhanden), Datenschutz. 5. Frequenz: Betonung, dass das Jahresgespräch nur ein Teil ist; regelmäßige Feedbackschleifen (Jour Fixe) sind die Basis. 6. Umgang mit Horst Hektik: Das Konzept muss effizient und klar strukturiert sein, um „Hektik“ entgegenzuwirken.",
+        "gradingPrompt": "Du agierst als Senior HR-Consultant und bewertest den Entwurf des Users.\n\nBewertungskriterien (Masterniveau):\n1. Vollständigkeit: Deckt das Konzept Vorbereitung, Durchführung und Nachbereitung ab?\n2. Rechtssicherheit: Werden rechtliche Aspekte (z.B. AGG, Dokumentation) thematisiert?\n3. Strategische Tiefe: Geht es über reine Checklisten hinaus? Werden Ziele und Nutzen (Personalentwicklung) klar definiert?\n4. Ansprache: Ist der Ton professionell und überzeugend für einen gestressten Manager wie Horst Hektik?\n\nReagiere streng aber konstruktiv. Wenn wichtige Keywords wie \"regelmäßige Gespräche\" oder \"Rechtssicherheit\" fehlen, ziehe Punkte ab und erkläre, warum diese für ein professionelles Beurteilungssystem unerlässlich sind.",
+        "keywords": [
+            "regelmäßige Mitarbeitergespräche als Grundlage",
+            "rechtssichere Formulierungen",
+            "Zielvereinbarung",
+            "Trennung von Beobachtung und Bewertung",
+            "Einbindung Betriebsrat"
+        ],
         "thresholds": {
             "30": "Zu wenig.",
             "70": "Gut.",
