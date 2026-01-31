@@ -6569,76 +6569,63 @@ document.getElementById('overlay-sort').classList.add('hidden');
         document.getElementById('overlay-ai').classList.remove('hidden');
     }
 
-   
-async function analyzeAIAnswer() {
-    const userText = document.getElementById('ai-input').value; 
-    const scenario = aiScenarios[currentAiId]; 
-    
-    const feedbackBox = document.getElementById('ai-result-box');
-    feedbackBox.style.display = 'block';
-    document.getElementById('ai-feedback-text').innerHTML = "<i>Verbindung zu 'ki-lernaufgaben' wird aufgebaut...</i> ⏳";
-    document.getElementById('ai-verdict').innerText = "";
-    document.getElementById('ai-score-fill').style.width = "0%";
-
-    try {
-        // HIER IST IHRE GEWÜNSCHTE ADRESSE:
-        async function analyzeAIAnswer() {
-    const userText = document.getElementById('ai-input').value; 
-    const scenario = aiScenarios[currentAiId]; 
-    
-    const feedbackBox = document.getElementById('ai-result-box');
-    feedbackBox.style.display = 'block';
-    document.getElementById('ai-feedback-text').innerHTML = "<i>Verbindung zum Lernserver wird aufgebaut...</i> ⏳";
-    document.getElementById('ai-verdict').innerText = "";
-    document.getElementById('ai-score-fill').style.width = "0%";
-
-    try {
-        // HIER WAR DER FEHLER: Die URL muss auf deinen neuen Server zeigen
-        // Wir hängen "/api/chat" an, da dies der Standard-Eingang für solche Server ist.
-        const apiUrl = "https://lernchatserver-2025.vercel.app/api/chat"; 
+   async function analyzeAIAnswer() {
+        const userText = document.getElementById('ai-input').value; 
+        const scenario = aiScenarios[currentAiId]; 
         
-        const response = await fetch(apiUrl, { 
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                messages: [
-                    { role: "system", content: scenario.gradingPrompt },
-                    { role: "user", content: userText } 
-                ] 
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Server antwortet nicht (Status: ${response.status})`);
-        }
-
-        const data = await response.text(); 
+        const feedbackBox = document.getElementById('ai-result-box');
+        feedbackBox.style.display = 'block';
         
-        // Versuchen, die Punktzahl auszulesen
-        let score = 0;
-        const scoreMatch = data.match(/PUNKTE:\s*(\d+)/i);
-        if (scoreMatch && scoreMatch[1]) {
-            score = parseInt(scoreMatch[1]); 
-        } else {
-            score = 50; // Fallback, falls die KI die Formatierung vergisst
+        // Status-Anzeige
+        document.getElementById('ai-feedback-text').innerHTML = "<i>Verbindung zum Lernserver wird aufgebaut...</i> ⏳";
+        document.getElementById('ai-verdict').innerText = "";
+        document.getElementById('ai-score-fill').style.width = "0%";
+
+        try {
+            // Die korrekte Adresse für den Server
+            const apiUrl = "https://lernchatserver-2025.vercel.app/api/chat"; 
+            
+            const response = await fetch(apiUrl, { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    messages: [
+                        { role: "system", content: scenario.gradingPrompt },
+                        { role: "user", content: userText } 
+                    ] 
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server antwortet nicht (Status: ${response.status})`);
+            }
+
+            const data = await response.text(); 
+            
+            // Versuchen, die Punktzahl auszulesen
+            let score = 0;
+            const scoreMatch = data.match(/PUNKTE:\s*(\d+)/i);
+            if (scoreMatch && scoreMatch[1]) {
+                score = parseInt(scoreMatch[1]); 
+            } else {
+                score = 50; // Fallback, falls die KI die Formatierung vergisst
+            }
+
+            const cleanText = data.replace(/PUNKTE:\s*\d+(\/100)?/i, "").trim();
+            displayAiResult(score, cleanText);
+
+        } catch (error) {
+            console.error(error);
+            document.getElementById('ai-feedback-text').innerHTML = 
+                `<span style="color:#e74c3c"><b>Verbindungsfehler:</b><br>
+                Der Server ist nicht erreichbar (${error.message}).<br><br>
+                <b>Hinweis:</b> Die lokale Not-Bewertung wird jetzt genutzt.</span><hr>`;
+                
+            // Fallback auf lokale Bewertung
+            analyzeAIAnswerLocal(false); 
         }
-
-        const cleanText = data.replace(/PUNKTE:\s*\d+(\/100)?/i, "").trim();
-        displayAiResult(score, cleanText);
-
-    } catch (error) {
-        console.error(error);
-        document.getElementById('ai-feedback-text').innerHTML = 
-            `<span style="color:#e74c3c"><b>Verbindungsfehler:</b><br>
-            Der Server "${error.message}" ist nicht erreichbar.<br><br>
-            <b>Mögliche Gründe:</b><br>
-            1. Die URL ist falsch oder der Server ist offline.<br>
-            2. Du startest die Datei lokal (file://). Viele Server blockieren das (CORS).<br>
-            <br>Die lokale Not-Bewertung wird jetzt genutzt.</span><hr>` + 
-            analyzeAIAnswerLocal(true); 
     }
-}
-}
+
     function analyzeAIAnswerLocal(returnTextOnly = false) {
         const userText = document.getElementById('ai-input').value.toLowerCase();
         const scenario = aiScenarios[currentAiId];
@@ -6655,6 +6642,8 @@ async function analyzeAIAnswer() {
             displayAiResult(percent, text + " (Offline-Bewertung)");
         }
     }
+
+
 
     function displayAiResult(score, text) {
         const fill = document.getElementById('ai-score-fill');
