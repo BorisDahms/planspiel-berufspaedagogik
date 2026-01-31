@@ -6571,65 +6571,43 @@ document.getElementById('overlay-sort').classList.add('hidden');
 
    
 async function analyzeAIAnswer() {
-    const userText = document.getElementById('ai-input').value; 
-    const scenario = aiScenarios[currentAiId]; 
-    
-    const feedbackBox = document.getElementById('ai-result-box');
-    feedbackBox.style.display = 'block';
-    document.getElementById('ai-feedback-text').innerHTML = "<i>Verbindung zum Lernserver wird aufgebaut...</i> ⏳";
-    document.getElementById('ai-verdict').innerText = "";
-    document.getElementById('ai-score-fill').style.width = "0%";
-
-    try {
-        // HIER IST DIE NEUE ADRESSE:
-        const apiUrl = "https://lernchatserver-2025.vercel.app/api/chat"; 
+        const userText = document.getElementById('ai-input').value; 
+        const scenario = aiScenarios[currentAiId]; 
         
-        const response = await fetch(apiUrl, { 
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                messages: [
-                    { role: "system", content: scenario.gradingPrompt },
-                    { role: "user", content: userText } 
-                ] 
-            })
-        });
+        const feedbackBox = document.getElementById('ai-result-box');
+        feedbackBox.style.display = 'block';
+        document.getElementById('ai-feedback-text').innerHTML = "<i>Verbindung zum Lernserver wird aufgebaut...</i> ⏳";
+        document.getElementById('ai-verdict').innerText = "";
+        document.getElementById('ai-score-fill').style.width = "0%";
 
-        if (!response.ok) {
-            throw new Error(`Server antwortet nicht (Status: ${response.status})`);
-        }
+        try {
+            const apiUrl = "https://lernchatserver-2025.vercel.app/api/chat"; 
+            
+            const response = await fetch(apiUrl, { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    messages: [
+                        { role: "system", content: scenario.gradingPrompt },
+                        { role: "user", content: userText } 
+                    ] 
+                })
+            });
 
-        const data = await response.text(); 
-        
-        // Versuchen, die Punktzahl auszulesen
-        let score = 0;
-        const scoreMatch = data.match(/PUNKTE:\s*(\d+)/i);
-        if (scoreMatch && scoreMatch[1]) {
-            score = parseInt(scoreMatch[1]); 
-        } else {
-            score = 50; // Fallback
-        }
+            if (!response.ok) {
+                throw new Error(`Server antwortet nicht (Status: ${response.status})`);
+            }
 
-        const cleanText = data.replace(/PUNKTE:\s*\d+(\/100)?/i, "").trim();
-        displayAiResult(score, cleanText);
-
-    } catch (error) {
-        console.error(error);
-        document.getElementById('ai-feedback-text').innerHTML = 
-            `<span style="color:#e74c3c"><b>Verbindungsfehler:</b><br>
-            Der Server ist nicht erreichbar.<br>
-            <i>${error.message}</i><br><br>
-            Die lokale Bewertung wird genutzt.</span><hr>` + 
-            analyzeAIAnswerLocal(true); 
-    }
-}
-
-            if (!response.ok) throw new Error("Verbindungsfehler: " + response.status);
             const data = await response.text(); 
             
+            // Versuchen, die Punktzahl auszulesen
             let score = 0;
             const scoreMatch = data.match(/PUNKTE:\s*(\d+)/i);
-            if (scoreMatch && scoreMatch[1]) score = parseInt(scoreMatch[1]); else score = 50; 
+            if (scoreMatch && scoreMatch[1]) {
+                score = parseInt(scoreMatch[1]); 
+            } else {
+                score = 50; // Fallback
+            }
 
             const cleanText = data.replace(/PUNKTE:\s*\d+(\/100)?/i, "").trim();
             displayAiResult(score, cleanText);
@@ -6637,15 +6615,13 @@ async function analyzeAIAnswer() {
         } catch (error) {
             console.error(error);
             document.getElementById('ai-feedback-text').innerHTML = 
-                `<span style="color:#e74c3c"><b>Fehler bei der KI-Verbindung:</b><br>Konnte Server nicht erreichen.<br>(${error.message})<br><br>
-                Die lokale Bewertung wird als Fallback genutzt.</span><hr>` + 
+                `<span style="color:#e74c3c"><b>Verbindungsfehler:</b><br>
+                Der Server ist nicht erreichbar.<br>
+                <i>${error.message}</i><br><br>
+                Die lokale Bewertung wird genutzt.</span><hr>` + 
                 analyzeAIAnswerLocal(true); 
         }
     }
-
-
-
-
 
 
     function analyzeAIAnswerLocal(returnTextOnly = false) {
